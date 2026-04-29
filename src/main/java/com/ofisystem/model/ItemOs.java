@@ -1,4 +1,4 @@
-package Classes;
+package com.ofisystem.model;
 
 import java.util.Objects;
 
