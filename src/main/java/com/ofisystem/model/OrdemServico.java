@@ -1,4 +1,4 @@
-package com.ofisystem.entidades;
+package com.ofisystem.model;
 
 import Enums.Status;
 

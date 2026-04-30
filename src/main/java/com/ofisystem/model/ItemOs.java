@@ -1,8 +1,8 @@
-package com.ofisystem.entidades;
+package com.ofisystem.model;
 
 import java.util.Objects;
 
-public class ItemNota {
+public class ItemOs {
 
     private Integer id;
     private String descricao;
@@ -12,7 +12,7 @@ public class ItemNota {
 
     @Override
     public String toString() {
-        return "ItemNota{" +
+        return "ItemOs{" +
                 "id=" + id +
                 ", descricao='" + descricao + '\'' +
                 ", quantidade=" + quantidade +
@@ -24,8 +24,8 @@ public class ItemNota {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ItemNota itemNota = (ItemNota) o;
-        return Objects.equals(getId(), itemNota.getId()) && Objects.equals(getDescricao(), itemNota.getDescricao()) && Objects.equals(getQuantidade(), itemNota.getQuantidade()) && Objects.equals(getValorUnitario(), itemNota.getValorUnitario()) && Objects.equals(getSubtotal(), itemNota.getSubtotal());
+        ItemOs itemOs = (ItemOs) o;
+        return Objects.equals(getId(), itemOs.getId()) && Objects.equals(getDescricao(), itemOs.getDescricao()) && Objects.equals(getQuantidade(), itemOs.getQuantidade()) && Objects.equals(getValorUnitario(), itemOs.getValorUnitario()) && Objects.equals(getSubtotal(), itemOs.getSubtotal());
     }
 
     @Override
