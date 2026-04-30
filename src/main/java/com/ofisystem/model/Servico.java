@@ -1,14 +1,31 @@
 package com.ofisystem.model;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "servico")
 public class Servico {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "servico_id")
     private Integer id;
+
+    @Column(nullable = false, name = "servico_nome")
     private String nome;
+
+    @Column(nullable = false, name = "servico_descrico")
     private String descricao;
+
+    @Column(nullable = false, name = "servico_valor")
     private Double valor;
+
+    @Column(nullable = false, name = "servico_duracao_min")
     private Integer duracaoMin;
+
+    @Column(nullable = false, name = "servico_ativo")
     private boolean ativo;
 
     @Override

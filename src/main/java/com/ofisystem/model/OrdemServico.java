@@ -1,20 +1,48 @@
 package com.ofisystem.model;
 
 import Enums.Status;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "item_nota")
 public class OrdemServico {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, name = "ordem_servico_id")
     private Integer id;
+
+    @Column(nullable = false, name = "ordem_servico_numero")
     private String numero;
+
+    @Column(nullable = false, name = "ordem_servico_data_abertura")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataAbertura;
+
+    @Column(nullable = false, name = "ordem_servico_data_conclusao")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataConclusao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ordem_servico_status")
     private Status status;
+
+    @Column(nullable = false, name = "ordem_servico_descricao")
     private String descricao;
+
+    @Column(nullable = false, name = "ordem_servico_valor_total")
     private Double valorTotal;
+
+    @Column(nullable = false, name = "ordem_servico_cliente")
     private String cliente;
+
+    @OneToMany(mappedBy = "ordemServico", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemOs> itens = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -104,5 +132,13 @@ public class OrdemServico {
 
     public void setCliente(String cliente) {
         this.cliente = cliente;
+    }
+
+    public List<ItemOs> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemOs> itens) {
+        this.itens = itens;
     }
 }
