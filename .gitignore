@@ -37,3 +37,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Banco de dados - nunca subir credenciais ###
+src/main/resources/META-INF/persistence.xml

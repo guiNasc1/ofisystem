@@ -12,7 +12,7 @@ public class Estoque {
     @Column(name = "estoque_id")
     private Long id;
 
-    @Column(name = "estoque_id", nullable = false)
+    @Column(name = "estoque_nome", nullable = false)
     private String nome;
 
     @Column(name = "estoque_categoria")
