@@ -1,18 +1,41 @@
 package com.ofisystem.model;
 
 import Enums.Status;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "nota_fiscal")
 public class NotaFiscal {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "nota_fiscal_id")
     private Integer id;
+
+    @Column(nullable = false, name = "nota_fiscal_numero")
     private String numero;
+
+    @Column(nullable = false, name = "nota_fiscal_Data_emissao")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dataEmissao;
+
+    @Column(nullable = false, name = "nota_fiscal_valor_total")
     private Double valorTotal;
+
+    @Column(nullable = false, name = "nota_fiscal_impostos")
     private Double impostos;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "nota_fiscal_status")
     private Status status;
+
+    @OneToMany(mappedBy = "notaFiscal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemNota> itens = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -84,5 +107,13 @@ public class NotaFiscal {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public List<ItemNota> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemNota> itens) {
+        this.itens = itens;
     }
 }

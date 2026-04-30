@@ -1,14 +1,33 @@
 package com.ofisystem.model;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "item_os")
 public class ItemOs {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, name = "item_os_id")
     private Integer id;
+
+    @Column(nullable = false, name = "item_os_descricao")
     private String descricao;
+
+    @Column(nullable = false, name = "item_os_quantidade")
     private Integer quantidade;
+
+    @Column(nullable = false, name = "item_os_valor_unitario")
     private Double valorUnitario;
+
+    @Column(nullable = false, name = "item_os_subtotal")
     private Double subtotal;
+
+    @ManyToOne
+    @JoinColumn(name = "ordem_servico_id", nullable = false)
+    private OrdemServico ordemServico;
 
     @Override
     public String toString() {
@@ -71,5 +90,13 @@ public class ItemOs {
 
     public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public OrdemServico getOrdemServico() {
+        return ordemServico;
+    }
+
+    public void setOrdemServico(OrdemServico ordemServico) {
+        this.ordemServico = ordemServico;
     }
 }

@@ -1,14 +1,33 @@
 package com.ofisystem.model;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "item_nota")
 public class ItemNota {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, name = "item_nota_Id")
     private Integer id;
+
+    @Column(nullable = false, name = "item_nota_descricao")
     private String descricao;
+
+    @Column(nullable = false, name = "item_nota_descricao")
     private Integer quantidade;
+
+    @Column(nullable = false, name = "item_nota_valor_unitrio")
     private Double valorUnitario;
+
+    @Column(nullable = false, name = "item_nota-subtotal")
     private Double subtotal;
+
+    @ManyToOne
+    @JoinColumn(name = "nota_fiscal_id", nullable = false)
+    private NotaFiscal notaFiscal;
 
     @Override
     public String toString() {
@@ -71,5 +90,13 @@ public class ItemNota {
 
     public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
+    }
+
+    public NotaFiscal getNotaFiscal() {
+        return notaFiscal;
+    }
+
+    public void setNotaFiscal(NotaFiscal notaFiscal) {
+        this.notaFiscal = notaFiscal;
     }
 }
