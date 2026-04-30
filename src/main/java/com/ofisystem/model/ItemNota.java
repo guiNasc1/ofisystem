@@ -16,7 +16,7 @@ public class ItemNota {
     @Column(nullable = false, name = "item_nota_descricao")
     private String descricao;
 
-    @Column(nullable = false, name = "item_nota_descricao")
+    @Column(nullable = false, name = "item_nota_quantidade")
     private Integer quantidade;
 
     @Column(nullable = false, name = "item_nota_valor_unitrio")

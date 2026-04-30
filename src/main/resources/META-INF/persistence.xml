@@ -13,18 +13,18 @@
         <class>com.ofisystem.model.NotaFiscal</class>
         <class>com.ofisystem.model.OrdemServico</class>
         <class>com.ofisystem.model.Servico</class>
-        <class>com.ofisystem.model.Usurio</class>
+        <class>com.ofisystem.model.Usuario</class>
 
         <properties>
             <!-- Conexão PostgreSQL -->
             <property name="jakarta.persistence.jdbc.driver"
                       value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:postgresql://localhost:5432/ofisystem"/>
+                      value="jdbc:postgresql://db.khcfflpvobqimaihbyub.supabase.co:5432/postgres"/>
             <property name="jakarta.persistence.jdbc.user"
                       value="postgres"/>
             <property name="jakarta.persistence.jdbc.password"
-                      value="guirare123"/>
+                      value="guirare18106"/>
 
             <!-- Hibernate cria as tabelas automaticamente na primeira execução -->
             <property name="hibernate.hbm2ddl.auto"     value="update"/>
