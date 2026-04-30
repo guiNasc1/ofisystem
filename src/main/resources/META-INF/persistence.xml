@@ -8,6 +8,12 @@
     <persistence-unit name="ofisystem" transaction-type="RESOURCE_LOCAL">
 
         <class>com.ofisystem.model.Estoque</class>
+        <class>com.ofisystem.model.ItemNota</class>
+        <class>com.ofisystem.model.ItemOs</class>
+        <class>com.ofisystem.model.NotaFiscal</class>
+        <class>com.ofisystem.model.OrdemServico</class>
+        <class>com.ofisystem.model.Servico</class>
+        <class>com.ofisystem.model.Usurio</class>
 
         <properties>
             <!-- Conexão PostgreSQL -->
