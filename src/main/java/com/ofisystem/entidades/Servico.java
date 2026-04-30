@@ -1,4 +1,4 @@
-package com.ofisystem.model;
+package com.ofisystem.entidades;
 
 import java.util.Objects;
 
