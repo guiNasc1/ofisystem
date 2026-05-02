@@ -41,7 +41,7 @@ public class OrdemServico {
     @Column(nullable = false, name = "ordem_servico_cliente")
     private String cliente;
 
-    @OneToMany(mappedBy = "ordemServico", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ordemServico", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ItemOs> itens = new ArrayList<>();
 
     @Override

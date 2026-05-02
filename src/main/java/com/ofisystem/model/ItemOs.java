@@ -26,7 +26,7 @@ public class ItemOs {
     private Double subtotal;
 
     @ManyToOne
-    @JoinColumn(name = "ordem_servico_id", nullable = false)
+    @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id",nullable = false)
     private OrdemServico ordemServico;
 
     @Override

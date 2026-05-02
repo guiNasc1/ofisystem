@@ -26,7 +26,7 @@ public class ItemNota {
     private Double subtotal;
 
     @ManyToOne
-    @JoinColumn(name = "nota_fiscal_id", nullable = false)
+    @JoinColumn(name = "nota_fiscal_id", referencedColumnName = "nota_fiscal_id", nullable = false)
     private NotaFiscal notaFiscal;
 
     @Override

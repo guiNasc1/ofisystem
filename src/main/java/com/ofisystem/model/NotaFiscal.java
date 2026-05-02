@@ -34,7 +34,7 @@ public class NotaFiscal {
     @Column(name = "nota_fiscal_status")
     private Status status;
 
-    @OneToMany(mappedBy = "notaFiscal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "notaFiscal", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ItemNota> itens = new ArrayList<>();
 
     @Override
