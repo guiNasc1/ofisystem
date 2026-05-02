@@ -13,8 +13,7 @@ public class Main {
         FlatLightLaf.setup();
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame();
-            frame.setVisible(true);
+            new MainFrame().exibirFrame();
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(JPAutil::close));
