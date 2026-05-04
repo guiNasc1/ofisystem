@@ -5,9 +5,6 @@ import java.awt.*;
 
 public abstract class AbstractPanel extends JPanel {
 
-    private JFrame frame;
-    private JPanel painelCentral;
-
     public AbstractPanel(){
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
@@ -16,19 +13,12 @@ public abstract class AbstractPanel extends JPanel {
 
     protected abstract void inicializarTela();
 
-    protected JFrame getFrame(String titulo, int largura, int altura, int larguraMinimaJanela, int alturaMinimaJanela){
-        frame = new JFrame();
-        frame.setTitle(titulo);
-        frame.setSize(largura,altura);
-        frame.setMinimumSize(new Dimension(larguraMinimaJanela, alturaMinimaJanela));
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null); // centraliza na tela
-
-        // Painel de conteúdo central (começa vazio)
-        painelCentral = new JPanel(new BorderLayout());
-        painelCentral.setBackground(new Color(245, 245, 245));
-        frame.add(painelCentral);
-        return frame;
+    protected JLabel criarTexto(String texto, int tamanho){
+        JLabel txt = new JLabel(texto);
+        txt.setHorizontalAlignment(JLabel.CENTER);
+        txt.setFont(new Font("Segoe UI", Font.BOLD, tamanho));
+        txt.setVerticalAlignment(JLabel.CENTER);
+        return txt;
     }
 
     protected JButton criarBotao(String texto, Color cor){

@@ -1,6 +1,9 @@
 package com.ofisystem.ui;
 
 import com.ofisystem.ui.panels.AbstractPanel;
+import com.ofisystem.ui.panels.cliente.ClienteCadastroPanel;
+import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class MainFrame {
     }
 
     // Troca o conteúdo do painel central
-    private void navegarPara(AbstractPanel painel) {
+    private void navegarPara(JPanel painel) {
         painelCentral.removeAll();
         painelCentral.add(painel, BorderLayout.CENTER);
         painelCentral.revalidate();
@@ -116,7 +119,7 @@ public class MainFrame {
         container.setBackground(new Color(33, 37, 41));
         container.setMaximumSize(new Dimension(210, 1000));
 
-        // Botão principal
+        // Botão do título
         JButton btnTitulo = new JButton(titulo + "  ▶");
         btnTitulo.setMaximumSize(new Dimension(210, 46));
         btnTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -134,6 +137,10 @@ public class MainFrame {
         painelSub.setLayout(new BoxLayout(painelSub, BoxLayout.Y_AXIS));
         painelSub.setBackground(new Color(22, 25, 29));
         painelSub.setVisible(false);
+
+        // Registra na lista global
+        todosOsMenus.add(painelSub);
+        todosBotoesTitulo.add(btnTitulo);
 
         // Cria cada subitem
         for (String subitem : subitens) {
@@ -166,13 +173,20 @@ public class MainFrame {
             painelSub.add(btnSub);
         }
 
-        // Clique no título — expande ou recolhe
+        // Clique no título — fecha todos e abre só esse
         btnTitulo.addActionListener(e -> {
-            boolean visivel = painelSub.isVisible();
-            painelSub.setVisible(!visivel);
-            btnTitulo.setText(titulo + (visivel ? "  ▶" : "  ▼"));
-            btnTitulo.setForeground(visivel
-                    ? new Color(200, 200, 200) : Color.WHITE);
+            boolean estaAberto = painelSub.isVisible();
+
+            // Fecha todos os menus
+            fecharTodosMenus();
+
+            // Se estava fechado, abre ele
+            if (!estaAberto) {
+                painelSub.setVisible(true);
+                btnTitulo.setText(titulo + "  ▼");
+                btnTitulo.setForeground(Color.WHITE);
+            }
+
             container.revalidate();
             container.repaint();
         });
@@ -195,19 +209,12 @@ public class MainFrame {
     // Aqui você conecta cada subitem ao seu painel
     private void onSubitemClicado(String menu, String subitem) {
         // Exemplo — substitua os JOptionPane pelos painéis reais quando criar
-        // switch (menu) {
-        //     case "👤  Clientes" -> {
-        //         if (subitem.equals("Cadastrar")) navegarPara(new ClienteCadastroPanel());
-        //         if (subitem.equals("Consultar")) navegarPara(new ClienteConsultaPanel());
-        //     }
-        //     case "📦  Estoque" -> {
-        //         if (subitem.equals("Cadastrar Peça")) navegarPara(new EstoquePanel());
-        //     }
-        // }
-
-        // Por enquanto mostra o que foi clicado
-        JOptionPane.showMessageDialog(frame,
-                "Você clicou em: " + menu.trim() + " → " + subitem);
+         switch (menu) {
+             case "👤  Clientes" -> {
+                 if (subitem.equals("Cadastrar")) navegarPara(new ClienteCadastroPanel());
+                 if (subitem.equals("Consultar")) navegarPara(new ClienteConsultaPanel());
+             }
+         }
     }
 
     private JSeparator criarSeparador() {
