@@ -1,12 +1,13 @@
-package com.ofisystem.model;
+package com.ofisystem.entidade;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "item_nota")
-public class ItemNota {
+public class ItemNota implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

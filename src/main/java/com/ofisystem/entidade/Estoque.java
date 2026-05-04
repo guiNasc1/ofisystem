@@ -1,11 +1,13 @@
-package com.ofisystem.model;
+package com.ofisystem.entidade;
 
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "estoque")
-public class Estoque {
+public class Estoque implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
