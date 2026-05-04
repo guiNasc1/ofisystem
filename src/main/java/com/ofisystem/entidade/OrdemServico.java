@@ -1,8 +1,9 @@
-package com.ofisystem.model;
+package com.ofisystem.entidade;
 
 import Enums.Status;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "item_nota")
-public class OrdemServico {
+public class OrdemServico implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

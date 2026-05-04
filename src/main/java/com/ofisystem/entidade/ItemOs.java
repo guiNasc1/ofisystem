@@ -1,57 +1,56 @@
-package com.ofisystem.model;
+package com.ofisystem.entidade;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "item_Peca")
-public class itemPeca {
+@Table(name = "item_os")
+public class ItemOs implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_peca_id")
+    @Column(nullable = false, name = "item_os_id")
     private Integer id;
 
-    @Column(nullable = false, name = "item_peca_quantidade")
+    @Column(nullable = false, name = "item_os_descricao")
+    private String descricao;
+
+    @Column(nullable = false, name = "item_os_quantidade")
     private Integer quantidade;
 
-    @Column(nullable = false, name = "item_peca_valor_unitario")
+    @Column(nullable = false, name = "item_os_valor_unitario")
     private Double valorUnitario;
 
-    @Column(nullable = false, name = "item_peca_subtotal")
+    @Column(nullable = false, name = "item_os_subtotal")
     private Double subtotal;
 
     @ManyToOne
-    @JoinColumn(name = "peca_id", referencedColumnName = "peca_id", nullable = false)
-    private Peca peca;
-
-    @ManyToOne
-    @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id", nullable = false)
+    @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id",nullable = false)
     private OrdemServico ordemServico;
 
     @Override
     public String toString() {
-        return "itemPeca{" +
+        return "ItemOs{" +
                 "id=" + id +
+                ", descricao='" + descricao + '\'' +
                 ", quantidade=" + quantidade +
                 ", valorUnitario=" + valorUnitario +
                 ", subtotal=" + subtotal +
-                ", peca=" + peca +
-                ", ordemServico=" + ordemServico +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        itemPeca itemPeca = (itemPeca) o;
-        return Objects.equals(getId(), itemPeca.getId()) && Objects.equals(getQuantidade(), itemPeca.getQuantidade()) && Objects.equals(getValorUnitario(), itemPeca.getValorUnitario()) && Objects.equals(getSubtotal(), itemPeca.getSubtotal()) && Objects.equals(getPeca(), itemPeca.getPeca()) && Objects.equals(getOrdemServico(), itemPeca.getOrdemServico());
+        ItemOs itemOs = (ItemOs) o;
+        return Objects.equals(getId(), itemOs.getId()) && Objects.equals(getDescricao(), itemOs.getDescricao()) && Objects.equals(getQuantidade(), itemOs.getQuantidade()) && Objects.equals(getValorUnitario(), itemOs.getValorUnitario()) && Objects.equals(getSubtotal(), itemOs.getSubtotal());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getQuantidade(), getValorUnitario(), getSubtotal(), getPeca(), getOrdemServico());
+        return Objects.hash(getId(), getDescricao(), getQuantidade(), getValorUnitario(), getSubtotal());
     }
 
     public Integer getId() {
@@ -60,6 +59,14 @@ public class itemPeca {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public Integer getQuantidade() {
@@ -84,14 +91,6 @@ public class itemPeca {
 
     public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
-    }
-
-    public Peca getPeca() {
-        return peca;
-    }
-
-    public void setPeca(Peca peca) {
-        this.peca = peca;
     }
 
     public OrdemServico getOrdemServico() {

@@ -1,13 +1,14 @@
-package com.ofisystem.model;
+package com.ofisystem.entidade;
 
 import Enums.Perfil;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "usuario")
-public class Usuario {
+public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

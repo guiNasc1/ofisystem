@@ -1,4 +1,4 @@
-package com.ofisystem.model;
+package com.ofisystem.entidade;
 
 import Enums.Status;
 import jakarta.persistence.*;
