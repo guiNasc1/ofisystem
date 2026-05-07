@@ -118,9 +118,15 @@ public class ClienteCadastroPanel extends AbstractPanel {
         painel.add(txtEstado, gbc);
 
         btBuscarCep.addActionListener(e -> buscarCep());
+//        btSalvar.addActionListener(e -> salvar());
 
         return painel;
     }
+
+//    private void salvar(){
+//        Cliente cliente = new Cliente();
+//
+//    }
 
     private void buscarCep(){
 

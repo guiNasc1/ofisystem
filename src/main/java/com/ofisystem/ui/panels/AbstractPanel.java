@@ -37,8 +37,8 @@ public abstract class AbstractPanel extends JPanel {
         return btn;
     }
 
-    protected JTextField criarCampo(int colunas, int maxCaracteres) {
-        JTextField campo = new JTextField(colunas);
+    protected JTextField criarCampo(int largura, int maxCaracteres) {
+        JTextField campo = new JTextField(largura);
         campo.setDocument(new PlainDocument() {
             @Override
             public void insertString(int offs, String str, AttributeSet a)
