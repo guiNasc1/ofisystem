@@ -1,6 +1,9 @@
 package com.ofisystem.ui.panels;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 
 public abstract class AbstractPanel extends JPanel {
@@ -34,9 +37,18 @@ public abstract class AbstractPanel extends JPanel {
         return btn;
     }
 
-    protected JTextField criarCampo(int colunas) {
+    protected JTextField criarCampo(int colunas, int maxCaracteres) {
         JTextField campo = new JTextField(colunas);
+        campo.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet a)
+                    throws BadLocationException {
+                if (str != null && (getLength() + str.length()) <= maxCaracteres)
+                    super.insertString(offs, str, a);
+            }
+        });
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        FontMetrics fm = campo.getFontMetrics(campo.getFont());
         campo.setPreferredSize(new Dimension(campo.getPreferredSize().width, 32));
         return campo;
     }
