@@ -26,7 +26,7 @@ public class Peca {
     private Double valorUnitario;
 
     @OneToMany(mappedBy = "peca", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<itemPeca> itens = new ArrayList<>();
+    private List<ItemPeca> itens = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "pecaStatus")
@@ -95,11 +95,11 @@ public class Peca {
         this.status = status;
     }
 
-    public List<itemPeca> getItens() {
+    public List<ItemPeca> getItens() {
         return itens;
     }
 
-    public void setItens(List<itemPeca> itens) {
+    public void setItens(List<ItemPeca> itens) {
         this.itens = itens;
     }
 }

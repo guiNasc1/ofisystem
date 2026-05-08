@@ -23,6 +23,10 @@ public class Endereco implements Serializable {
     private String rua;
     @Column(name = "end_numero")
     private String numero;
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    @JsonIgnore
+    private Cliente cliente;
 
     public Integer getId() {
         return id;
@@ -70,5 +74,13 @@ public class Endereco implements Serializable {
 
     public void setNumero(String numero) {
         this.numero = numero;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 }

@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "item_Peca")
-public class itemPeca {
+public class ItemPeca {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +45,7 @@ public class itemPeca {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        itemPeca itemPeca = (itemPeca) o;
+        ItemPeca itemPeca = (ItemPeca) o;
         return Objects.equals(getId(), itemPeca.getId()) && Objects.equals(getQuantidade(), itemPeca.getQuantidade()) && Objects.equals(getValorUnitario(), itemPeca.getValorUnitario()) && Objects.equals(getSubtotal(), itemPeca.getSubtotal()) && Objects.equals(getPeca(), itemPeca.getPeca()) && Objects.equals(getOrdemServico(), itemPeca.getOrdemServico());
     }
 

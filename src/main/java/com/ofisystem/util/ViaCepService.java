@@ -16,7 +16,7 @@ public class ViaCepService {
         String cepLimpo = cep.replaceAll("[^0-9]", "");
 
         if(cepLimpo.length() != 8){
-            throw new IllegalArgumentException("CEP inválido! Digite 8 números.");
+            throw new IllegalArgumentException("CEP inválido!");
         }
 
         String urlSrt = String.format(URL_BASE, cepLimpo);

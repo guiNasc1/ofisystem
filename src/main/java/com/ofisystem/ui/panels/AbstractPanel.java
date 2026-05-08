@@ -3,18 +3,20 @@ package com.ofisystem.ui.panels;
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.MaskFormatter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.text.ParseException;
 
 public abstract class AbstractPanel extends JPanel {
 
-    public AbstractPanel(){
+    public AbstractPanel() throws ParseException {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
         inicializarTela();
     }
 
-    protected abstract void inicializarTela();
+    protected abstract void inicializarTela() throws ParseException;
 
     protected JLabel criarTexto(String texto, int tamanho){
         JLabel txt = new JLabel(texto);
@@ -48,14 +50,38 @@ public abstract class AbstractPanel extends JPanel {
             }
         });
         campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        campo.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
         FontMetrics fm = campo.getFontMetrics(campo.getFont());
         campo.setPreferredSize(new Dimension(campo.getPreferredSize().width, 32));
         return campo;
     }
 
-    protected JLabel criarLabel(String texto) {
+    protected JFormattedTextField criarCampoFormatado(MaskFormatter mask, int largura, int maxCaracteres){
+        try {
+            JFormattedTextField campo = new JFormattedTextField(mask);
+            campo.setDocument(new PlainDocument() {
+                @Override
+                public void insertString(int offs, String str, AttributeSet a)
+                        throws BadLocationException {
+                    if (str != null && (getLength() + str.length()) <= maxCaracteres)
+                        super.insertString(offs, str, a);
+                }
+            });
+            campo.setColumns(largura);
+            campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+            campo.setBorder(BorderFactory.createLineBorder(Color.gray, 1));
+            FontMetrics fm = campo.getFontMetrics(campo.getFont());
+            campo.setPreferredSize(new Dimension(campo.getPreferredSize().width, 32));
+
+            return campo;
+        }catch (Exception e) {
+            return new JFormattedTextField();
+        }
+    }
+
+    protected JLabel criarLabel(String texto, int tamanho) {
         JLabel label = new JLabel(texto);
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        label.setFont(new Font("Segoe UI", Font.PLAIN, tamanho));
         return label;
     }
 

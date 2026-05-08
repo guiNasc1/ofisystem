@@ -6,6 +6,7 @@ import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,7 +169,13 @@ public class MainFrame {
             });
 
             // Ação do subitem — aqui você vai conectar os painéis reais
-            btnSub.addActionListener(e -> onSubitemClicado(titulo, subitem));
+            btnSub.addActionListener(e -> {
+                try {
+                    onSubitemClicado(titulo, subitem);
+                } catch (ParseException ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
 
             painelSub.add(btnSub);
         }
@@ -207,7 +214,7 @@ public class MainFrame {
     }
 
     // Aqui você conecta cada subitem ao seu painel
-    private void onSubitemClicado(String menu, String subitem) {
+    private void onSubitemClicado(String menu, String subitem) throws ParseException {
         // Exemplo — substitua os JOptionPane pelos painéis reais quando criar
          switch (menu) {
              case "👤  Clientes" -> {
