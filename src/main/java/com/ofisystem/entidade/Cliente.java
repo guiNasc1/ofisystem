@@ -14,13 +14,13 @@ public class Cliente implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cliente_id")
     private Integer id;
-    @Column(name = "cliente_nome")
+    @Column(name = "cliente_nome", nullable = false)
     private String cliNome;
-    @Column(name = "cliente_cpf")
+    @Column(name = "cliente_cpf", nullable = false)
     private String cliCpf;
-    @Column(name = "cliente_telefone")
+    @Column(name = "cliente_telefone", nullable = false)
     private String cliTelefone;
-    @Column(name = "cliente_email")
+    @Column(name = "cliente_email", nullable = false)
     private String cliEmail;
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Endereco> endereco = new ArrayList<>();

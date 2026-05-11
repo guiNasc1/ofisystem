@@ -27,14 +27,8 @@ public class ClienteCadastroPanel extends AbstractPanel {
     private JTextField txtEstado;
     private JTextField txtNumero;
 
-    private JTable tabela;
-    private DefaultTableModel modeloTabela;
-
     private JButton btBuscarCep;
     private JButton btSalvar;
-    private JButton btVoltar;
-
-    private Cliente clienteSelecionado;
 
     private ClienteDAO clienteDAO;
 
@@ -58,7 +52,7 @@ public class ClienteCadastroPanel extends AbstractPanel {
         painel.setBorder(BorderFactory.createEmptyBorder(10, 24, 10, 24));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 0);
+        gbc.insets = new Insets(6, 6, 6, 6);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
