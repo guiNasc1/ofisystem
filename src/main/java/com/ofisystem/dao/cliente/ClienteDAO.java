@@ -26,4 +26,31 @@ public class ClienteDAO {
 
     }
 
+    public void atualizar(Cliente cliente){
+        EntityManager
+    }
+
+    public void deletar(Cliente cliente){
+        EntityManager em = JPAutil.getEntityManager();
+        try{
+            em.getTransaction().begin();
+            em.remove(em.merge(cliente));
+            em.getTransaction().commit();
+        } catch (Exception e){
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Cliente buscarPorID(Integer id){
+        EntityManager em = JPAutil.getEntityManager();
+        try{
+            return em.find(Cliente.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
 }

@@ -3,6 +3,7 @@ package com.ofisystem.ui.panels.cliente;
 import com.ofisystem.entidade.Cliente;
 import com.ofisystem.ui.panels.AbstractPanel;
 import com.ofisystem.dao.cliente.ClienteDAO;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -42,14 +43,14 @@ public class ClienteConsultaPanel extends AbstractPanel {
         add(criarFiltro());
     }
 
-    private JPanel criarFiltro(){
+    private JPanel criarFiltro() {
 
         JPanel painelGeral = new JPanel(new BorderLayout());
         painelGeral.setBackground(new Color(188, 188, 188, 255));
 
         JPanel painelCampos = new JPanel(new GridBagLayout());
         painelCampos.setBackground(new Color(188, 188, 188, 255));
-        painelCampos.setBorder(BorderFactory.createEmptyBorder(10, 24, 10,24));
+        painelCampos.setBorder(BorderFactory.createEmptyBorder(10, 24, 10, 24));
 
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -62,7 +63,8 @@ public class ClienteConsultaPanel extends AbstractPanel {
         txtFiltroTelefone = criarCampo(15, 255);
         txtFiltroCidade = criarCampo(15, 255);
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         painelCampos.add(criarLabel("Nome:", 13), gbc);
         gbc.gridx = 1;
         painelCampos.add(txtFiltroNome, gbc);
@@ -72,7 +74,8 @@ public class ClienteConsultaPanel extends AbstractPanel {
         gbc.gridx = 3;
         painelCampos.add(txtFiltroCpf, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         painelCampos.add(criarLabel("Telefone:", 13), gbc);
         gbc.gridx = 1;
         painelCampos.add(txtFiltroTelefone, gbc);
@@ -83,7 +86,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
         painelCampos.add(txtFiltroCidade, gbc);
 
         JButton btFiltrar = criarBotao("🔍 Filtrar", new Color(0, 123, 255));
-        JButton btLimpar  = criarBotao("🧹 Limpar",  new Color(108, 117, 125));
+        JButton btLimpar = criarBotao("🧹 Limpar", new Color(108, 117, 125));
 
         JPanel painelBotoesFiltro = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         painelBotoesFiltro.setBackground(new Color(245, 245, 245));
@@ -102,7 +105,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
 
         modeloTabela = new DefaultTableModel(colunas, 0) {
             @Override
-            public boolean isCellEditable(int row, int column){
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
@@ -127,7 +130,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
 
                 if (temSeleção) {
                     Integer id = (Integer) modeloTabela.getValueAt(linha, 0);
-                    clienteSelecionado = clienteDAO.buscarPorId(id);
+                    clienteSelecionado = clienteDAO.buscarPorID(id);
                 }
             }
         });
@@ -137,6 +140,28 @@ public class ClienteConsultaPanel extends AbstractPanel {
         scroll.setPreferredSize(new Dimension(0, 350));
         return scroll;
 
+    }
+
+    private JPanel criarFooter() {
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 12));
+        footer.setBackground(new Color(235, 235, 23));
+        footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(200, 200, 200)));
+
+        btNovo = criarBotao("Novo Cliente", new Color(40, 167, 69));
+        btEditar = criarBotao("Editar", new Color(123, 173, 253));
+        btExcluir = criarBotao("Excluir", new Color(189, 34, 34));
+
+        btNovo.setPreferredSize(new Dimension(150, 38));
+        btEditar.setPreferredSize(new Dimension(120, 38));
+        btExcluir.setPreferredSize(new Dimension(120, 38));
+
+        btEditar.setEnabled(false);
+        btExcluir.setEnabled(false);
+
+        btNovo.addActionListener(e -> aoClicarNovo.run());
+        btEditar.addActionListener(e -> abrirEdicao);
+
+        return footer;
     }
 
     private JPanel criarLista() {
@@ -151,11 +176,10 @@ public class ClienteConsultaPanel extends AbstractPanel {
         gbc.anchor = GridBagConstraints.WEST;
 
 
-
         return lista;
     }
 
-    private void filtrar(){
+    private void filtrar() {
         String nome = txtFiltroNome.getText().trim();
         String cpf = txtFiltroCpf.getText().trim();
         String telefone = txtFiltroTelefone.getText().trim();
@@ -165,7 +189,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
         carregarTabela(resultado);
     }
 
-    private void limparFiltros(){
+    private void limparFiltros() {
         txtFiltroNome.setText("");
         txtFiltroCpf.setText("");
         txtFiltroCidade.setText("");
@@ -173,8 +197,110 @@ public class ClienteConsultaPanel extends AbstractPanel {
         carregarTabela(clienteDAO.listarTodos());
     }
 
-    private void carregarTabela(List<Cliente> clientes){
+    private void excluir() {
+        if (clienteSelecionado == null) {
+            return;
+        }
+
+        if (confirmar("Deseja excluir o cliente " + clienteSelecionado.getCliNome() + "?")) {
+            clienteDAO.deletar(clienteSelecionado);
+            mostrarSucesso("Cliente excluído com sucesso!");
+            clienteSelecionado = null;
+            btEditar.setEnabled(false);
+            btExcluir.setEnabled(false);
+
+        }
+    }
+
+    private void abrirEdicao(){
+        if(clienteSelecionado == null) return;
+
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Editar Cliente — " + clienteSelecionado.getCliNome());
+        dialog.setSize(450, 320);
+        dialog.setLocationRelativeTo(null);
+        dialog.setModal(true);
+        dialog.setLayout(new BorderLayout());
+
+        JPanel painel = new JPanel(new GridBagLayout());
+        painel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 6, 6, 6);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JTextField txtNome     = new JTextField(clienteSelecionado.getCliNome(), 20);
+        JTextField txtCpf      = new JTextField(clienteSelecionado.getCliCpf(), 15);
+        JTextField txtTelefone = new JTextField(clienteSelecionado.getCliTelefone(), 15);
+        JTextField txtEmail    = new JTextField(clienteSelecionado.getCliEmail(), 20);
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        painel.add(new JLabel("Nome:"), gbc);
+        gbc.gridx = 1;
+        painel.add(txtNome, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        painel.add(new JLabel("CPF:"), gbc);
+        gbc.gridx = 1;
+        painel.add(txtCpf, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        painel.add(new JLabel("Telefone:"), gbc);
+        gbc.gridx = 1;
+        painel.add(txtTelefone, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3;
+        painel.add(new JLabel("Email:"), gbc);
+        gbc.gridx = 1;
+        painel.add(txtEmail, gbc);
+
+        // Footer do dialog
+        JPanel footerDialog = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
+        JButton btCancelar = new JButton("Cancelar");
+        JButton btSalvar   = new JButton("💾  Salvar");
+        btSalvar.setBackground(new Color(40, 167, 69));
+        btSalvar.setForeground(Color.WHITE);
+        btSalvar.setFocusPainted(false);
+
+        btCancelar.addActionListener(e -> dialog.dispose());
+
+        btSalvar.addActionListener(e -> {
+            clienteSelecionado.setCliNome(txtNome.getText().trim());
+            clienteSelecionado.setCliCpf(txtCpf.getText().trim());
+            clienteSelecionado.setCliTelefone(txtTelefone.getText().trim());
+            clienteSelecionado.setCliEmail(txtEmail.getText().trim());
+            clienteDAO.atualizar(clienteSelecionado);
+            mostrarSucesso("Cliente atualizado com sucesso!");
+            dialog.dispose();
+            carregarTabela(clienteDAO.listarTodos());
+        });
+
+        footerDialog.add(btCancelar);
+        footerDialog.add(btSalvar);
+
+        dialog.add(painel, BorderLayout.CENTER);
+        dialog.add(footerDialog, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
+
+    private void carregarTabela(List<Cliente> clientes) {
         modeloTabela.setRowCount(0);
+
+        for (Cliente c : clientes) {
+            String cidade = c.getEndereco().isEmpty() ? "" : c.getEndereco().get(0).getCidade();
+            String estado = c.getEndereco().isEmpty() ? "" : c.getEndereco().get(0).getEstado();
+
+            modeloTabela.addRow(new Object[]{
+                    c.getId(),
+                    c.getCliNome(),
+                    c.getCliCpf(),
+                    c.getCliEmail(),
+                    c.getCliEmail(),
+                    cidade,
+                    estado
+            });
+
+        }
+
     }
 
 }
