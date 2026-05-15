@@ -58,6 +58,7 @@ public class ClienteCadastroPanel extends AbstractPanel {
 
         txtNome = criarCampo(20, 255);
         txtEmail = criarCampo(20, 255);
+        txtNome.putClientProperty("JTextField.placeholderText", "Digite seu nome");
 
         MaskFormatter maskCpf = new MaskFormatter("###.###.###-##");
         maskCpf.setPlaceholderCharacter('_');

@@ -39,8 +39,17 @@ public class ClienteConsultaPanel extends AbstractPanel {
     @Override
     protected void inicializarTela() {
         clienteDAO = new ClienteDAO();
+        setLayout(new BorderLayout());
+        JPanel centro = new JPanel(new BorderLayout());
+
+        centro.add(criarFiltro(), BorderLayout.NORTH);
+        centro.add(criarTabela(), BorderLayout.CENTER);
+
         add(criarTexto("Consultar Cliente", 13), BorderLayout.NORTH);
-        add(criarFiltro());
+        add(centro, BorderLayout.CENTER);
+        add(criarFooter(), BorderLayout.SOUTH);
+
+        carregarTabela(clienteDAO::listarTodosPaginado);
     }
 
     private JPanel criarFiltro() {
@@ -94,7 +103,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
         painelBotoesFiltro.add(btLimpar);
         painelBotoesFiltro.add(btFiltrar);
 
-        btFiltrar.addActionListener(e -> filtrar());
+        btFiltrar.addActionListener(e -> filtrarCampos());
         btLimpar.addActionListener(e -> limparFiltros());
 
         return painelGeral;
@@ -138,6 +147,9 @@ public class ClienteConsultaPanel extends AbstractPanel {
         JScrollPane scroll = new JScrollPane(tabela);
         scroll.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
         scroll.setPreferredSize(new Dimension(0, 350));
+
+        carregarTabelaAsync(clienteDAO::listarTodosPaginado);
+
         return scroll;
 
     }
@@ -155,38 +167,29 @@ public class ClienteConsultaPanel extends AbstractPanel {
         btEditar.setPreferredSize(new Dimension(120, 38));
         btExcluir.setPreferredSize(new Dimension(120, 38));
 
+        btNovo.setVisible(true);
+        btEditar.setVisible(true);
+        btExcluir.setVisible(true);
+
         btEditar.setEnabled(false);
         btExcluir.setEnabled(false);
 
         btNovo.addActionListener(e -> aoClicarNovo.run());
-        btEditar.addActionListener(e -> abrirEdicao);
+        btEditar.addActionListener(e -> abrirEdicao());
 
         return footer;
     }
 
-    private JPanel criarLista() {
+    // - Ações -
 
-        JPanel lista = new JPanel(new GridBagLayout());
-        lista.setBackground(new Color(188, 188, 188, 255));
-        lista.setBorder(BorderFactory.createEmptyBorder(10, 24, 10, 24));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 6, 6, 6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-
-
-        return lista;
-    }
-
-    private void filtrar() {
-        String nome = txtFiltroNome.getText().trim();
-        String cpf = txtFiltroCpf.getText().trim();
+    private void filtrarCampos() {
+        String nome     = txtFiltroNome.getText().trim();
+        String cpf      = txtFiltroCpf.getText().trim();
         String telefone = txtFiltroTelefone.getText().trim();
-        String cidade = txtFiltroCidade.getText().trim();
+        String cidade   = txtFiltroCidade.getText().trim();
 
-        List<Cliente> resultado = clienteDAO.filtrar();
-        carregarTabela(resultado);
+        List<Cliente> resultado = clienteDAO.filtrar(nome, cpf, telefone, cidade);
+        carregarTabela(() -> clienteDAO.filtrar(nome, cpf, telefone, cidade));
     }
 
     private void limparFiltros() {
@@ -194,7 +197,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
         txtFiltroCpf.setText("");
         txtFiltroCidade.setText("");
         txtFiltroTelefone.setText("");
-        carregarTabela(clienteDAO.listarTodos());
+        carregarTabela(clienteDAO::listarTodosPaginado);
     }
 
     private void excluir() {
@@ -211,6 +214,8 @@ public class ClienteConsultaPanel extends AbstractPanel {
 
         }
     }
+
+    // - Dialog -
 
     private void abrirEdicao(){
         if(clienteSelecionado == null) return;
@@ -271,7 +276,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
             clienteDAO.atualizar(clienteSelecionado);
             mostrarSucesso("Cliente atualizado com sucesso!");
             dialog.dispose();
-            carregarTabela(clienteDAO.listarTodos());
+            carregarTabela(clienteDAO::listarTodosPaginado);
         });
 
         footerDialog.add(btCancelar);
@@ -282,25 +287,51 @@ public class ClienteConsultaPanel extends AbstractPanel {
         dialog.setVisible(true);
     }
 
-    private void carregarTabela(List<Cliente> clientes) {
+    private void carregarTabela(java.util.function.Supplier<List<Cliente>> supplier) {
+        carregarTabelaAsync(supplier);
+    }
+
+    private void carregarTabelaAsync(java.util.function.Supplier<List<Cliente>> supplier){
         modeloTabela.setRowCount(0);
+        modeloTabela.addRow(new Object[]{null, "Carregando...", "", "", "", "", "",});
+        tabela.setEnabled(false);
 
-        for (Cliente c : clientes) {
-            String cidade = c.getEndereco().isEmpty() ? "" : c.getEndereco().get(0).getCidade();
-            String estado = c.getEndereco().isEmpty() ? "" : c.getEndereco().get(0).getEstado();
+        SwingWorker<List<Cliente>, Void> worker = new SwingWorker<>() {
+            @Override
+            protected List<Cliente> doInBackground() throws Exception {
+                return supplier.get();
+            }
 
-            modeloTabela.addRow(new Object[]{
-                    c.getId(),
-                    c.getCliNome(),
-                    c.getCliCpf(),
-                    c.getCliEmail(),
-                    c.getCliEmail(),
-                    cidade,
-                    estado
-            });
+            @Override
+            protected void done(){
+                try{
+                    List<Cliente> clientes = get();
+                    modeloTabela.setRowCount(0);
 
-        }
+                    for(Cliente c : clientes) {
+                        String cidade = c.getEndereco().isEmpty() ? "" : c.getEndereco().get(0).getCidade();
+                        String estado = c.getEndereco().isEmpty() ? "" : c.getEndereco().get(0).getEstado();
 
+                        modeloTabela.addRow(new Object[]{
+                                c.getId(),
+                                c.getCliNome(),
+                                c.getCliCpf(),
+                                c.getCliTelefone(),
+                                c.getCliEmail(),
+                                cidade,
+                                estado
+                        });
+                    }
+                } catch (Exception e) {
+                    modeloTabela.setRowCount(0);
+                    mostrarErro("Erro ao carregar clientes: " + e.getMessage());
+                } finally {
+                    tabela.setEnabled(true);
+                }
+            }
+        };
+
+        worker.execute();
     }
 
 }
