@@ -17,6 +17,8 @@ public class ClienteConsultaPanel extends AbstractPanel {
     private JTextField txtFiltroTelefone;
     private JTextField txtFiltroCidade;
 
+    private JPanel painelFiltroTabela;
+
     private JTable tabela;
     private DefaultTableModel modeloTabela;
 
@@ -55,7 +57,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
     private JPanel criarFiltro() {
 
         JPanel painelGeral = new JPanel(new BorderLayout());
-        painelGeral.setBackground(new Color(188, 188, 188, 255));
+        painelGeral.setBackground(new Color(255, 0, 0, 255));
 
         JPanel painelCampos = new JPanel(new GridBagLayout());
         painelCampos.setBackground(new Color(188, 188, 188, 255));
@@ -72,7 +74,6 @@ public class ClienteConsultaPanel extends AbstractPanel {
         txtFiltroTelefone = criarCampo(15, 255);
         txtFiltroCidade = criarCampo(15, 255);
 
-        gbc.gridx = 0;
         gbc.gridy = 0;
         painelCampos.add(criarLabel("Nome:", 13), gbc);
         gbc.gridx = 1;
@@ -83,25 +84,26 @@ public class ClienteConsultaPanel extends AbstractPanel {
         gbc.gridx = 3;
         painelCampos.add(txtFiltroCpf, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridx = 4;
         painelCampos.add(criarLabel("Telefone:", 13), gbc);
-        gbc.gridx = 1;
+        gbc.gridx = 5;
         painelCampos.add(txtFiltroTelefone, gbc);
 
-        gbc.gridx = 2;
+        gbc.gridx = 6;
         painelCampos.add(criarLabel("Cidade:", 13), gbc);
-        gbc.gridx = 3;
+        gbc.gridx = 7;
         painelCampos.add(txtFiltroCidade, gbc);
 
         JButton btFiltrar = criarBotao("🔍 Filtrar", new Color(0, 123, 255));
         JButton btLimpar = criarBotao("🧹 Limpar", new Color(108, 117, 125));
 
         JPanel painelBotoesFiltro = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        painelBotoesFiltro.setBackground(new Color(245, 245, 245));
+        painelBotoesFiltro.setBackground(new Color(14, 198, 17));
         painelBotoesFiltro.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
         painelBotoesFiltro.add(btLimpar);
         painelBotoesFiltro.add(btFiltrar);
+
+        painelGeral.add(painelCampos, BorderLayout.CENTER);
 
         btFiltrar.addActionListener(e -> filtrarCampos());
         btLimpar.addActionListener(e -> limparFiltros());
@@ -144,6 +146,61 @@ public class ClienteConsultaPanel extends AbstractPanel {
             }
         });
 
+        painelFiltroTabela = new JPanel(null);
+        painelFiltroTabela.setBackground(new Color(255, 255, 255, 255));
+        painelFiltroTabela.setPreferredSize(new Dimension(0, 34));
+
+        JTextField[] campos = {
+                new JTextField(), // ID
+                txtFiltroNome,
+                txtFiltroCpf,
+                txtFiltroTelefone,
+                new JTextField(), // Email
+                txtFiltroCidade,
+                new JTextField() // Estado
+        };
+
+        for (JTextField c : campos) {
+            c.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            c.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(180, 180, 180)),
+                    BorderFactory.createEmptyBorder(2, 6, 2, 6)
+            ));
+            painelFiltroTabela.add(c);
+        }
+
+        Runnable sincronizar = () -> {
+            int x = 0;
+            for( int i = 0; i < tabela.getColumnCount(); i++ ) {
+                int largura = tabela.getColumnModel().getColumn(i).getWidth();
+                campos[i].setBounds(x + 2, 3, largura -4, 28);
+                x += largura;
+            }
+            painelFiltroTabela.revalidate();
+        };
+
+        tabela.getColumnModel().addColumnModelListener(new javax.swing.event.TableColumnModelListener() {
+            public void columnMarginChanged(javax.swing.event.ChangeEvent e) { sincronizar.run(); }
+            public void columnAdded(javax.swing.event.TableColumnModelEvent e) {}
+            public void columnRemoved(javax.swing.event.TableColumnModelEvent e) {}
+            public void columnMoved(javax.swing.event.TableColumnModelEvent e) { sincronizar.run(); }
+            public void columnSelectionChanged(javax.swing.event.ListSelectionEvent e) {}
+        });
+
+        // Atualiza ao redimensionar a janela
+        tabela.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent e) { sincronizar.run(); }
+        });
+
+        // Dispara filtro ao digitar
+        for (JTextField c : new JTextField[]{txtFiltroNome, txtFiltroCpf, txtFiltroTelefone, txtFiltroCidade}) {
+            c.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                public void insertUpdate(javax.swing.event.DocumentEvent e)  { filtrarCampos(); }
+                public void removeUpdate(javax.swing.event.DocumentEvent e)  { filtrarCampos(); }
+                public void changedUpdate(javax.swing.event.DocumentEvent e) {}
+            });
+        }
+
         JScrollPane scroll = new JScrollPane(tabela);
         scroll.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
         scroll.setPreferredSize(new Dimension(0, 350));
@@ -157,7 +214,9 @@ public class ClienteConsultaPanel extends AbstractPanel {
     private JPanel criarFooter() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 12));
         footer.setBackground(new Color(235, 235, 23));
-        footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0, 0, 0)));
+        footer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY),
+                BorderFactory.createEmptyBorder(8, 16, 8, 16)));
 
         btNovo = criarBotao("Novo Cliente", new Color(40, 167, 69));
         btEditar = criarBotao("Editar", new Color(123, 173, 253));
