@@ -157,7 +157,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
     private JPanel criarFooter() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 12));
         footer.setBackground(new Color(235, 235, 23));
-        footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(200, 200, 200)));
+        footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(0, 0, 0)));
 
         btNovo = criarBotao("Novo Cliente", new Color(40, 167, 69));
         btEditar = criarBotao("Editar", new Color(123, 173, 253));
@@ -167,15 +167,15 @@ public class ClienteConsultaPanel extends AbstractPanel {
         btEditar.setPreferredSize(new Dimension(120, 38));
         btExcluir.setPreferredSize(new Dimension(120, 38));
 
-        btNovo.setVisible(true);
-        btEditar.setVisible(true);
-        btExcluir.setVisible(true);
-
         btEditar.setEnabled(false);
         btExcluir.setEnabled(false);
 
         btNovo.addActionListener(e -> aoClicarNovo.run());
         btEditar.addActionListener(e -> abrirEdicao());
+
+        footer.add(btNovo);
+        footer.add(btEditar);
+        footer.add(btExcluir);
 
         return footer;
     }
