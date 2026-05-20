@@ -31,11 +31,13 @@ public class ClienteConsultaPanel extends AbstractPanel {
 
     private Runnable aoClicarNovo;
 
-    public ClienteConsultaPanel(Runnable aoClicarNovo) throws ParseException {
-        this.aoClicarNovo = aoClicarNovo;
+    public ClienteConsultaPanel() {
     }
 
-    public ClienteConsultaPanel() throws ParseException {
+    public static ClienteConsultaPanel criar(Runnable aoClicarNovo){
+        ClienteConsultaPanel painel = new ClienteConsultaPanel();
+        painel.aoClicarNovo = aoClicarNovo;
+        return painel;
     }
 
     @Override
@@ -47,11 +49,10 @@ public class ClienteConsultaPanel extends AbstractPanel {
         centro.add(criarFiltro(), BorderLayout.NORTH);
         centro.add(criarTabela(), BorderLayout.CENTER);
 
-        add(criarTexto("Consultar Cliente", 13), BorderLayout.NORTH);
+        add(criarTexto("Consultar Cliente"), BorderLayout.NORTH);
         add(centro, BorderLayout.CENTER);
         add(criarFooter(), BorderLayout.SOUTH);
 
-        carregarTabela(clienteDAO::listarTodosPaginado);
     }
 
     private JPanel criarFiltro() {
@@ -138,11 +139,11 @@ public class ClienteConsultaPanel extends AbstractPanel {
         tabela.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int linha = tabela.getSelectedRow();
-                boolean temSeleção = linha != -1;
-                btEditar.setEnabled(temSeleção);
-                btExcluir.setEnabled(temSeleção);
+                boolean temSelecao = linha != -1;
+                btEditar.setEnabled(temSelecao);
+                btExcluir.setEnabled(temSelecao);
 
-                if (temSeleção) {
+                if (temSelecao) {
                     Integer id = (Integer) modeloTabela.getValueAt(linha, 0);
                     clienteSelecionado = clienteDAO.buscarPorID(id);
                 }
@@ -237,7 +238,9 @@ public class ClienteConsultaPanel extends AbstractPanel {
         btEditar.setEnabled(false);
         btExcluir.setEnabled(false);
 
-        btNovo.addActionListener(e -> aoClicarNovo.run());
+        btNovo.addActionListener(e -> {
+            if(aoClicarNovo != null) aoClicarNovo.run();
+        });
         btEditar.addActionListener(e -> abrirEdicao());
         btExcluir.addActionListener(e -> excluir());
 

@@ -31,14 +31,14 @@ public class ClienteCadastroPanel extends AbstractPanel {
 
     private ClienteDAO clienteDAO;
 
-    public ClienteCadastroPanel() throws ParseException {
+    public ClienteCadastroPanel(){
     }
 
     @Override
     protected void inicializarTela() {
         try {
             clienteDAO = new ClienteDAO();
-            add(criarTexto("Cadastrar Cliente", 13), BorderLayout.NORTH);
+            add(criarTexto("Cadastrar Cliente"), BorderLayout.NORTH);
             add(criarFormulario());
         }catch (ParseException e){
             mostrarErro("Erro ao inicializar tela: " + e.getMessage());

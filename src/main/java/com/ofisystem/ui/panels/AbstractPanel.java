@@ -10,13 +10,13 @@ import java.text.ParseException;
 
 public abstract class AbstractPanel extends JPanel {
 
-    public AbstractPanel() throws ParseException {
+    public AbstractPanel(){
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 245));
         inicializarTela();
     }
 
-    protected abstract void inicializarTela() throws ParseException;
+    protected abstract void inicializarTela();
 
     protected JLabel criarTexto(String texto){
         JLabel txt = new JLabel(texto);

@@ -1,5 +1,6 @@
 package com.ofisystem.ui;
 
+import com.ofisystem.entidade.Cliente;
 import com.ofisystem.ui.panels.AbstractPanel;
 import com.ofisystem.ui.panels.cliente.ClienteCadastroPanel;
 import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
@@ -170,11 +171,7 @@ public class MainFrame {
 
             // Ação do subitem — aqui você vai conectar os painéis reais
             btnSub.addActionListener(e -> {
-                try {
                     onSubitemClicado(titulo, subitem);
-                } catch (ParseException ex) {
-                    throw new RuntimeException(ex);
-                }
             });
 
             painelSub.add(btnSub);
@@ -214,12 +211,13 @@ public class MainFrame {
     }
 
     // Aqui você conecta cada subitem ao seu painel
-    private void onSubitemClicado(String menu, String subitem) throws ParseException {
+    private void onSubitemClicado(String menu, String subitem) {
         // Exemplo — substitua os JOptionPane pelos painéis reais quando criar
          switch (menu) {
              case "👤  Clientes" -> {
                  if (subitem.equals("Cadastrar")) navegarPara(new ClienteCadastroPanel());
-                 if (subitem.equals("Consultar")) navegarPara(new ClienteConsultaPanel());
+                 if (subitem.equals("Consultar")) navegarPara(ClienteConsultaPanel.criar(() ->
+                         navegarPara(new ClienteCadastroPanel())));
              }
          }
     }
