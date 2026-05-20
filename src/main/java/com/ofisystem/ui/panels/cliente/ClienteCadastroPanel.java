@@ -3,12 +3,11 @@ package com.ofisystem.ui.panels.cliente;
 import com.ofisystem.entidade.Cliente;
 import com.ofisystem.entidade.Endereco;
 import com.ofisystem.ui.panels.AbstractPanel;
-import com.ofisystem.dao.cliente.ClienteDAO;
+import com.ofisystem.dao.ClienteDAO;
 import com.ofisystem.util.EnderecoDTO;
 import com.ofisystem.util.ViaCepService;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.text.ParseException;
@@ -58,15 +57,18 @@ public class ClienteCadastroPanel extends AbstractPanel {
 
         txtNome = criarCampo(20, 255);
         txtEmail = criarCampo(20, 255);
-        txtNome.putClientProperty("JTextField.placeholderText", "Digite seu nome");
+        txtNome.putClientProperty("JTextField.placeholderText", " Digite seu nome");
+        txtEmail.putClientProperty("JTextField.placeholderText", " email@gmail.com");
 
         MaskFormatter maskCpf = new MaskFormatter("###.###.###-##");
         maskCpf.setPlaceholderCharacter('_');
         txtCpf = criarCampoFormatado(maskCpf, 20, 255);
+        txtCpf.putClientProperty("JTextField.placeholderText", " ___.___.___-__");
 
         MaskFormatter maskTelefone = new MaskFormatter("(##)#####-####");
         maskTelefone.setPlaceholderCharacter('_');
         txtTelefone = criarCampoFormatado(maskTelefone, 20, 255);
+        txtTelefone.putClientProperty("JTextField.placeholderText", " (__) _____-____");
 
         gbc.gridx = 1; gbc.gridy = 1;
         painel.add(criarLabel("Nome: ", 15), gbc);

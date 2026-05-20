@@ -2,7 +2,7 @@ package com.ofisystem.ui.panels.cliente;
 
 import com.ofisystem.entidade.Cliente;
 import com.ofisystem.ui.panels.AbstractPanel;
-import com.ofisystem.dao.cliente.ClienteDAO;
+import com.ofisystem.dao.ClienteDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -108,6 +108,9 @@ public class ClienteConsultaPanel extends AbstractPanel {
         btFiltrar.addActionListener(e -> filtrarCampos());
         btLimpar.addActionListener(e -> limparFiltros());
 
+        painelGeral.add(painelCampos, BorderLayout.CENTER);
+        painelGeral.add(painelBotoesFiltro, BorderLayout.SOUTH);
+
         return painelGeral;
     }
 
@@ -205,6 +208,11 @@ public class ClienteConsultaPanel extends AbstractPanel {
         scroll.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
         scroll.setPreferredSize(new Dimension(0, 350));
 
+        JPanel wrapperHeader = new JPanel(new BorderLayout());
+        wrapperHeader.add(tabela.getTableHeader(), BorderLayout.NORTH);
+        wrapperHeader.add(painelFiltroTabela, BorderLayout.SOUTH);
+        scroll.setColumnHeaderView(wrapperHeader);
+
         carregarTabelaAsync(clienteDAO::listarTodosPaginado);
 
         return scroll;
@@ -231,6 +239,7 @@ public class ClienteConsultaPanel extends AbstractPanel {
 
         btNovo.addActionListener(e -> aoClicarNovo.run());
         btEditar.addActionListener(e -> abrirEdicao());
+        btExcluir.addActionListener(e -> excluir());
 
         footer.add(btNovo);
         footer.add(btEditar);
@@ -247,7 +256,6 @@ public class ClienteConsultaPanel extends AbstractPanel {
         String telefone = txtFiltroTelefone.getText().trim();
         String cidade   = txtFiltroCidade.getText().trim();
 
-        List<Cliente> resultado = clienteDAO.filtrar(nome, cpf, telefone, cidade);
         carregarTabela(() -> clienteDAO.filtrar(nome, cpf, telefone, cidade));
     }
 
@@ -267,10 +275,12 @@ public class ClienteConsultaPanel extends AbstractPanel {
         if (confirmar("Deseja excluir o cliente " + clienteSelecionado.getCliNome() + "?")) {
             clienteDAO.deletar(clienteSelecionado);
             mostrarSucesso("Cliente excluído com sucesso!");
+
             clienteSelecionado = null;
             btEditar.setEnabled(false);
             btExcluir.setEnabled(false);
 
+            carregarTabela(clienteDAO::listarTodosPaginado);
         }
     }
 

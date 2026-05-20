@@ -1,4 +1,4 @@
-package com.ofisystem.dao.cliente;
+package com.ofisystem.dao;
 
 import com.ofisystem.entidade.Cliente;
 import com.ofisystem.util.JPAutil;

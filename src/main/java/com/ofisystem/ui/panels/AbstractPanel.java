@@ -18,10 +18,10 @@ public abstract class AbstractPanel extends JPanel {
 
     protected abstract void inicializarTela() throws ParseException;
 
-    protected JLabel criarTexto(String texto, int tamanho){
+    protected JLabel criarTexto(String texto){
         JLabel txt = new JLabel(texto);
         txt.setHorizontalAlignment(JLabel.CENTER);
-        txt.setFont(new Font("Segoe UI", Font.BOLD, tamanho));
+        txt.setFont(new Font("Segoe UI", Font.BOLD, 26));
         txt.setVerticalAlignment(JLabel.CENTER);
         return txt;
     }
