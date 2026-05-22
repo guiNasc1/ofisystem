@@ -1,9 +1,12 @@
 package com.ofisystem.ui;
 
+import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.Cliente;
+import com.ofisystem.entidade.Usuario;
 import com.ofisystem.ui.panels.AbstractPanel;
 import com.ofisystem.ui.panels.cliente.ClienteCadastroPanel;
 import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
+import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -112,7 +115,173 @@ public class MainFrame {
 
         menu.add(Box.createVerticalGlue()); // empurra tudo para cima
 
+        JLabel lblUsuario = new JLabel("Usuário:" + Sessao.getNome());
+        lblUsuario.setForeground(new Color(160,160,160));
+        lblUsuario.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblUsuario.setBorder(BorderFactory.createEmptyBorder(0,0,8,0));
+
+        JButton btSair = new JButton("Sair");
+        btSair.setMaximumSize(new Dimension(210,36));
+        btSair.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btSair.setForeground(new Color(220, 53, 69));
+        btSair.setBackground(new Color(33, 37, 41));
+        btSair.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btSair.setBorderPainted(false);
+        btSair.setFocusPainted(false);
+        btSair.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btSair.addActionListener(e -> sair());
+
+        JButton btTrocarUsuario = new JButton("Trocar Usuário");
+        btTrocarUsuario.setMaximumSize(new Dimension(210,36));
+        btTrocarUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btTrocarUsuario.setForeground(new Color(255, 255, 255));
+        btTrocarUsuario.setBackground(new Color(33, 37, 41));
+        btTrocarUsuario.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btTrocarUsuario.setBorderPainted(false);
+        btTrocarUsuario.setFocusPainted(false);
+        btTrocarUsuario.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btTrocarUsuario.addActionListener(e -> trocarUsuario());
+
+        menu.add(lblUsuario);
+        menu.add(btSair);
+        menu.add(btTrocarUsuario);
+
         return menu;
+    }
+
+    private void sair(){
+        try{
+        int resposta = JOptionPane.showConfirmDialog(frame,
+                "Deseja sair do programa?", "Sair", JOptionPane.YES_NO_OPTION);
+        if(resposta == JOptionPane.YES_OPTION) {
+            Sessao.encerrar();
+            frame.dispose();
+            new LoginFrame().exibir();
+            }
+        } catch (ParseException e){
+            JOptionPane.showMessageDialog(frame, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void trocarUsuario(){
+        try{
+            JDialog dialog = new JDialog();
+            dialog.setSize(720, 560);
+            dialog.setLocationRelativeTo(frame);
+            dialog.setResizable(false);
+            dialog.setLayout(new BorderLayout());
+
+            JPanel painel = new JPanel(new GridBagLayout());
+            painel.setBackground(new Color(245, 245, 245));
+            painel.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(8, 0, 8, 0);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridwidth = GridBagConstraints.REMAINDER;
+
+            // Título
+            JLabel titulo = new JLabel("Trocar Usuário", SwingConstants.CENTER);
+            titulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
+            gbc.insets = new Insets(0, 0, 20, 0);
+            painel.add(titulo, gbc);
+
+            // Campo usuário
+            gbc.insets = new Insets(4, 0, 4, 0);
+            JLabel lblUsuario = new JLabel("Usuário");
+            lblUsuario.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            painel.add(lblUsuario, gbc);
+
+            JTextField txtUsuario = new JTextField();
+            txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+            txtUsuario.setPreferredSize(new Dimension(280, 36));
+            txtUsuario.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                    BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+            painel.add(txtUsuario, gbc);
+
+            // Campo senha
+            JLabel lblSenha = new JLabel("Senha");
+            lblSenha.setFont(new Font("Segoe UI", Font.BOLD, 13));
+            painel.add(lblSenha, gbc);
+
+            JPasswordField txtSenha = new JPasswordField();
+            txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+            txtSenha.setPreferredSize(new Dimension(280, 36));
+            txtSenha.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                    BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+            painel.add(txtSenha, gbc);
+
+            // Botões
+            JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+            painelBotoes.setBackground(new Color(245, 245, 245));
+
+            JButton btCancelar = new JButton("Cancelar");
+            btCancelar.setFocusPainted(false);
+
+            JButton btEntrar = new JButton("Entrar");
+            btEntrar.setBackground(new Color(33, 37, 41));
+            btEntrar.setForeground(Color.WHITE);
+            btEntrar.setFocusPainted(false);
+            btEntrar.setBorderPainted(false);
+            btEntrar.setPreferredSize(new Dimension(100, 34));
+
+            painelBotoes.add(btCancelar);
+            painelBotoes.add(btEntrar);
+
+            gbc.insets = new Insets(16, 0, 0, 0);
+            painel.add(painelBotoes, gbc);
+
+            dialog.add(painel, BorderLayout.CENTER);
+
+            // Ações
+            btCancelar.addActionListener(e -> dialog.dispose());
+
+            // Enter na senha também loga
+            txtSenha.addKeyListener(new java.awt.event.KeyAdapter() {
+                public void keyPressed(java.awt.event.KeyEvent e) {
+                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
+                        btEntrar.doClick();
+                    }
+                }
+            });
+
+            btEntrar.addActionListener(e -> {
+                String usuario = txtUsuario.getText().trim();
+                String senha   = new String(txtSenha.getPassword());
+
+                if (usuario.isEmpty() || senha.isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Preencha usuário e senha!", "Aviso",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                UsuarioDAO usuarioDAO = new UsuarioDAO();
+                Usuario u = usuarioDAO.autenticar(usuario, senha);
+
+                if (u != null) {
+                    Sessao.iniciar(u);          // troca a sessão para o novo usuário
+                    dialog.dispose();           // fecha o dialog
+                    frame.dispose();            // fecha o MainFrame atual
+
+                    // Abre um novo MainFrame com o novo usuário
+                    SwingUtilities.invokeLater(() -> new MainFrame().exibirFrame());
+                } else {
+                    JOptionPane.showMessageDialog(dialog,
+                            "Usuário ou senha incorretos!", "Erro",
+                            JOptionPane.ERROR_MESSAGE);
+                    txtSenha.setText("");
+                    txtSenha.requestFocus();
+                }
+            });
+
+            dialog.setVisible(true);
+        } catch (Exception e){
+            JOptionPane.showMessageDialog(frame, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private JPanel criarMenuExpansivel(String titulo, String[] subitens) {

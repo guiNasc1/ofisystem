@@ -12,7 +12,6 @@ public class UsuarioDAO {
         EntityManager em = JPAutil.getEntityManager();
         try{
             usuario.setSenha(SenhaUtil.criptografar(usuario.getSenha()));
-
             em.getTransaction().begin();
             em.persist(usuario);
             em.getTransaction().commit();
@@ -24,7 +23,7 @@ public class UsuarioDAO {
         }
     }
 
-    public boolean existeUsuario(Usuario usuario){
+    public boolean existeUsuario(){
         EntityManager em = JPAutil.getEntityManager();
         try{
             Long total = em.createQuery(
