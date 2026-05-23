@@ -15,6 +15,8 @@ public class CadastroUsuarioFrame {
     private JPasswordField txtConfirmarSenha;
     private UsuarioDAO usuarioDAO;
 
+    private GradientPaint gradientPaint;
+
     public CadastroUsuarioFrame(JFrame parent) {
         usuarioDAO = new UsuarioDAO();
         construirTela(parent);
@@ -26,7 +28,7 @@ public class CadastroUsuarioFrame {
 
     private void construirTela(JFrame parent) {
         dialog = new JDialog(parent, "Criar conta", true);
-        dialog.setSize(380, 430);
+        dialog.setSize(560, 500);
         dialog.setLocationRelativeTo(parent);
         dialog.setResizable(false);
         dialog.setLayout(new BorderLayout());
@@ -51,6 +53,7 @@ public class CadastroUsuarioFrame {
         txtUsuario = new JTextField();
         txtUsuario.setPreferredSize(new Dimension(300, 38));
         txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
         painel.add(txtUsuario, gbc);
 
         // Email
@@ -59,6 +62,11 @@ public class CadastroUsuarioFrame {
         txtEmail = new JTextField();
         txtEmail.setPreferredSize(new Dimension(300, 38));
         txtEmail.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txtEmail.setBackground(new Color(255, 255, 255, 25));
+        txtEmail.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200,200,200)),
+                BorderFactory.createEmptyBorder(4,8,4,8)));
+        txtEmail.putClientProperty("JTextField.placeholderText", "Insira o email");
         painel.add(txtEmail, gbc);
 
         // Senha
@@ -66,6 +74,7 @@ public class CadastroUsuarioFrame {
         txtSenha = new JPasswordField();
         txtSenha.setPreferredSize(new Dimension(300, 38));
         txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txtSenha.putClientProperty("JTextField.placeholderText", "Insira a senha");
         painel.add(txtSenha, gbc);
 
         // Confirmar senha
@@ -73,6 +82,7 @@ public class CadastroUsuarioFrame {
         txtConfirmarSenha = new JPasswordField();
         txtConfirmarSenha.setPreferredSize(new Dimension(300, 38));
         txtConfirmarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txtConfirmarSenha.putClientProperty("JTextField.placeholderText", "Confirme a senha");
         painel.add(txtConfirmarSenha, gbc);
 
         // Botão cadastrar

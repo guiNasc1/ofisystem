@@ -23,17 +23,6 @@ public class UsuarioDAO {
         }
     }
 
-    public boolean existeUsuario(){
-        EntityManager em = JPAutil.getEntityManager();
-        try{
-            Long total = em.createQuery(
-                    "SELECT COUNT(u) FROM Usuario u", Long.class).getSingleResult();
-            return total > 0;
-        } finally {
-            em.close();
-        }
-    }
-
     public Usuario buscarPorNome(String nome){
         EntityManager em = JPAutil.getEntityManager();
         try{
@@ -42,6 +31,15 @@ public class UsuarioDAO {
                     .getSingleResult();
         } catch (NoResultException e){
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public String contarUsuario(){
+        EntityManager em = JPAutil.getEntityManager();
+        try{
+            return em.createQuery("SELECT COUNT(u) FROM Usuario u", Long.class).getSingleResult().toString();
         } finally {
             em.close();
         }

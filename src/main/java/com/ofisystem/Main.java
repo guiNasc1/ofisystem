@@ -19,7 +19,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             try {
                 new LoginFrame().exibir();
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         });

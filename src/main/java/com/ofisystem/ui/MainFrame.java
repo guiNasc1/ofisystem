@@ -159,7 +159,7 @@ public class MainFrame {
             frame.dispose();
             new LoginFrame().exibir();
             }
-        } catch (ParseException e){
+        } catch (Exception e){
             JOptionPane.showMessageDialog(frame, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
