@@ -114,6 +114,7 @@ public class LoginFrame {
         gbc.insets = new Insets(6,24,4,24);
         txtPassword = new JPasswordField();
         txtPassword.setFont(new Font("Segoes UI", Font.PLAIN, 14));
+        txtPassword.setForeground(Color.WHITE);
         txtPassword.setBackground(new Color(255, 255, 255, 25));
         txtPassword.setPreferredSize(new Dimension(300, 40));
         txtPassword.setBorder(BorderFactory.createCompoundBorder(
