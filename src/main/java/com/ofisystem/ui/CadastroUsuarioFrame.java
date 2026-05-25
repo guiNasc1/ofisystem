@@ -2,6 +2,8 @@ package com.ofisystem.ui;
 
 import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.Usuario;
+import com.ofisystem.ui.style.CardPanel;
+import com.ofisystem.ui.style.PainelFundo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,12 +15,20 @@ public class CadastroUsuarioFrame {
     private JTextField txtEmail;
     private JPasswordField txtSenha;
     private JPasswordField txtConfirmarSenha;
+
+    private Runnable aoConcluir;
     private UsuarioDAO usuarioDAO;
 
     private GradientPaint gradientPaint;
 
+    public CadastroUsuarioFrame(JFrame parent, Runnable aoConcluir) {
+        this.usuarioDAO = new UsuarioDAO();
+        this.aoConcluir = aoConcluir;
+        construirTela(parent);
+    }
+
     public CadastroUsuarioFrame(JFrame parent) {
-        usuarioDAO = new UsuarioDAO();
+        this.usuarioDAO = new UsuarioDAO();
         construirTela(parent);
     }
 
@@ -33,36 +43,68 @@ public class CadastroUsuarioFrame {
         dialog.setResizable(false);
         dialog.setLayout(new BorderLayout());
 
-        JPanel painel = new JPanel(new GridBagLayout());
-        painel.setBackground(new Color(245, 245, 245));
-        painel.setBorder(BorderFactory.createEmptyBorder(16, 24, 16, 24));
+        CardPanel painel = new CardPanel(0,0.88f);
+        painel.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 0, 4, 0);
+        gbc.insets = new Insets(6, 20, 4, 20);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(5, 0, 5, 0);
+        ImageIcon logo = new ImageIcon(getClass()
+                .getResource("/images/logofundo.png"));
+
+        Image imgRedimensionada = logo.getImage().getScaledInstance(150,110,Image.SCALE_SMOOTH);
+        JLabel logoIcon = new JLabel(new ImageIcon(imgRedimensionada), SwingConstants.CENTER);
+        painel.add(logoIcon, gbc);
+        gbc.gridwidth = 1;
 
         JLabel titulo = new JLabel("Criar conta", SwingConstants.CENTER);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        gbc.insets = new Insets(0, 0, 20, 0);
+        titulo.setForeground(Color.WHITE);
+        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 20, 20, 20);
         painel.add(titulo, gbc);
+        gbc.gridwidth = 1;
 
         // Usuário
-        gbc.insets = new Insets(6, 0, 4, 0);
-        painel.add(criarLabel("Usuário"), gbc);
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.insets = new Insets(6, 20, 4, 10);
+        JLabel usuariojlabel = new JLabel("Usuário:");
+        usuariojlabel.setForeground(new Color(213, 214, 255));
+        usuariojlabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        painel.add(usuariojlabel, gbc);
+
+        // Usuário campo
+        gbc.gridx = 1; gbc.gridy = 2;
+        gbc.insets = new Insets(6, 0, 4, 20);
         txtUsuario = new JTextField();
         txtUsuario.setPreferredSize(new Dimension(300, 38));
         txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
+        txtUsuario.setForeground(Color.WHITE);
         painel.add(txtUsuario, gbc);
 
         // Email
-        gbc.insets = new Insets(6, 0, 4, 0);
-        painel.add(criarLabel("Email:"), gbc);
+        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.insets = new Insets(6, 20, 4, 10);
+        JLabel emailJLabel = new JLabel("Email:");
+        emailJLabel.setForeground(new Color(177, 178, 202));
+        emailJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        painel.add(emailJLabel, gbc);
+
+        // Email campo
+        gbc.gridx = 1; gbc.gridy = 3;
+        gbc.insets = new Insets(6, 0, 4, 20);
         txtEmail = new JTextField();
         txtEmail.setPreferredSize(new Dimension(300, 38));
         txtEmail.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtEmail.setBackground(new Color(255, 255, 255, 25));
+        txtEmail.setForeground(Color.WHITE);
         txtEmail.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(200,200,200)),
                 BorderFactory.createEmptyBorder(4,8,4,8)));
@@ -70,29 +112,51 @@ public class CadastroUsuarioFrame {
         painel.add(txtEmail, gbc);
 
         // Senha
-        painel.add(criarLabel("Senha"), gbc);
+        gbc.gridx = 0; gbc.gridy = 4;
+        gbc.insets = new Insets(6, 20, 4, 10);
+        JLabel senhaJLabel = new JLabel("Senha:");
+        senhaJLabel.setForeground(new Color(177, 178, 202));
+        senhaJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        painel.add(senhaJLabel, gbc);
+
+        // Senha campo
+        gbc.gridx = 1; gbc.gridy = 4;
+        gbc.insets = new Insets(6, 0, 4, 20);
         txtSenha = new JPasswordField();
         txtSenha.setPreferredSize(new Dimension(300, 38));
         txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtSenha.putClientProperty("JTextField.placeholderText", "Insira a senha");
+        txtSenha.setForeground(Color.WHITE);
         painel.add(txtSenha, gbc);
 
         // Confirmar senha
-        painel.add(criarLabel("Confirmar senha"), gbc);
+        gbc.gridx = 0; gbc.gridy = 5;
+        gbc.insets = new Insets(6, 10, 4, 20);
+        JLabel confirmarSenhaJLabel = new JLabel("Confirmar Senha:");
+        confirmarSenhaJLabel.setForeground(new Color(177, 178, 202));
+        confirmarSenhaJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        painel.add(confirmarSenhaJLabel, gbc);
+
+        // Confirmar senha campo
+        gbc.gridx = 1; gbc.gridy = 5;
+        gbc.insets = new Insets(6, 0, 4, 20);
         txtConfirmarSenha = new JPasswordField();
         txtConfirmarSenha.setPreferredSize(new Dimension(300, 38));
         txtConfirmarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtConfirmarSenha.putClientProperty("JTextField.placeholderText", "Confirme a senha");
+        txtConfirmarSenha.setForeground(Color.WHITE);
         painel.add(txtConfirmarSenha, gbc);
 
         // Botão cadastrar
-        gbc.insets = new Insets(20, 0, 0, 0);
+        gbc.gridx = 0; gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 0, 20, 20);
         JButton btCadastrar = new JButton("Criar conta");
         btCadastrar.setBackground(new Color(33, 37, 41));
         btCadastrar.setForeground(Color.WHITE);
         btCadastrar.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btCadastrar.setFocusPainted(false);
-        btCadastrar.setBorderPainted(false);
+        btCadastrar.setForeground(Color.WHITE);
         btCadastrar.setPreferredSize(new Dimension(300, 42));
         btCadastrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btCadastrar.addActionListener(e -> cadastrar());
@@ -141,11 +205,9 @@ public class CadastroUsuarioFrame {
                 JOptionPane.INFORMATION_MESSAGE);
 
         dialog.dispose();
-    }
 
-    private JLabel criarLabel(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        return label;
+        if(aoConcluir != null){
+            aoConcluir.run();
+        }
     }
 }

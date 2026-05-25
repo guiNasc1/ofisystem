@@ -24,6 +24,7 @@ public class LoginFrame {
     private JPasswordField txtPassword;
     private JButton btnLogin;
     private JButton btnCadastrar;;
+    private JLabel qtdUsuario;
 
     private UsuarioDAO usuarioDAO;
 
@@ -89,10 +90,7 @@ public class LoginFrame {
 
         // Texto usuário
         gbc.insets = new Insets(6,24,4,24);
-        JLabel usuariojlabel = new JLabel("Usuário:");
-        usuariojlabel.setForeground(new Color(177, 178, 202));
-        usuariojlabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        cardPanel.add(usuariojlabel, gbc);
+
 
         // Campo usuário
         txtUsuario = new PlaceHolderTextField("Insira o usuário");
@@ -163,7 +161,7 @@ public class LoginFrame {
 
         gbc.weightx = 0;
 
-        JLabel qtdUsuario = new JLabel("Quantidade de usuários cadastrado: " + usuarioDAO.contarUsuario(), SwingConstants.CENTER);
+        qtdUsuario = new JLabel("Quantidade de usuários cadastrado: " + usuarioDAO.contarUsuario(), SwingConstants.CENTER);
         qtdUsuario.setFont(new Font("Segoes UI", Font.PLAIN, 15));
         qtdUsuario.setForeground(new Color(145, 147, 158));
         cardPanel.add(qtdUsuario, gbc);
@@ -252,8 +250,13 @@ public class LoginFrame {
         worker.execute();
     }
 
+    private void atualizarContagem(){
+        String total = usuarioDAO.contarUsuario();
+        qtdUsuario.setText("Quantidade de usuários cadastrado:" + total);
+    }
+
     private void abrirCadastro() {
-        new CadastroUsuarioFrame(frame).exibir();
+        new CadastroUsuarioFrame(frame, () -> atualizarContagem()).exibir();
     }
 
 }
