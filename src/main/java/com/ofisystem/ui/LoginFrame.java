@@ -1,12 +1,9 @@
 package com.ofisystem.ui;
 
-import com.ofisystem.Main;
 import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.Usuario;
-import com.ofisystem.ui.panels.AbstractPanel;
 import com.ofisystem.ui.style.CardPanel;
 import com.ofisystem.ui.style.PainelFundo;
-import com.ofisystem.ui.style.PlaceHolderTextField;
 import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
@@ -15,12 +12,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
 
 public class LoginFrame {
 
     private JFrame frame;
-    private PlaceHolderTextField txtUsuario;
+    private JTextField txtUsuario;
     private JPasswordField txtPassword;
     private JButton btnLogin;
     private JButton btnCadastrar;;
@@ -78,33 +74,39 @@ public class LoginFrame {
         // Titulo
         JLabel titulo = new JLabel("Ofisystem", SwingConstants.CENTER);
         titulo.setFont(new Font("Segoes UI", Font.BOLD, 26));
-        titulo.setForeground(new Color(177, 178, 202));
+        titulo.setForeground(new Color(229, 232, 251));
         cardPanel.add(titulo, gbc);
 
         // Subtitulo
         JLabel subtitulo = new JLabel("Sistema de Gestão de Oficina", SwingConstants.CENTER);
         subtitulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        subtitulo.setForeground(new Color(127, 128, 147));
+        subtitulo.setForeground(new Color(186, 187, 213));
         gbc.insets = new Insets(0,24,24,24);
         cardPanel.add(subtitulo, gbc);
 
         // Texto usuário
         gbc.insets = new Insets(6,24,4,24);
-
+        JLabel usuariojlabel = new JLabel("Usuário:");
+        usuariojlabel.setForeground(new Color(229, 232, 251));
+        usuariojlabel.setFont(new Font("Segoes UI", Font.BOLD, 16));
+        cardPanel.add(usuariojlabel, gbc);
 
         // Campo usuário
-        txtUsuario = new PlaceHolderTextField("Insira o usuário");
+        txtUsuario = new JTextField();
         txtUsuario.setFont(new Font("Segoes UI", Font.PLAIN, 14));
         txtUsuario.setPreferredSize(new Dimension(300, 40));
+        txtUsuario.setBackground(new Color(255, 255, 255, 25));
+        txtUsuario.setForeground(Color.WHITE);
         txtUsuario.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+                BorderFactory.createLineBorder(new Color(200,200,200)),
+                BorderFactory.createEmptyBorder(4,8,4,8)));
+        txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
         cardPanel.add(txtUsuario, gbc);
 
         // Texto senha
         gbc.insets = new Insets(12, 24, 4, 24);
         JLabel senhajlabel = new JLabel("Senha:");
-        senhajlabel.setForeground(new Color(177, 178, 202));
+        senhajlabel.setForeground(new Color(229, 232, 251));
         senhajlabel.setFont(new Font("Segoes UI", Font.BOLD, 16));
         cardPanel.add(senhajlabel, gbc);
 

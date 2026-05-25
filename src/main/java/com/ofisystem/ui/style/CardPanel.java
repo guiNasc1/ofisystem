@@ -24,7 +24,7 @@ public class CardPanel extends JPanel {
 
         GradientPaint gradiente = new GradientPaint(
                 0, 0,                          // canto superior esquerdo
-                new Color(66, 85, 113),
+                new Color(138, 165, 216),
                 getWidth(), getHeight(),       // canto inferior direito
                 new Color(24, 32, 43
                 ));

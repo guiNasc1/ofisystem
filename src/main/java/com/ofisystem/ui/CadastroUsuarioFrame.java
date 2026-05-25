@@ -43,7 +43,7 @@ public class CadastroUsuarioFrame {
         dialog.setResizable(false);
         dialog.setLayout(new BorderLayout());
 
-        CardPanel painel = new CardPanel(0,0.88f);
+        CardPanel painel = new CardPanel(0,0.99f);
         painel.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -55,16 +55,16 @@ public class CadastroUsuarioFrame {
         gbc.gridwidth = 2;
         gbc.insets = new Insets(5, 0, 5, 0);
         ImageIcon logo = new ImageIcon(getClass()
-                .getResource("/images/logofundo.png"));
+                .getResource("/images/logo.png"));
 
         Image imgRedimensionada = logo.getImage().getScaledInstance(150,110,Image.SCALE_SMOOTH);
         JLabel logoIcon = new JLabel(new ImageIcon(imgRedimensionada), SwingConstants.CENTER);
         painel.add(logoIcon, gbc);
         gbc.gridwidth = 1;
 
-        JLabel titulo = new JLabel("Criar conta", SwingConstants.CENTER);
+        JLabel titulo = new JLabel("Cadastro de Usuário", SwingConstants.CENTER);
         titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titulo.setForeground(Color.WHITE);
+        titulo.setForeground(new Color(229, 232, 251));
         gbc.gridx = 0; gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.insets = new Insets(20, 20, 20, 20);
@@ -75,7 +75,7 @@ public class CadastroUsuarioFrame {
         gbc.gridx = 0; gbc.gridy = 2;
         gbc.insets = new Insets(6, 20, 4, 10);
         JLabel usuariojlabel = new JLabel("Usuário:");
-        usuariojlabel.setForeground(new Color(213, 214, 255));
+        usuariojlabel.setForeground(new Color(229, 232, 251));
         usuariojlabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         painel.add(usuariojlabel, gbc);
 
@@ -85,15 +85,19 @@ public class CadastroUsuarioFrame {
         txtUsuario = new JTextField();
         txtUsuario.setPreferredSize(new Dimension(300, 38));
         txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
+        txtUsuario.setBackground(new Color(255, 255, 255, 25));
         txtUsuario.setForeground(Color.WHITE);
+        txtUsuario.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200,200,200)),
+                BorderFactory.createEmptyBorder(4,8,4,8)));
+        txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
         painel.add(txtUsuario, gbc);
 
         // Email
         gbc.gridx = 0; gbc.gridy = 3;
         gbc.insets = new Insets(6, 20, 4, 10);
         JLabel emailJLabel = new JLabel("Email:");
-        emailJLabel.setForeground(new Color(177, 178, 202));
+        emailJLabel.setForeground(new Color(229, 232, 251));
         emailJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         painel.add(emailJLabel, gbc);
 
@@ -115,7 +119,7 @@ public class CadastroUsuarioFrame {
         gbc.gridx = 0; gbc.gridy = 4;
         gbc.insets = new Insets(6, 20, 4, 10);
         JLabel senhaJLabel = new JLabel("Senha:");
-        senhaJLabel.setForeground(new Color(177, 178, 202));
+        senhaJLabel.setForeground(new Color(229, 232, 251));
         senhaJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         painel.add(senhaJLabel, gbc);
 
@@ -125,15 +129,19 @@ public class CadastroUsuarioFrame {
         txtSenha = new JPasswordField();
         txtSenha.setPreferredSize(new Dimension(300, 38));
         txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtSenha.putClientProperty("JTextField.placeholderText", "Insira a senha");
+        txtSenha.setBackground(new Color(255, 255, 255, 25));
         txtSenha.setForeground(Color.WHITE);
+        txtSenha.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200,200,200)),
+                BorderFactory.createEmptyBorder(4,8,4,8)));
+        txtSenha.putClientProperty("JTextField.placeholderText", "Insira a senha");
         painel.add(txtSenha, gbc);
 
         // Confirmar senha
         gbc.gridx = 0; gbc.gridy = 5;
-        gbc.insets = new Insets(6, 10, 4, 20);
+        gbc.insets = new Insets(6, 20, 4, 20);
         JLabel confirmarSenhaJLabel = new JLabel("Confirmar Senha:");
-        confirmarSenhaJLabel.setForeground(new Color(177, 178, 202));
+        confirmarSenhaJLabel.setForeground(new Color(229, 232, 251));
         confirmarSenhaJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         painel.add(confirmarSenhaJLabel, gbc);
 
@@ -143,14 +151,18 @@ public class CadastroUsuarioFrame {
         txtConfirmarSenha = new JPasswordField();
         txtConfirmarSenha.setPreferredSize(new Dimension(300, 38));
         txtConfirmarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtConfirmarSenha.putClientProperty("JTextField.placeholderText", "Confirme a senha");
+        txtConfirmarSenha.setBackground(new Color(255, 255, 255, 25));
         txtConfirmarSenha.setForeground(Color.WHITE);
+        txtConfirmarSenha.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200,200,200)),
+                BorderFactory.createEmptyBorder(4,8,4,8)));
+        txtConfirmarSenha.putClientProperty("JTextField.placeholderText", "Confirme a senha");
         painel.add(txtConfirmarSenha, gbc);
 
         // Botão cadastrar
         gbc.gridx = 0; gbc.gridy = 6;
         gbc.gridwidth = 2;
-        gbc.insets = new Insets(20, 0, 20, 20);
+        gbc.insets = new Insets(20, 20, 20, 20);
         JButton btCadastrar = new JButton("Criar conta");
         btCadastrar.setBackground(new Color(33, 37, 41));
         btCadastrar.setForeground(Color.WHITE);

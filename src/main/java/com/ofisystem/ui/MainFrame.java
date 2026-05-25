@@ -9,6 +9,7 @@ import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
 import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MainFrame {
         frame.setLayout(new BorderLayout());
 
         // Menu lateral fixo — nunca muda
+        frame.add(crirarMenuTopBar(), BorderLayout.NORTH);
         frame.add(criarMenuLateral(), BorderLayout.WEST);
 
         // Painel central — só esse muda
@@ -69,13 +71,23 @@ public class MainFrame {
         }
     }
 
+private JPanel crirarMenuTopBar() {
+        JPanel topbar = new JPanel();
+        topbar.setPreferredSize(new Dimension(0, 60));
+        topbar.setBackground(new Color(55, 71, 87));
+        topbar.setLayout(new BoxLayout(topbar, BoxLayout.Y_AXIS));
+
+        return topbar;
+}
+
     // ─── Menu lateral ────────────────────────────────────────────
 
     private JPanel criarMenuLateral() {
         JPanel menu = new JPanel();
-        menu.setPreferredSize(new Dimension(210, 0));
+        menu.setPreferredSize(new Dimension(190, 0));
         menu.setBackground(new Color(33, 37, 41));
         menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
+        menu.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Logo / título
         JLabel titulo = new JLabel("🏍️  OFICINA");
@@ -287,25 +299,30 @@ public class MainFrame {
     private JPanel criarMenuExpansivel(String titulo, String[] subitens) {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setAlignmentX(Component.LEFT_ALIGNMENT);
         container.setBackground(new Color(33, 37, 41));
-        container.setMaximumSize(new Dimension(210, 1000));
+        container.setMaximumSize(new Dimension(190, 1000));
+        container.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         // Botão do título
         JButton btnTitulo = new JButton(titulo + "  ▶");
-        btnTitulo.setMaximumSize(new Dimension(210, 46));
         btnTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnTitulo.setMaximumSize(new Dimension(190, 46));
+        btnTitulo.setMinimumSize(new Dimension(190, 46));
+        btnTitulo.setPreferredSize(new Dimension(190,46));
+        btnTitulo.setHorizontalAlignment(SwingConstants.LEFT);
+        btnTitulo.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
         btnTitulo.setForeground(new Color(200, 200, 200));
         btnTitulo.setBackground(new Color(33, 37, 41));
         btnTitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         btnTitulo.setBorderPainted(false);
         btnTitulo.setFocusPainted(false);
         btnTitulo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnTitulo.setHorizontalAlignment(SwingConstants.LEFT);
-        btnTitulo.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
 
         // Painel dos subitens — começa escondido
         JPanel painelSub = new JPanel();
         painelSub.setLayout(new BoxLayout(painelSub, BoxLayout.Y_AXIS));
+        painelSub.setAlignmentX(Component.LEFT_ALIGNMENT);
         painelSub.setBackground(new Color(22, 25, 29));
         painelSub.setVisible(false);
 
@@ -315,16 +332,18 @@ public class MainFrame {
 
         // Cria cada subitem
         for (String subitem : subitens) {
-            JButton btnSub = new JButton("        • " + subitem);
-            btnSub.setMaximumSize(new Dimension(210, 38));
-            btnSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+            JButton btnSub = new JButton("•" + subitem);
+            btnSub.setMaximumSize(new Dimension(190, 38));
+            btnSub.setMinimumSize(new Dimension(190, 38));
+            btnSub.setPreferredSize(new Dimension(190, 38));
+            btnSub.setHorizontalAlignment(SwingConstants.LEFT);
+            btnSub.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 0));
             btnSub.setForeground(new Color(160, 160, 160));
             btnSub.setBackground(new Color(22, 25, 29));
             btnSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
             btnSub.setBorderPainted(false);
             btnSub.setFocusPainted(false);
             btnSub.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            btnSub.setHorizontalAlignment(SwingConstants.LEFT);
 
             // Hover no subitem
             btnSub.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -360,8 +379,8 @@ public class MainFrame {
                 btnTitulo.setForeground(Color.WHITE);
             }
 
-            container.revalidate();
-            container.repaint();
+            SwingUtilities.getAncestorOfClass(JPanel.class, container).revalidate();
+            SwingUtilities.getAncestorOfClass(JPanel.class, container).repaint();
         });
 
         // Hover no título
