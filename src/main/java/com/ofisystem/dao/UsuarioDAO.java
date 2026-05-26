@@ -23,6 +23,20 @@ public class UsuarioDAO {
         }
     }
 
+    public void atualizarNomeOficina(Usuario usuario) {
+        EntityManager em = JPAutil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(usuario);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
     public Usuario buscarPorNome(String nome){
         EntityManager em = JPAutil.getEntityManager();
         try{

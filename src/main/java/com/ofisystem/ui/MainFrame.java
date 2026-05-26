@@ -19,6 +19,7 @@ public class MainFrame {
 
     private JFrame frame;
     private JPanel painelCentral;
+    private JLabel lblNomeOficina;
 
     private List<JPanel> todosOsMenus = new ArrayList<>();
     private List<JButton> todosBotoesTitulo = new ArrayList<>();
@@ -39,8 +40,14 @@ public class MainFrame {
         // Painel central — só esse muda
         painelCentral = new JPanel(new BorderLayout());
         painelCentral.setBackground(new Color(245, 245, 245));
-        mostrarBemVindo();
         frame.add(painelCentral, BorderLayout.CENTER);
+
+        if(Sessao.getUsuariologado().getNomeOficina() == null
+        || Sessao.getUsuariologado().getNomeOficina().isEmpty()) {
+            mostrarTelaBoasVindas();
+        } else {
+            mostrarBemVindo();
+        }
     }
 
     public void exibirFrame() {
@@ -56,10 +63,15 @@ public class MainFrame {
     }
 
     private void mostrarBemVindo() {
+        painelCentral.removeAll();
+
         JLabel label = new JLabel("Bem-vindo ao sistema da oficina! 🏍️");
         label.setFont(new Font("Segoe UI", Font.PLAIN, 22));
         label.setHorizontalAlignment(SwingConstants.CENTER);
         painelCentral.add(label, BorderLayout.CENTER);
+
+        painelCentral.revalidate();
+        painelCentral.repaint();
     }
 
     private void fecharTodosMenus() {
@@ -71,73 +83,101 @@ public class MainFrame {
         }
     }
 
-private JPanel crirarMenuTopBar() {
+    private JPanel crirarMenuTopBar() {
         JPanel topbar = new JPanel();
+        topbar.setLayout(new BorderLayout());
         topbar.setPreferredSize(new Dimension(0, 60));
-        topbar.setBackground(new Color(55, 71, 87));
-        topbar.setLayout(new BoxLayout(topbar, BoxLayout.Y_AXIS));
+        topbar.setBackground(new Color(53, 69, 99));
+        topbar.setBorder(BorderFactory.createEmptyBorder(10, 16, 0, 16));
+
+        // = Lado Esquerdo =
+
+        ImageIcon logo = new ImageIcon(getClass()
+                .getResource("/images/logo.png"));
+
+        Image imgRedimensionada = logo.getImage().getScaledInstance(65,45,Image.SCALE_SMOOTH);
+        JLabel logoIcon = new JLabel(new ImageIcon(imgRedimensionada), SwingConstants.CENTER);
+        logoIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        JPanel esquerda = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        esquerda.setOpaque(false);
+
+        lblNomeOficina = new JLabel();
+        lblNomeOficina.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblNomeOficina.setForeground(new Color(245, 245, 245));
+
+        String nomeSessao = Sessao.getUsuariologado().getNomeOficina();
+        lblNomeOficina.setText(nomeSessao != null && !nomeSessao.isEmpty()? "Oficina - " + nomeSessao : "Nenhuma oficina vinculada");
+
+        esquerda.add(logoIcon);
+        esquerda.add(lblNomeOficina);
+        topbar.add(esquerda, BorderLayout.WEST);
+
+        // = Lado Direito =
+
+        JPanel direita = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        direita.setOpaque(false);
+
+        JLabel lblDireita = new JLabel("⭐ " + Sessao.getUsuariologado().getNome());
+        lblDireita.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        lblDireita.setForeground(new Color(200, 200, 200));
+        lblDireita.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+
+        direita.add(lblDireita);
+        topbar.add(direita, BorderLayout.EAST);
 
         return topbar;
-}
+    }
 
     // ─── Menu lateral ────────────────────────────────────────────
 
     private JPanel criarMenuLateral() {
-        JPanel menu = new JPanel();
-        menu.setPreferredSize(new Dimension(190, 0));
-        menu.setBackground(new Color(33, 37, 41));
-        menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
-        menu.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Logo / título
-        JLabel titulo = new JLabel("🏍️  OFICINA");
-        titulo.setForeground(Color.WHITE);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titulo.setBorder(BorderFactory.createEmptyBorder(28, 0, 28, 0));
-        menu.add(titulo);
+        JPanel menu = new JPanel(new BorderLayout());
+        menu.setPreferredSize(new Dimension(250, 0));
+        menu.setBackground(new Color(27, 37, 53));
 
         // Separador
+        JPanel painelItens = new JPanel();
+        painelItens.setLayout(new BoxLayout(painelItens, BoxLayout.Y_AXIS));
+        painelItens.setBackground(new Color(33, 37, 41));
+
         menu.add(criarSeparador());
+        menu.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Itens do menu com subitens
-        menu.add(criarMenuExpansivel("👤  Clientes", new String[]{
-                "Cadastrar", "Consultar"
-        }));
+        painelItens.add(criarSeparador());
 
-        menu.add(criarMenuExpansivel("🏍️  Motos", new String[]{
-                "Cadastrar", "Consultar"
-        }));
+        painelItens.add(criarMenuExpansivel("Clientes", new String[]{
+                "Cadastrar", "Consultar"}));
 
-        menu.add(criarMenuExpansivel("🔧  Ordens de Serviço", new String[]{
-                "Nova Ordem", "Consultar"
-        }));
+        painelItens.add(criarMenuExpansivel("Motos", new String[]{
+                "Cadastrar", "Consultar"}));
 
-        menu.add(criarMenuExpansivel("📦  Estoque", new String[]{
-                "Cadastrar Peça", "Consultar", "Movimentação"
-        }));
+        painelItens.add(criarMenuExpansivel("Ordens de Servico", new String[]{
+                "Nova Ordem", "Consultar"}));
 
-        menu.add(criarMenuExpansivel("💰  Financeiro", new String[]{
-                "Lançamentos", "Relatório"
-        }));
+        painelItens.add(criarMenuExpansivel("Estoque", new String[]{
+                "Cadastrar Peca", "Consultar", "Movimentacao"}));
 
-        menu.add(criarMenuExpansivel("📖  Manuais", new String[]{
-                "Catálogo"
-        }));
+        painelItens.add(criarMenuExpansivel("Financeiro", new String[]{
+                "Lancamentos", "Relatorio"}));
+
+        painelItens.add(criarMenuExpansivel("Manuais", new String[]{
+                "Catalogo"}));
+
 
         menu.add(Box.createVerticalGlue()); // empurra tudo para cima
 
-        JLabel lblUsuario = new JLabel("Usuário:" + Sessao.getNome());
-        lblUsuario.setForeground(new Color(160,160,160));
-        lblUsuario.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lblUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblUsuario.setBorder(BorderFactory.createEmptyBorder(0,0,8,0));
+        JPanel painelRodape = new JPanel();
+        painelRodape.setLayout(new BoxLayout(painelRodape, BoxLayout.Y_AXIS));
+        painelRodape.setBackground(new Color(24, 32, 43));
 
         JButton btSair = new JButton("Sair");
         btSair.setMaximumSize(new Dimension(210,36));
         btSair.setAlignmentX(Component.CENTER_ALIGNMENT);
         btSair.setForeground(new Color(220, 53, 69));
-        btSair.setBackground(new Color(33, 37, 41));
+        btSair.setBackground(new Color(24, 32, 43));
         btSair.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btSair.setBorderPainted(false);
         btSair.setFocusPainted(false);
@@ -148,18 +188,37 @@ private JPanel crirarMenuTopBar() {
         btTrocarUsuario.setMaximumSize(new Dimension(210,36));
         btTrocarUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
         btTrocarUsuario.setForeground(new Color(255, 255, 255));
-        btTrocarUsuario.setBackground(new Color(33, 37, 41));
+        btTrocarUsuario.setBackground(new Color(24, 32, 43));
         btTrocarUsuario.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btTrocarUsuario.setBorderPainted(false);
         btTrocarUsuario.setFocusPainted(false);
         btTrocarUsuario.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btTrocarUsuario.addActionListener(e -> trocarUsuario());
 
-        menu.add(lblUsuario);
-        menu.add(btSair);
-        menu.add(btTrocarUsuario);
+        painelRodape.add(btSair);
+        painelRodape.add(btTrocarUsuario);
+
+        menu.add(painelItens, BorderLayout.NORTH);
+        menu.add(painelRodape,  BorderLayout.SOUTH);
 
         return menu;
+    }
+
+    private void atualizarTopBar(){
+        String nome = Sessao.getUsuariologado().getNomeOficina();
+        lblNomeOficina.setText(nome != null ? nome : "Oficina");
+    }
+
+    private void mostrarTelaBoasVindas() {
+        // cobre o painel central com a tela de boas-vindas
+        painelCentral.removeAll();
+        painelCentral.add(new BoasVindasPanel(() -> {
+            // ao concluir — remove a tela de boas-vindas e mostra o sistema
+            atualizarTopBar();
+            mostrarBemVindo();
+        }), BorderLayout.CENTER);
+        painelCentral.revalidate();
+        painelCentral.repaint();
     }
 
     private void sair(){
@@ -300,21 +359,20 @@ private JPanel crirarMenuTopBar() {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setAlignmentX(Component.LEFT_ALIGNMENT);
+        container.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1000));
         container.setBackground(new Color(33, 37, 41));
-        container.setMaximumSize(new Dimension(190, 1000));
-        container.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         // Botão do título
         JButton btnTitulo = new JButton(titulo + "  ▶");
         btnTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        btnTitulo.setMaximumSize(new Dimension(190, 46));
-        btnTitulo.setMinimumSize(new Dimension(190, 46));
-        btnTitulo.setPreferredSize(new Dimension(190,46));
+        btnTitulo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
+        btnTitulo.setMinimumSize(new Dimension(0, 46));
+        btnTitulo.setPreferredSize(new Dimension(0, 46));
         btnTitulo.setHorizontalAlignment(SwingConstants.LEFT);
-        btnTitulo.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
         btnTitulo.setForeground(new Color(200, 200, 200));
-        btnTitulo.setBackground(new Color(33, 37, 41));
-        btnTitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnTitulo.setBorder(BorderFactory.createEmptyBorder(10,16,10,0));
+        btnTitulo.setBackground(new Color(15, 22, 37));
+        btnTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btnTitulo.setBorderPainted(false);
         btnTitulo.setFocusPainted(false);
         btnTitulo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -323,6 +381,7 @@ private JPanel crirarMenuTopBar() {
         JPanel painelSub = new JPanel();
         painelSub.setLayout(new BoxLayout(painelSub, BoxLayout.Y_AXIS));
         painelSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+        painelSub.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1000));
         painelSub.setBackground(new Color(22, 25, 29));
         painelSub.setVisible(false);
 
@@ -333,14 +392,15 @@ private JPanel crirarMenuTopBar() {
         // Cria cada subitem
         for (String subitem : subitens) {
             JButton btnSub = new JButton("•" + subitem);
-            btnSub.setMaximumSize(new Dimension(190, 38));
-            btnSub.setMinimumSize(new Dimension(190, 38));
-            btnSub.setPreferredSize(new Dimension(190, 38));
             btnSub.setHorizontalAlignment(SwingConstants.LEFT);
+            btnSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+            btnSub.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+            btnSub.setMinimumSize(new Dimension(0, 38));
+            btnSub.setPreferredSize(new Dimension(0, 38));
             btnSub.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 0));
             btnSub.setForeground(new Color(160, 160, 160));
             btnSub.setBackground(new Color(22, 25, 29));
-            btnSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            btnSub.setFont(new Font("Segoe UI", Font.PLAIN, 18));
             btnSub.setBorderPainted(false);
             btnSub.setFocusPainted(false);
             btnSub.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -402,7 +462,7 @@ private JPanel crirarMenuTopBar() {
     private void onSubitemClicado(String menu, String subitem) {
         // Exemplo — substitua os JOptionPane pelos painéis reais quando criar
          switch (menu) {
-             case "👤  Clientes" -> {
+             case "Clientes" -> {
                  if (subitem.equals("Cadastrar")) navegarPara(new ClienteCadastroPanel());
                  if (subitem.equals("Consultar")) navegarPara(ClienteConsultaPanel.criar(() ->
                          navegarPara(new ClienteCadastroPanel())));
@@ -413,7 +473,8 @@ private JPanel crirarMenuTopBar() {
     private JSeparator criarSeparador() {
         JSeparator sep = new JSeparator();
         sep.setForeground(new Color(55, 60, 65));
-        sep.setMaximumSize(new Dimension(210, 1));
+        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        sep.setAlignmentX(Component.LEFT_ALIGNMENT);
         return sep;
     }
 }

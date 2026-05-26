@@ -24,18 +24,16 @@ public class Usuario implements Serializable {
     @Column(nullable = false, name = "usuario_senha")
     private String senha;
 
+    @Column(name = "usuario_oficina")
+    private String nomeOficina;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "usuario_perfil")
     private Perfil perfil;
 
     @Override
     public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", email='" + email + '\'' +
-                ", perfil=" + perfil +
-                '}';
+        return id.toString();
     }
 
     @Override
@@ -88,5 +86,13 @@ public class Usuario implements Serializable {
 
     public void setPerfil(Perfil perfil) {
         this.perfil = perfil;
+    }
+
+    public String getNomeOficina() {
+        return nomeOficina;
+    }
+
+    public void setNomeOficina(String nomeOficina) {
+        this.nomeOficina = nomeOficina;
     }
 }
