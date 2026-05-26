@@ -70,10 +70,16 @@ public class ClienteConsultaPanel extends AbstractPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
-        txtFiltroNome = criarCampo(15, 255);
-        txtFiltroCpf = criarCampo(15, 255);
-        txtFiltroTelefone = criarCampo(15, 255);
-        txtFiltroCidade = criarCampo(15, 255);
+        txtFiltroNome = new JTextField();
+        txtFiltroCpf = new JTextField();
+        txtFiltroTelefone = new JTextField();
+        txtFiltroCidade = new JTextField();
+
+        Dimension tamanhoCampo = new Dimension(140,32);
+        txtFiltroNome.setPreferredSize(tamanhoCampo);
+        txtFiltroCpf.setPreferredSize(tamanhoCampo);
+        txtFiltroTelefone.setPreferredSize(tamanhoCampo);
+        txtFiltroCidade.setPreferredSize(tamanhoCampo);
 
         gbc.gridy = 0;
         painelCampos.add(criarLabel("Nome:", 13), gbc);
@@ -95,18 +101,15 @@ public class ClienteConsultaPanel extends AbstractPanel {
         gbc.gridx = 7;
         painelCampos.add(txtFiltroCidade, gbc);
 
-        JButton btFiltrar = criarBotao("🔍 Filtrar", new Color(0, 123, 255));
         JButton btLimpar = criarBotao("🧹 Limpar", new Color(108, 117, 125));
 
         JPanel painelBotoesFiltro = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         painelBotoesFiltro.setBackground(new Color(14, 198, 17));
         painelBotoesFiltro.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
         painelBotoesFiltro.add(btLimpar);
-        painelBotoesFiltro.add(btFiltrar);
 
         painelGeral.add(painelCampos, BorderLayout.CENTER);
 
-        btFiltrar.addActionListener(e -> filtrarCampos());
         btLimpar.addActionListener(e -> limparFiltros());
 
         painelGeral.add(painelCampos, BorderLayout.CENTER);
@@ -150,54 +153,17 @@ public class ClienteConsultaPanel extends AbstractPanel {
             }
         });
 
-        painelFiltroTabela = new JPanel(null);
-        painelFiltroTabela.setBackground(new Color(255, 255, 255, 255));
-        painelFiltroTabela.setPreferredSize(new Dimension(0, 34));
-
-        JTextField[] campos = {
-                new JTextField(), // ID
-                txtFiltroNome,
-                txtFiltroCpf,
-                txtFiltroTelefone,
-                new JTextField(), // Email
-                txtFiltroCidade,
-                new JTextField() // Estado
-        };
-
-        for (JTextField c : campos) {
-            c.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-            c.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(180, 180, 180)),
-                    BorderFactory.createEmptyBorder(2, 6, 2, 6)
-            ));
-            painelFiltroTabela.add(c);
+        for (JTextField c : new JTextField[]{txtFiltroNome, txtFiltroCpf,
+                txtFiltroTelefone, txtFiltroCidade}) {
+            c.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                public void insertUpdate(javax.swing.event.DocumentEvent e)  { filtrarCampos(); }
+                public void removeUpdate(javax.swing.event.DocumentEvent e)  { filtrarCampos(); }
+                public void changedUpdate(javax.swing.event.DocumentEvent e) {}
+            });
         }
 
-        Runnable sincronizar = () -> {
-            int x = 0;
-            for( int i = 0; i < tabela.getColumnCount(); i++ ) {
-                int largura = tabela.getColumnModel().getColumn(i).getWidth();
-                campos[i].setBounds(x + 2, 3, largura -4, 28);
-                x += largura;
-            }
-            painelFiltroTabela.revalidate();
-        };
-
-        tabela.getColumnModel().addColumnModelListener(new javax.swing.event.TableColumnModelListener() {
-            public void columnMarginChanged(javax.swing.event.ChangeEvent e) { sincronizar.run(); }
-            public void columnAdded(javax.swing.event.TableColumnModelEvent e) {}
-            public void columnRemoved(javax.swing.event.TableColumnModelEvent e) {}
-            public void columnMoved(javax.swing.event.TableColumnModelEvent e) { sincronizar.run(); }
-            public void columnSelectionChanged(javax.swing.event.ListSelectionEvent e) {}
-        });
-
-        // Atualiza ao redimensionar a janela
-        tabela.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent e) { sincronizar.run(); }
-        });
-
-        // Dispara filtro ao digitar
-        for (JTextField c : new JTextField[]{txtFiltroNome, txtFiltroCpf, txtFiltroTelefone, txtFiltroCidade}) {
+        for (JTextField c : new JTextField[]{txtFiltroNome, txtFiltroCpf,
+                txtFiltroTelefone, txtFiltroCidade}) {
             c.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
                 public void insertUpdate(javax.swing.event.DocumentEvent e)  { filtrarCampos(); }
                 public void removeUpdate(javax.swing.event.DocumentEvent e)  { filtrarCampos(); }
@@ -207,12 +173,6 @@ public class ClienteConsultaPanel extends AbstractPanel {
 
         JScrollPane scroll = new JScrollPane(tabela);
         scroll.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
-        scroll.setPreferredSize(new Dimension(0, 350));
-
-        JPanel wrapperHeader = new JPanel(new BorderLayout());
-        wrapperHeader.add(tabela.getTableHeader(), BorderLayout.NORTH);
-        wrapperHeader.add(painelFiltroTabela, BorderLayout.SOUTH);
-        scroll.setColumnHeaderView(wrapperHeader);
 
         carregarTabelaAsync(clienteDAO::listarTodosPaginado);
 
@@ -258,6 +218,11 @@ public class ClienteConsultaPanel extends AbstractPanel {
         String cpf      = txtFiltroCpf.getText().trim();
         String telefone = txtFiltroTelefone.getText().trim();
         String cidade   = txtFiltroCidade.getText().trim();
+
+        if (nome.isEmpty() && cpf.isEmpty() && telefone.isEmpty() && cidade.isEmpty()) {
+            carregarTabela(clienteDAO::listarTodosPaginado);
+            return;
+        }
 
         carregarTabela(() -> clienteDAO.filtrar(nome, cpf, telefone, cidade));
     }

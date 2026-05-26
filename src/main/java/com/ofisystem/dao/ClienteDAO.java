@@ -44,28 +44,30 @@ public class ClienteDAO {
 
     public List<Cliente> filtrar(String nome, String cpf, String telefone, String cidade){
         EntityManager em = JPAutil.getEntityManager();
-
         try{
-
             StringBuilder jpql = new StringBuilder(
-                    "SELECT c FROM Clientes c WHERE 1=1"
+                    "SELECT DISTINCT c FROM Cliente c" +
+                    " LEFT JOIN FETCH c.endereco e" +
+                    " WHERE 1=1"
             );
 
             if (nome != null && !nome.isBlank()){
-                jpql.append(" AND LOWER(c.nome) LIKE LOWER(:nome)");
+                jpql.append(" AND LOWER(c.cliNome) LIKE LOWER(:nome)");
             }
 
             if (cpf != null && !cpf.isBlank()) {
-                jpql.append(" AND LOWER(c.cpf) LIKE LOWER(:cpf)");
+                jpql.append(" AND LOWER(c.cliCpf) LIKE LOWER(:cpf)");
             }
 
             if (telefone != null && !telefone.isBlank()) {
-                jpql.append(" AND LOWER(c.telefone) LIKE LOWER(:telefone)");
+                jpql.append(" AND LOWER(c.cliTelefone) LIKE LOWER(:telefone)");
             }
 
             if (cidade != null && !cidade.isBlank()) {
                 jpql.append(" AND LOWER(c.cidade) LIKE LOWER(:cidade)");
             }
+
+            jpql.append(" ORDER BY c.cliNome");
 
             TypedQuery<Cliente> query = em.createQuery(jpql.toString(), Cliente.class);
 

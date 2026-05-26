@@ -1,17 +1,13 @@
 package com.ofisystem.ui;
 
 import com.ofisystem.dao.UsuarioDAO;
-import com.ofisystem.entidade.Cliente;
 import com.ofisystem.entidade.Usuario;
-import com.ofisystem.ui.panels.AbstractPanel;
 import com.ofisystem.ui.panels.cliente.ClienteCadastroPanel;
 import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
 import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +44,17 @@ public class MainFrame {
         } else {
             mostrarBemVindo();
         }
+
+        frame.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                // redimensiona o painel de boas-vindas se estiver visível
+                for (Component c : frame.getLayeredPane().getComponents()) {
+                    if (c instanceof BoasVindasPanel) {
+                        c.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+                    }
+                }
+            }
+        });
     }
 
     public void exibirFrame() {
@@ -211,14 +218,28 @@ public class MainFrame {
 
     private void mostrarTelaBoasVindas() {
         // cobre o painel central com a tela de boas-vindas
-        painelCentral.removeAll();
-        painelCentral.add(new BoasVindasPanel(() -> {
-            // ao concluir — remove a tela de boas-vindas e mostra o sistema
+        BoasVindasPanel boasVindas = new BoasVindasPanel(() -> {
+
+            Component[] components = frame.getLayeredPane().getComponents();
+            for (Component c : components) {
+                if (c instanceof BoasVindasPanel) {
+                    frame.getLayeredPane().remove(c);
+                }
+            }
+
             atualizarTopBar();
             mostrarBemVindo();
-        }), BorderLayout.CENTER);
-        painelCentral.revalidate();
-        painelCentral.repaint();
+
+            frame.getLayeredPane().revalidate();
+            frame.getLayeredPane().repaint();
+            frame.revalidate();
+            frame.repaint();
+        });
+
+        boasVindas.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+        frame.getLayeredPane().add(boasVindas, JLayeredPane.POPUP_LAYER);
+        frame.getLayeredPane().revalidate();
+        frame.getLayeredPane().repaint();
     }
 
     private void sair(){

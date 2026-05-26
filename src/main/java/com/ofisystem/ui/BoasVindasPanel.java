@@ -15,6 +15,8 @@ public class BoasVindasPanel extends JPanel {
     public BoasVindasPanel(Runnable aoConcluir) {
         this.aoConcluir = aoConcluir;
         this.usuarioDAO = new UsuarioDAO();
+        setOpaque(true);
+        setBackground(new Color(22, 28, 36));
         construir();
     }
 
@@ -61,7 +63,7 @@ public class BoasVindasPanel extends JPanel {
         // campo
         txtNomeOficina = new JTextField();
         txtNomeOficina.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtNomeOficina.setPreferredSize(new Dimension(0, 48));
+        txtNomeOficina.setPreferredSize(new Dimension(200, 48));
         txtNomeOficina.setBackground(new Color(35, 43, 54));
         txtNomeOficina.setForeground(Color.WHITE);
         txtNomeOficina.setCaretColor(Color.WHITE);
