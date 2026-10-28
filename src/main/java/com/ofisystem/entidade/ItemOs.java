@@ -31,7 +31,8 @@ public class ItemOs implements Serializable {
     private Double subtotal;
 
     @ManyToOne
-    @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id",nullable = false)
+    @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_item_os_ordem_servico"))
     private OrdemServico ordemServico;
 
     public void calcularSubtotal() {

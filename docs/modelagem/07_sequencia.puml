@@ -1,0 +1,36 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Usuário as U
+participant LoginFrame as T
+participant UsuarioDAO as D
+participant SenhaUtil as S
+participant Sessao as C
+U -> T : informar usuário e senha
+T -> D : autenticar(nome, senha)
+D -> D : buscarPorNome(nome normalizado)
+D -> S : verificar(senha, hash)
+S --> D : resultado
+D --> T : usuário ou null
+alt credenciais válidas
+T -> C : iniciar(usuario)
+T -> T : abrir MainFrame
+else credenciais inválidas
+T --> U : exibir mensagem de erro
+end
+@enduml

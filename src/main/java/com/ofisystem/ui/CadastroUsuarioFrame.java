@@ -1,7 +1,8 @@
 package com.ofisystem.ui;
 
-import com.ofisystem.dao.UsuarioDAO;
+import com.ofisystem.controle.usuario.UsuarioController;
 import com.ofisystem.entidade.Usuario;
+import com.ofisystem.util.RegraNegocioException;
 import com.ofisystem.ui.style.Botao;
 import com.ofisystem.ui.style.Icones;
 import com.ofisystem.ui.style.Superficie;
@@ -22,10 +23,10 @@ public class CadastroUsuarioFrame {
     private Botao btCadastrar;
 
     private final Runnable aoConcluir;
-    private final UsuarioDAO usuarioDAO;
+    private final UsuarioController usuarioController;
 
     public CadastroUsuarioFrame(JFrame parent, Runnable aoConcluir) {
-        this.usuarioDAO = new UsuarioDAO();
+        this.usuarioController = new UsuarioController();
         this.aoConcluir = aoConcluir;
         construirTela(parent);
     }
@@ -134,13 +135,20 @@ public class CadastroUsuarioFrame {
         usuario.setEmail(email);
         usuario.setSenha(senha);
 
+        try {
+            UsuarioController.validarCadastro(usuario);
+        } catch (RegraNegocioException e) {
+            lblErro.setText(e.getMessage());
+            return;
+        }
+
         lblErro.setText(" ");
         btCadastrar.setEnabled(false);
         btCadastrar.setText("Criando...");
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                usuarioDAO.salvar(usuario);
+                usuarioController.cadastrar(usuario);
                 return null;
             }
 
@@ -148,14 +156,20 @@ public class CadastroUsuarioFrame {
             protected void done() {
                 try {
                     get();
-                    JOptionPane.showMessageDialog(dialog, "Conta criada. Agora é só entrar.", "Conta criada",
+                    JOptionPane.showMessageDialog(dialog, "Conta criada com perfil "
+                                    + usuario.getPerfil().getDescricao() + ". Agora é só entrar.", "Conta criada",
                             JOptionPane.INFORMATION_MESSAGE);
                     dialog.dispose();
                     if (aoConcluir != null) aoConcluir.run();
                 } catch (Exception e) {
                     btCadastrar.setEnabled(true);
                     btCadastrar.setText("Criar conta");
-                    lblErro.setText("Não foi possível criar a conta. Verifique a conexão.");
+                    Throwable causa = e;
+                    while (causa.getCause() != null && !(causa instanceof RegraNegocioException)) {
+                        causa = causa.getCause();
+                    }
+                    lblErro.setText(causa instanceof RegraNegocioException ? causa.getMessage()
+                            : "Não foi possível criar a conta. Verifique a conexão.");
                 }
             }
         }.execute();

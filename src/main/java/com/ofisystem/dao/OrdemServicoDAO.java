@@ -121,6 +121,9 @@ public class OrdemServicoDAO extends AbstractFacade<OrdemServico> {
     }
 
     public void alterarStatus(Integer id, StatusOS novoStatus) {
+        if (novoStatus == null || !novoStatus.isEditavel()) {
+            throw new RegraNegocioException("Use as opções Concluir e receber ou Cancelar.");
+        }
         emTransacao(em -> {
             OrdemServico os = travarEditavel(em, id);
             os.setStatus(novoStatus);
@@ -131,6 +134,14 @@ public class OrdemServicoDAO extends AbstractFacade<OrdemServico> {
     public void concluir(Integer id, FormaPagamento formaPagamento) {
         emTransacao(em -> {
             OrdemServico os = travarEditavel(em, id);
+            if (formaPagamento == null) {
+                throw new RegraNegocioException("Selecione a forma de pagamento.");
+            }
+            OrdemServico completa = carregarCompleta(em, id);
+            completa.recalcularTotais();
+            if (completa.getValorTotal() <= 0) {
+                throw new RegraNegocioException("Adicione serviços ou peças com valor maior que zero antes de concluir a OS.");
+            }
             os.setStatus(StatusOS.CONCLUIDA);
             os.setDataConclusao(LocalDateTime.now());
             os.setFormaPagamento(formaPagamento);

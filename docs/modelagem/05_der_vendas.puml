@@ -1,0 +1,69 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+entity "usuario" as Usuario {
+usuario_id : INTEGER
+}
+entity "pessoa" as Pessoa {
+pessoa_id : INTEGER
+}
+entity "venda" as Venda {
+venda_id : INTEGER
+pessoa_id : INTEGER
+}
+entity "item_venda" as ItemVenda {
+item_venda_id : INTEGER
+peca_id : INTEGER
+servico_id : INTEGER
+venda_id : INTEGER
+}
+entity "pagamento_venda" as PagamentoVenda {
+pagamento_id : INTEGER
+venda_id : INTEGER
+}
+entity "peca" as Peca {
+peca_id : INTEGER
+}
+entity "servico" as Servico {
+servico_id : INTEGER
+}
+entity "estoque" as Estoque {
+estoque_id : BIGINT
+peca_id : INTEGER
+}
+entity "movimentacao_estoque" as MovimentacaoEstoque {
+mov_id : INTEGER
+peca_id : INTEGER
+ordem_servico_id : INTEGER
+venda_id : INTEGER
+}
+entity "ordem_servico" as OrdemServico {
+ordem_servico_id : INTEGER
+pessoa_id : INTEGER
+}
+Pessoa |o--o{ Venda
+Venda ||--|{ ItemVenda
+Venda ||--|{ PagamentoVenda
+Peca |o--o{ ItemVenda
+Servico |o--o{ ItemVenda
+Peca ||--|| Estoque
+Peca ||--o{ MovimentacaoEstoque
+Venda |o--o{ MovimentacaoEstoque
+OrdemServico |o--o{ MovimentacaoEstoque
+Usuario -[hidden]-> Pessoa
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Administrador as U
+participant "OrdemServico\nConsultaPanel" as T
+participant "OrdemServico\nController" as C
+participant NotaFiscalDAO as D
+database PostgreSQL as B
+U -> T : emitir documento interno
+T -> C : emitirNotaFiscal(os)
+C -> C : verificar Sessao.isAdmin()
+C -> D : emitir(osId, 0.06)
+group Transação
+D -> B : verificar OS concluída e documento único
+D -> D : copiar itens e simular tributos
+D -> B : persistir NotaFiscal e ItemNota por cascata
+end
+D --> T : documento
+T --> U : exibir impressão com aviso de uso interno
+@enduml

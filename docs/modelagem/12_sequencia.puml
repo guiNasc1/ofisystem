@@ -1,0 +1,36 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Usuário as U
+participant "OrdemServico\nConsultaPanel" as T
+participant "OrdemServico\nController" as C
+participant OrdemServicoDAO as D
+database PostgreSQL as B
+U -> T : clicar Concluir e receber
+T --> U : solicitar forma e confirmação integral
+U -> T : confirmar recebimento integral
+T -> C : concluir(os, formaPagamento)
+C -> D : concluir(id, formaPagamento)
+group Transação
+D -> B : bloquear OS editável e carregar itens
+D -> D : recalcular e validar valor positivo
+D -> B : atualizar status, data e forma
+end
+D --> T : OS concluída e recebida
+note over T,B : Sem venda automática e sem segunda baixa de estoque
+@enduml

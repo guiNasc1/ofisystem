@@ -72,14 +72,18 @@ final class ImpressaoOS {
                     Formatador.moeda(item.getValorUnitario()), Formatador.moeda(item.getSubtotal())});
         }
 
-        List<String> resumo = List.of(
-                "Tributos aproximados (" + Formatador.decimal(OrdemServicoController.ALIQUOTA_IMPOSTO * 100) + "%): "
-                        + Formatador.moeda(nota.getImpostos()),
-                "VALOR TOTAL DA NOTA: " + Formatador.moeda(nota.getValorTotal()),
-                " ",
-                "Documento de controle interno — não substitui a NF-e/NFS-e.");
+        List<String> resumo = new ArrayList<>();
+        if (os.getDesconto() != null && os.getDesconto() > 0) {
+            resumo.add("Desconto: " + Formatador.moeda(os.getDesconto()));
+        }
+        resumo.add("Simulação didática de tributos ("
+                + Formatador.decimal(OrdemServicoController.ALIQUOTA_IMPOSTO * 100) + "%): "
+                + Formatador.moeda(nota.getImpostos()));
+        resumo.add("VALOR TOTAL DO DOCUMENTO: " + Formatador.moeda(nota.getValorTotal()));
+        resumo.add(" ");
+        resumo.add("Documento de controle interno — não substitui a NF-e/NFS-e.");
 
-        return RelatorioJasper.gerar("Nota Fiscal Nº " + nota.getNumero(), cabecalho,
+        return RelatorioJasper.gerar("Documento interno Nº " + nota.getNumero(), cabecalho,
                 new String[]{"Descrição", "Qtd.", "Valor unit.", "Subtotal"}, linhas, resumo);
     }
 

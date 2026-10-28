@@ -6,37 +6,41 @@
 
 desktop
 
-Aplicativo desktop Java Swing (FlatLaf 3.4), instalado no PC da oficina. Sem plano de migração para web. Fora dos valores `web`/`ios`/`android`/`adaptive` do schema: trabalho de interface segue convenções de app desktop (janela redimensionável, mouse e teclado, mínimo 900×600), não de página web.
+Aplicativo desktop Java Swing (FlatLaf 3.4), executado no computador de demonstração. Sem plano de migração para web. Fora dos valores `web`/`ios`/`android`/`adaptive` do schema: trabalho de interface segue convenções de app desktop (janela redimensionável, mouse e teclado, mínimo 900×600), não de página web.
 
 ## Users
 
-Dono/mecânico de oficina pequena que opera tudo sozinho: atende o balcão, abre a ordem de serviço, executa o serviço, baixa peças e controla o caixa no mesmo computador. Usa o sistema entre um atendimento e outro, muitas vezes com o cliente na frente, mãos sujas e pouco tempo.
+Protótipo acadêmico apresentado pelos alunos à banca. O perfil de dono/mecânico de uma pequena oficina serve como referência para os cenários de demonstração, sem implantação ou uso operacional em uma oficina real.
 
 ## Product Purpose
 
-Substituir caderno e planilha na gestão da oficina mecânica: cadastro de clientes e veículos, ordens de serviço, estoque de peças, lançamentos financeiros e relatórios. Sucesso é o dono abrir e fechar uma OS rápido no balcão, saber o que tem de peça sem contar prateleira e saber quanto entrou, saiu e está a receber.
+Demonstrar cadastros, ordens de serviço, estoque, vendas de balcão e relatórios com regras delimitadas e coerência entre código e documentação. O roteiro central deve permitir abrir, editar, concluir e receber uma OS, observar as movimentações de estoque e consultar o financeiro.
 
 ## Positioning
 
-Produto para várias oficinas (modelo SaaS): cada usuário cadastra a própria oficina no primeiro acesso, e todas compartilham o mesmo banco. Atende oficina mecânica geral, qualquer tipo de veículo (carro, moto, utilitário).
+Projeto Integrador de Sistemas de Informação. Utiliza uma base única de demonstração, compartilhada entre usuários. O nome de oficina personaliza a identificação visual e não representa isolamento entre empresas. SaaS, uso comercial e implantação operacional estão fora do escopo.
 
 ## Operating Context
 
-- Fluxo central: cliente chega → cadastro/busca de pessoa e veículo → OS aberta → serviços e peças lançados → status acompanhado (Aberta, Em andamento, Aguardando peça, Concluída, Cancelada) → OS impressa → lançamento financeiro.
+- Fluxo central: pessoa cadastrada → OS aberta → serviços e peças lançados → salvamento com baixa de estoque → Concluir e receber com confirmação integral → documento interno opcional → recebimento exibido no financeiro.
+- OS e venda de balcão são independentes; concluir OS não cria venda nem baixa peças novamente.
+- A OS usa uma única forma de pagamento e recebimento integral na conclusão. Parcelamento, pagamentos parciais e contas a receber ficam para trabalhos futuros.
+- Cancelar OS em aberto pressupõe devolução integral das peças. Devoluções parciais e reabertura após conclusão estão fora do escopo.
+- Perfis funcionais: ADMIN e USUARIO. A primeira conta da base vazia recebe ADMIN e as seguintes USUARIO. A emissão de documento interno exige ADMIN; ambos acessam os demais fluxos e consultam documentos existentes.
 - OS Concluída ou Cancelada não é mais editável.
 - Peças usadas e movimentações (entrada/saída) alteram o estoque.
 - Relatórios impressos/exportados via JasperReports: ordens de serviço, vendas, pessoas, estoque, financeiro.
 - Endereço preenchido por CEP (ViaCEP); pessoa física ou jurídica (CPF/CNPJ).
-- Login por usuário com perfil (Administrador, Gerente, Usuário, Suporte).
+- Login pelo nome de usuário, com os perfis Administrador e Usuário.
 
 ## Capabilities and Constraints
 
-- Stack: Java 17, Swing + FlatLaf, Hibernate 6.4, PostgreSQL no Supabase, JasperReports 6.21, Gson.
-- Banco é compartilhado e real: rodar o app ou testes de conexão altera dados de produção.
+- Stack: alvo Java 17 (desenvolvimento com JDK 25), Swing + FlatLaf, Hibernate 6.4, PostgreSQL no Supabase, JasperReports 6.21, Gson. Testes com JUnit e H2 em memória, sem acesso ao Supabase.
+- A configuração padrão conecta a uma base remota compartilhada no Supabase; não usar essa base para testes automatizados ou exemplos destrutivos. O protótipo não é destinado a produção.
 - Módulos: Pessoas, Veículos, Serviços, Ordens de Serviço, Estoque (peças, consulta, movimentação), Financeiro (lançamentos), Relatórios, Manuais (catálogo).
 - Termos do domínio: "OS"/"Ordem de Serviço", "Peça", "Lançamento", "Movimentação", "Pessoa" (cliente ou fornecedor).
 - Em aberto: o menu ainda diz "Motos" e a interface usa emoji de moto, herdados de quando o foco era moto; o produto atende qualquer veículo e a terminologia deve virar "Veículos".
-- Em aberto: isolamento entre oficinas. Hoje a oficina é só um texto no usuário (`usuario_oficina`); não há tenant que separe dados de uma oficina das outras.
+- Trabalhos futuros: isolamento entre oficinas, pagamentos parciais, reservas e devoluções parciais de peças, emissão fiscal eletrônica, valores monetários com BigDecimal e numeração concorrente.
 
 ## Brand Commitments
 

@@ -1,0 +1,32 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Usuário as U
+participant "ServicoCadastro\nPanel" as T
+participant "Servico\nController" as C
+participant ServicoDAO as D
+database PostgreSQL as B
+U -> T : informar nome, valor e duração
+T -> C : salvar(servico)
+C -> C : validar dados
+C -> D : existeNome(nome, id)
+D -> B : consultar duplicidade
+C -> D : salvar(servico)
+D -> B : persistir em transação
+B --> T : confirmação ou erro
+@enduml

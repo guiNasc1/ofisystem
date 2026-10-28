@@ -1,0 +1,34 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Usuário as U
+participant VendaPanel as T
+participant "Venda\nController" as C
+participant "VendaDAO\nEstoqueDAO" as D
+database PostgreSQL as B
+U -> T : informar itens e pagamentos
+T -> C : finalizar(venda)
+C -> C : validar pagamento integral e troco
+C -> D : finalizar(venda, usuario)
+group Transação
+D -> B : gravar venda, itens e pagamentos
+D -> B : baixar produtos e registrar movimentos
+end
+D --> T : venda finalizada
+note over T,B : Não exige nem cria ordem de serviço
+@enduml

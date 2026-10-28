@@ -1,0 +1,32 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Usuário as U
+participant "RelatorioFinanceiro\nPanel" as T
+participant "OrdemServicoController\nVendaController" as C
+database PostgreSQL as B
+U -> T : escolher período e tipo de relatório
+T -> C : consultar OS concluídas no período
+C -> B : buscar status CONCLUIDA e data de conclusão
+B --> T : recebimentos de OS
+T -> C : consultar vendas FINALIZADAS no período
+C -> B : buscar vendas e pagamentos
+B --> T : recebimentos de balcão
+T -> T : separar origens e resumir formas
+T --> U : exibir ou imprimir relatório
+@enduml

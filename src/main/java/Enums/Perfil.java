@@ -3,9 +3,7 @@ package Enums;
 public enum Perfil {
 
     ADMIN("Administrador"),
-    USUARIO("Usuário"),
-    GERENTE("Gerente"),
-    SUPORTE("Suporte");
+    USUARIO("Usuário");
 
     private final String descricao;
 

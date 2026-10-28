@@ -1,0 +1,39 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Usuário as U
+participant "OrdemServico\nPanel" as T
+participant "OrdemServico\nController" as C
+participant "OrdemServicoDAO\nEstoqueDAO" as D
+database PostgreSQL as B
+U -> T : preencher OS, serviços e peças
+T -> C : salvar(os)
+C -> C : validar itens e desconto; calcular totais
+C -> D : salvarComEstoque(os, usuario)
+group Transação
+D -> B : carregar OS anterior com bloqueio
+D -> B : gravar OS e itens
+D -> B : bloquear estoque e ajustar diferenças
+alt saldo suficiente
+D -> B : gravar movimentações e confirmar
+else saldo insuficiente
+D -> B : desfazer toda a transação
+end
+end
+D --> T : OS salva ou erro de negócio
+@enduml

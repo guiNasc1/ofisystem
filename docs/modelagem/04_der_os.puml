@@ -1,0 +1,62 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+entity "pessoa" as Pessoa {
+pessoa_id : INTEGER
+}
+entity "endereco" as Endereco {
+end_id : INTEGER
+pessoa_id : INTEGER
+}
+entity "ordem_servico" as OrdemServico {
+ordem_servico_id : INTEGER
+pessoa_id : INTEGER
+}
+entity "item_os" as ItemOs {
+item_os_id : INTEGER
+servico_id : INTEGER
+ordem_servico_id : INTEGER
+}
+entity "item_peca" as ItemPeca {
+item_peca_id : INTEGER
+peca_id : INTEGER
+ordem_servico_id : INTEGER
+}
+entity "servico" as Servico {
+servico_id : INTEGER
+}
+entity "peca" as Peca {
+peca_id : INTEGER
+}
+entity "nota_fiscal" as NotaFiscal {
+nota_fiscal_id : INTEGER
+ordem_servico_id : INTEGER
+}
+entity "item_nota" as ItemNota {
+item_nota_id : INTEGER
+nota_fiscal_id : INTEGER
+}
+Pessoa ||--o{ Endereco
+Pessoa ||--o{ OrdemServico
+OrdemServico ||--o{ ItemOs
+OrdemServico ||--o{ ItemPeca
+Servico |o--o{ ItemOs
+Peca ||--o{ ItemPeca
+OrdemServico ||--o| NotaFiscal
+NotaFiscal ||--|{ ItemNota
+@enduml

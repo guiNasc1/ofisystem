@@ -121,12 +121,13 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
 
     @Override
     protected void montarBotoes(JPanel painel) {
+        painel.setLayout(new GridLayout(0, 4, 8, 8));
         adicionarBotao(painel, "Nova OS", COR_SUCESSO, () -> Navegador.ir(new OrdemServicoPanel()));
         adicionarBotao(painel, "Abrir", COR_INFO, this::abrir);
         adicionarBotao(painel, "Status", COR_PRIMARIA, this::alterarStatus);
-        adicionarBotao(painel, "Concluir", COR_SUCESSO, this::concluir);
+        adicionarBotao(painel, "Concluir e receber", COR_SUCESSO, this::concluir);
         adicionarBotao(painel, "Cancelar", COR_PERIGO, this::cancelar);
-        adicionarBotao(painel, "Nota Fiscal", COR_ALERTA, this::notaFiscal);
+        adicionarBotao(painel, "Documento interno", COR_ALERTA, this::notaFiscal);
         adicionarBotao(painel, "Imprimir", COR_NEUTRA, this::imprimir);
     }
 
@@ -172,21 +173,27 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
         JComboBox<FormaPagamento> cbForma = new JComboBox<>(FormaPagamento.values());
         JPanel painel = new JPanel(new GridLayout(0, 1, 4, 4));
         painel.add(new JLabel("Concluir a OS " + os.getNumero() + " de " + os.getCliente().getNome() + "?"));
-        painel.add(new JLabel("Valor a receber: " + Formatador.moeda(os.getValorTotal())));
+        painel.add(new JLabel("Confirmar recebimento integral de " + Formatador.moeda(os.getValorTotal()) + "?"));
         painel.add(new JLabel("Forma de pagamento:"));
         painel.add(cbForma);
+        JCheckBox recebido = new JCheckBox("Confirmo que recebi o valor integral da OS.");
+        painel.add(recebido);
 
-        if (JOptionPane.showConfirmDialog(this, painel, "Concluir OS", JOptionPane.OK_CANCEL_OPTION,
+        if (JOptionPane.showConfirmDialog(this, painel, "Concluir e receber", JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.QUESTION_MESSAGE) != JOptionPane.OK_OPTION) {
+            return;
+        }
+        if (!recebido.isSelected()) {
+            mostrarAviso("Confirme o recebimento integral para concluir a OS.");
             return;
         }
         FormaPagamento forma = (FormaPagamento) cbForma.getSelectedItem();
         executarAsync(() -> CONTROLLER.concluir(os, forma), null, () -> {
             pesquisar();
-            if (Sessao.isAdmin() && confirmar("OS " + os.getNumero() + " concluída!\nDeseja emitir a nota fiscal agora?")) {
+            if (Sessao.isAdmin() && confirmar("OS " + os.getNumero() + " concluída e recebida!\nDeseja emitir o documento interno agora?")) {
                 emitirNota(os);
             } else {
-                mostrarSucesso("OS " + os.getNumero() + " concluída!");
+                mostrarSucesso("OS " + os.getNumero() + " concluída e recebida integralmente!");
             }
         });
     }
@@ -194,7 +201,8 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
     private void cancelar() {
         OrdemServico os = selecionado();
         if (os == null) return;
-        if (confirmar("Cancelar a OS " + os.getNumero() + "?\nAs peças lançadas voltarão para o estoque.")) {
+        if (confirmar("Cancelar a OS " + os.getNumero() + "?\nConfirme que todas as peças lançadas foram devolvidas."
+                + "\nO cancelamento devolverá essas quantidades ao estoque.")) {
             executarAsync(() -> CONTROLLER.cancelar(os), "OS " + os.getNumero() + " cancelada.", this::pesquisar);
         }
     }
@@ -203,15 +211,15 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
         OrdemServico os = selecionado();
         if (os == null) return;
         if (os.getStatus() != StatusOS.CONCLUIDA) {
-            mostrarAviso("A nota fiscal só pode ser emitida para OS concluída.");
+            mostrarAviso("O documento interno só pode ser emitido para OS concluída.");
             return;
         }
         executarAsync(() -> CONTROLLER.buscarNotaFiscal(os), nota -> {
             if (nota != null) {
                 exibirNota(nota);
             } else if (!Sessao.isAdmin()) {
-                mostrarAviso("Ainda não há nota fiscal para esta OS.\nSomente administradores podem emitir.");
-            } else if (confirmar("Emitir nota fiscal para a OS " + os.getNumero() + "?")) {
+                mostrarAviso("Ainda não há documento interno para esta OS.\nSomente administradores podem emitir.");
+            } else if (confirmar("Emitir documento interno para a OS " + os.getNumero() + "?")) {
                 emitirNota(os);
             }
         });
@@ -219,14 +227,14 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
 
     private void emitirNota(OrdemServico os) {
         executarAsync(() -> CONTROLLER.emitirNotaFiscal(os), nota -> {
-            mostrarSucesso("Nota fiscal Nº " + nota.getNumero() + " emitida!");
+            mostrarSucesso("Documento interno Nº " + nota.getNumero() + " emitido!");
             exibirNota(nota);
         });
     }
 
     private void exibirNota(NotaFiscal nota) {
         executarAsync(() -> gerar(() -> ImpressaoOS.notaFiscal(nota)),
-                print -> RelatorioJasper.exibir(print, "Nota Fiscal " + nota.getNumero()));
+                print -> RelatorioJasper.exibir(print, "Documento interno " + nota.getNumero()));
     }
 
     private void imprimir() {

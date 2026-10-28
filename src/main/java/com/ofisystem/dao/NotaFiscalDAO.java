@@ -27,13 +27,13 @@ public class NotaFiscalDAO extends AbstractFacade<NotaFiscal> {
         return emTransacao(em -> {
             OrdemServico os = OrdemServicoDAO.carregarCompleta(em, osId);
             if (os == null || os.getStatus() != StatusOS.CONCLUIDA) {
-                throw new RegraNegocioException("A nota fiscal só pode ser emitida para OS concluída.");
+                throw new RegraNegocioException("O documento interno só pode ser emitido para OS concluída.");
             }
             Long existentes = em.createQuery(
                             "SELECT COUNT(n) FROM NotaFiscal n WHERE n.ordemServico.id = :id", Long.class)
                     .setParameter("id", osId).getSingleResult();
             if (existentes > 0) {
-                throw new RegraNegocioException("Já existe nota fiscal emitida para a OS " + os.getNumero() + ".");
+                throw new RegraNegocioException("Já existe documento interno emitido para a OS " + os.getNumero() + ".");
             }
 
             String ultimo = em.createQuery("SELECT MAX(n.numero) FROM NotaFiscal n", String.class).getSingleResult();

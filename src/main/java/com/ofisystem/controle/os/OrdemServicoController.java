@@ -49,8 +49,11 @@ public class OrdemServicoController extends AbstractController<OrdemServico> {
             throw new RegraNegocioException("O desconto não pode ser negativo.");
         }
         os.recalcularTotais();
-        if (os.getDesconto() > os.getValorServicos() + os.getValorPecas()) {
-            throw new RegraNegocioException("O desconto não pode ser maior que o valor da OS.");
+        double subtotal = os.getValorServicos() + os.getValorPecas();
+        boolean possuiItens = !os.getItensServico().isEmpty() || !os.getItensPeca().isEmpty();
+        if ((possuiItens && os.getDesconto() >= subtotal) || (!possuiItens && os.getDesconto() > 0)) {
+            throw new RegraNegocioException("A OS com itens deve ter valor maior que zero."
+                    + " O desconto deve ser menor que o total dos itens.");
         }
         if (os.getResponsavel() == null) {
             os.setResponsavel(Sessao.getNome());
@@ -60,7 +63,7 @@ public class OrdemServicoController extends AbstractController<OrdemServico> {
 
     public void alterarStatus(OrdemServico os, StatusOS novoStatus) {
         if (novoStatus == StatusOS.CONCLUIDA || novoStatus == StatusOS.CANCELADA) {
-            throw new RegraNegocioException("Use as opções Concluir ou Cancelar.");
+            throw new RegraNegocioException("Use as opções Concluir e receber ou Cancelar.");
         }
         ordemServicoDAO.alterarStatus(os.getId(), novoStatus);
     }
@@ -105,7 +108,7 @@ public class OrdemServicoController extends AbstractController<OrdemServico> {
 
     public NotaFiscal emitirNotaFiscal(OrdemServico os) {
         if (!Sessao.isAdmin()) {
-            throw new RegraNegocioException("Somente administradores podem emitir nota fiscal.");
+            throw new RegraNegocioException("Somente administradores podem emitir o documento interno.");
         }
         return notaFiscalDAO.emitir(os.getId(), ALIQUOTA_IMPOSTO);
     }

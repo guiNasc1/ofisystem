@@ -15,10 +15,10 @@ public class Usuario implements Serializable {
     @Column(name = "usuario_id")
     private Integer id;
 
-    @Column(nullable = false, name = "usuario_nome")
+    @Column(nullable = false, unique = true, name = "usuario_nome")
     private String nome;
 
-    @Column(nullable = false, name = "usuario_email")
+    @Column(nullable = false, unique = true, name = "usuario_email")
     private String email;
 
     @Column(nullable = false, name = "usuario_senha")
@@ -28,8 +28,8 @@ public class Usuario implements Serializable {
     private String nomeOficina;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "usuario_perfil")
-    private Perfil perfil;
+    @Column(nullable = false, name = "usuario_perfil")
+    private Perfil perfil = Perfil.USUARIO;
 
     @Override
     public String toString() {

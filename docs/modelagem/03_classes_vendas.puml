@@ -1,0 +1,48 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+class Venda {
+- Integer id
+- String numero
+- StatusVenda status
+- Double valorTotal
+}
+class ItemVenda {
+- Integer id
+- Integer quantidade
+- Double subtotal
+}
+class PagamentoVenda {
+- Integer id
+- FormaPagamento forma
+- Double valor
+}
+class MovimentacaoEstoque {
+- Integer id
+- TipoMovimentacao tipo
+- Integer quantidade
+- Integer saldo
+}
+Venda "1" *-- "1..*" ItemVenda
+Venda "1" *-- "1..*" PagamentoVenda
+Venda "0..1" -- "0..*" MovimentacaoEstoque
+note bottom of MovimentacaoEstoque
+Cada movimento referencia uma peça.
+Pode ter origem em OS, venda ou ajuste manual.
+end note
+@enduml

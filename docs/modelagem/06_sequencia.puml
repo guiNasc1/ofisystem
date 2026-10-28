@@ -1,0 +1,35 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+actor Pessoa as U
+participant "CadastroUsuario\nFrame" as T
+participant "Usuario\nController" as C
+participant "UsuarioDAO" as D
+database PostgreSQL as B
+U -> T : informa usuário, e-mail e senha
+T -> C : cadastrar(usuario)
+C -> C : validarCadastro(usuario)
+C -> D : salvar(usuario)
+group Transação
+D -> B : consultar duplicidades e quantidade de contas
+D -> D : definir perfil e calcular hash
+D -> B : persistir usuário
+B --> D : confirmação
+end
+D --> T : conta criada ou erro de validação
+@enduml

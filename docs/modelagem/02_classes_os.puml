@@ -1,0 +1,50 @@
+@startuml
+!pragma layout smetana
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 18
+skinparam dpi 150
+skinparam roundcorner 0
+skinparam maxMessageSize 180
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 12
+skinparam BoxPadding 8
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #F5F5F5
+skinparam classBorderColor #333333
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceParticipantBorderColor #333333
+hide empty methods
+class OrdemServico {
+- Integer id
+- String numero
+- StatusOS status
+- Double valorTotal
+}
+class ItemOs {
+- Integer id
+- Integer quantidade
+- Double subtotal
+}
+class ItemPeca {
+- Integer id
+- Integer quantidade
+- Double subtotal
+}
+class NotaFiscal {
+- Integer id
+- String numero
+- Double valorTotal
+- StatusNota status
+}
+class ItemNota {
+- Integer id
+- Integer quantidade
+- Double subtotal
+}
+OrdemServico "1" *-- "0..*" ItemOs
+OrdemServico "1" *-- "0..*" ItemPeca
+OrdemServico "1" -- "0..1" NotaFiscal
+NotaFiscal "1" *-- "1..*" ItemNota
+@enduml
