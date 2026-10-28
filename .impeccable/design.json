@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T12:00:00-03:00",
+  "title": "Design System: OfiSystem",
+  "extensions": {
+    "platform": "Java 17 Swing + FlatLaf 3.4 desktop. Tokens live in com.ofisystem.ui.style.Tema (paired light/dark color methods, size and radius constants) and in FlatLaf global extra defaults set by Tema.propriedades(); no CSS exists. Snippets below are HTML/CSS translations for preview only.",
+    "colorMeta": {
+      "aco-forte": { "role": "primary", "displayName": "Azul-Aço de Faixa", "canonical": "#2B4A6F", "tonalRamp": ["#0F1A27", "#172A40", "#223D5C", "#2B4A6F", "#3D6A9C", "#6F93BD", "#A9C6E6", "#E1EAF4"] },
+      "aco-forte-escuro": { "role": "primary", "displayName": "Azul-Aço de Faixa (escuro)", "canonical": "#3D6A9C", "tonalRamp": ["#0F1A27", "#172A40", "#223D5C", "#2B4A6F", "#3D6A9C", "#6F93BD", "#A9C6E6", "#E1EAF4"] },
+      "foco": { "role": "primary", "displayName": "Aço de Foco", "canonical": "#4A79AD" },
+      "trilho-topo": { "role": "secondary", "displayName": "Trilho em Degradê (topo)", "canonical": "#2B4A6F" },
+      "trilho-base": { "role": "secondary", "displayName": "Trilho em Degradê (base)", "canonical": "#1F3A5A" },
+      "forja-claro": { "role": "secondary", "displayName": "Forja (luz)", "canonical": "#1B2B3D" },
+      "forja-fundo": { "role": "secondary", "displayName": "Forja (fundo)", "canonical": "#0B1219" },
+      "ambar-atencao": { "role": "tertiary", "displayName": "Âmbar de Atenção", "canonical": "#E8A33D", "tonalRamp": ["#3A2E17", "#5E4210", "#7A4E0B", "#B07418", "#E8A33D", "#F2C27A", "#F8DDB0", "#FDF1DC"] },
+      "vermelho-critico": { "role": "tertiary", "displayName": "Vermelho Crítico", "canonical": "#C8372D", "tonalRamp": ["#3A1E1E", "#6A1F1A", "#A52A21", "#C8372D", "#E5605A", "#F19A94", "#F7C6C2", "#FBE5E3"] },
+      "verde-faixa": { "role": "tertiary", "displayName": "Verde de Faixa", "canonical": "#23744A", "tonalRamp": ["#18301F", "#174D30", "#1E6B3A", "#23744A", "#2E8B57", "#4FB37E", "#8FD6AE", "#E3F4EA"] },
+      "verde-sucesso": { "role": "tertiary", "displayName": "Verde de Sucesso (texto)", "canonical": "#2E8B57" },
+      "faixa-inativo": { "role": "tertiary", "displayName": "Faixa Inativa", "canonical": "#6B7785" },
+      "chao": { "role": "neutral", "displayName": "Chão de Aço", "canonical": "#E9EDF2", "tonalRamp": ["#0F151C", "#18212B", "#2A3643", "#4E5B68", "#9DABB9", "#D3DAE2", "#E9EDF2", "#F4F6F9"] },
+      "vinil": { "role": "neutral", "displayName": "Vinil", "canonical": "#FFFFFF" },
+      "vinil-2": { "role": "neutral", "displayName": "Vinil Recuado", "canonical": "#F4F6F9" },
+      "borda": { "role": "neutral", "displayName": "Borda", "canonical": "#D3DAE2" },
+      "tinta": { "role": "neutral", "displayName": "Tinta", "canonical": "#16202B" },
+      "tinta-suave": { "role": "neutral", "displayName": "Tinta Suave", "canonical": "#4E5B68" }
+    },
+    "typographyMeta": {
+      "titulo": { "displayName": "Título", "purpose": "Título de tela, data/valor grande no adesivo, totais, título da forja." },
+      "texto": { "displayName": "Texto", "purpose": "Corpo, campos, células, valores em linhas de resumo; texto de apoio em tinta suave." },
+      "texto-forte": { "displayName": "Texto forte", "purpose": "Botões, itens principais do trilho, nome e total no adesivo." },
+      "rotulo": { "displayName": "Rótulo", "purpose": "Caixa alta: rótulo de campo/dado/bloco, cabeçalho de tabela, faixa e etiqueta." },
+      "pequeno": { "displayName": "Pequeno", "purpose": "Metadados, dica da forja, contagem de usuários." },
+      "familyNote": "Fonte instalada resolvida por Tema.familia(): Segoe UI > Inter > Noto Sans > Cantarell > Ubuntu > Liberation Sans > SansSerif. Barlow / Barlow Condensed: decisão em aberto, aguardando consentimento do usuário; não é a fonte do sistema."
+    },
+    "shadows": [
+      { "name": "vinil-repouso", "value": "0 1px 0 rgba(16,24,32,0.06), 0 3px 4px rgba(16,24,32,0.06), 0 6px 7px rgba(16,24,32,0.04)", "purpose": "Aproximação CSS de Tema.sombra com elevação 3: 7 camadas de fillRoundRect deslocadas 1px para baixo, alfa peso^2 x 0.42 x base. Base claro rgba(16,24,32,36/255); escuro rgba(0,0,0,115/255). Superfícies e adesivos em repouso." },
+      { "name": "adesivo-descolado", "value": "0 2px 0 rgba(16,24,32,0.06), 0 6px 6px rgba(16,24,32,0.06), 0 11px 10px rgba(16,24,32,0.04)", "purpose": "Elevação 12 (desfoque limitado a 11 camadas): adesivo em hover/foco, com corpo subindo 3px." }
+    ],
+    "motion": [
+      { "name": "saida-suave", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Única curva em uso (Movimento.SAIDA_SUAVE); FlatLaf Animator com resolução de 15ms, desliga com Animator.useAnimation()." },
+      { "name": "hover-botao", "value": "120ms entrada / 180ms saída", "purpose": "Interpolação de cor do Botao." },
+      { "name": "hover-trilho", "value": "100ms entrada / 180ms saída", "purpose": "Véu e clareamento do ItemTrilho." },
+      { "name": "acordeao-trilho", "value": "200ms", "purpose": "Giro de 90° do chevron de seção." },
+      { "name": "descolar-adesivo", "value": "220ms entrada / 160ms saída", "purpose": "Subida, sombra e dobra do adesivo." },
+      { "name": "apagar-outros", "value": "160ms", "purpose": "Véu cor-do-chão até 55% nos adesivos não focados." },
+      { "name": "troca-tema", "value": "320ms", "purpose": "Fade de captura da janela ao alternar claro/escuro." },
+      { "name": "assentar-cartao", "value": "520ms", "purpose": "Cartão de login assenta após a forja." },
+      { "name": "contar-caixa", "value": "700ms", "purpose": "Total do caixa conta de zero." },
+      { "name": "forja", "value": "1700ms", "purpose": "Engrenagem Forjada no login; brilho de aço único na fase 0.72-1.0." }
+    ],
+    "breakpoints": [
+      { "name": "janela-minima", "value": "900x600" },
+      { "name": "topo-inicio-empilha", "value": "1000px", "note": "Ações do início descem para baixo do título abaixo disso." },
+      { "name": "celula-adesivo", "value": "264px", "note": "GradeCelulas: largura mínima da célula da fila, gap 16px." },
+      { "name": "celula-resumo", "value": "272px", "note": "GradeCelulas: blocos de resumo do início, gap 16px." }
+    ],
+    "layout": {
+      "trilho": "248px",
+      "margemLateral": "24px",
+      "tituloTopo": "24px",
+      "tituloBase": "16px",
+      "alturaControle": "40px",
+      "alturaLinhaTabela": "36px",
+      "folgaSombra": "12px",
+      "grade": "8px"
+    }
+  },
+  "components": [
+    {
+      "name": "Botão Principal",
+      "kind": "button",
+      "refersTo": "button-principal",
+      "description": "Ação principal da área (Nova OS, Entrar, Finalizar). Uma por área de ação.",
+      "html": "<button class=\"ds-btn-principal\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.9\" stroke-linecap=\"round\"><path d=\"M12 5v14M5 12h14\"/></svg>Nova OS</button>",
+      "css": ".ds-btn-principal { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; min-width: 96px; padding: 0 16px; background: #2B4A6F; color: #FFFFFF; font: 700 14px 'Segoe UI', Inter, 'Noto Sans', sans-serif; border: none; border-radius: 8px; cursor: pointer; transition: background 120ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-principal:hover { background: #223D5C; } .ds-btn-principal:active { transform: translateY(1px); } .ds-btn-principal:focus-visible { outline: 2px solid #4A79AD; outline-offset: -3px; }"
+    },
+    {
+      "name": "Botão Contorno",
+      "kind": "button",
+      "refersTo": "button-contorno",
+      "description": "Ação paralela (Venda de balcão, Limpar, Ver todas).",
+      "html": "<button class=\"ds-btn-contorno\">Venda de balcão</button>",
+      "css": ".ds-btn-contorno { height: 40px; min-width: 96px; padding: 0 16px; background: #FFFFFF; color: #16202B; font: 700 14px 'Segoe UI', Inter, 'Noto Sans', sans-serif; border: 1px solid #D3DAE2; border-radius: 8px; cursor: pointer; transition: background 120ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-contorno:hover { background: #F4F6F9; } .ds-btn-contorno:active { transform: translateY(1px); } .ds-btn-contorno:focus-visible { outline: 2px solid #4A79AD; outline-offset: -3px; }"
+    },
+    {
+      "name": "Botão Discreto",
+      "kind": "button",
+      "refersTo": "button-discreto",
+      "description": "Ação terciária sem fundo (Criar conta, Consultar vendas).",
+      "html": "<button class=\"ds-btn-discreto\">Criar conta</button>",
+      "css": ".ds-btn-discreto { height: 40px; min-width: 96px; padding: 0 16px; background: transparent; color: #16202B; font: 700 14px 'Segoe UI', Inter, 'Noto Sans', sans-serif; border: none; border-radius: 8px; cursor: pointer; transition: background 120ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-discreto:hover { background: #F4F6F9; } .ds-btn-discreto:focus-visible { outline: 2px solid #4A79AD; outline-offset: -3px; }"
+    },
+    {
+      "name": "Botão Perigo",
+      "kind": "button",
+      "refersTo": "button-perigo",
+      "description": "Ação destrutiva.",
+      "html": "<button class=\"ds-btn-perigo\">Excluir</button>",
+      "css": ".ds-btn-perigo { height: 40px; min-width: 96px; padding: 0 16px; background: #FFFFFF; color: #C8372D; font: 700 14px 'Segoe UI', Inter, 'Noto Sans', sans-serif; border: 1px solid #CE8781; border-radius: 8px; cursor: pointer; transition: background 120ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-perigo:hover { background: #FBE5E3; } .ds-btn-perigo:focus-visible { outline: 2px solid #4A79AD; outline-offset: -3px; }"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "campo",
+      "description": "Campo de texto de 40px com rótulo em caixa alta acima.",
+      "html": "<label class=\"ds-campo\"><span class=\"ds-campo-rotulo\">Usuário</span><input class=\"ds-campo-input\" placeholder=\"Nome de usuário\"></label>",
+      "css": ".ds-campo { display: grid; gap: 6px; width: 328px; font-family: 'Segoe UI', Inter, 'Noto Sans', sans-serif; } .ds-campo-rotulo { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #4E5B68; } .ds-campo-input { height: 40px; padding: 0 10px; background: #FFFFFF; color: #16202B; font-size: 14px; border: 1px solid #D3DAE2; border-radius: 8px; } .ds-campo-input::placeholder { color: #4E5B68; } .ds-campo-input:focus-visible { outline: 2px solid #4A79AD; border-color: #4A79AD; }"
+    },
+    {
+      "name": "Etiqueta de Status",
+      "kind": "chip",
+      "refersTo": "etiqueta-status",
+      "description": "Estado por Tema.Tom: par fundo/texto, 12px negrito caixa alta.",
+      "html": "<span class=\"ds-etiqueta ds-etiqueta-critico\">1 OS atrasada</span> <span class=\"ds-etiqueta ds-etiqueta-atencao\">1 aguardando peça</span> <span class=\"ds-etiqueta ds-etiqueta-sucesso\">Tudo em dia</span>",
+      "css": ".ds-etiqueta { display: inline-block; padding: 4px 10px; border-radius: 6px; font: 700 12px 'Segoe UI', Inter, 'Noto Sans', sans-serif; text-transform: uppercase; background: #E1EAF4; color: #1F3A5A; } .ds-etiqueta-critico { background: #FBE5E3; color: #A52A21; } .ds-etiqueta-atencao { background: #FDF1DC; color: #7A4E0B; } .ds-etiqueta-sucesso { background: #E3F4EA; color: #1E6B3A; }"
+    },
+    {
+      "name": "Superfície de Vinil",
+      "kind": "card",
+      "refersTo": "superficie-vinil",
+      "description": "Bloco de conteúdo sobre o chão: vinil, borda 1px, raio 12, sombra macia.",
+      "html": "<div class=\"ds-vinil\"><div class=\"ds-vinil-rotulo\">Caixa de hoje</div><div class=\"ds-vinil-valor\">R$ 1.329,90</div></div>",
+      "css": ".ds-vinil { width: 272px; padding: 16px; background: #FFFFFF; border: 1px solid #D3DAE2; border-radius: 12px; box-shadow: 0 1px 0 rgba(16,24,32,0.06), 0 3px 4px rgba(16,24,32,0.06), 0 6px 7px rgba(16,24,32,0.04); font-family: 'Segoe UI', Inter, 'Noto Sans', sans-serif; } .ds-vinil-rotulo { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #4E5B68; margin-bottom: 12px; } .ds-vinil-valor { font-size: 22px; font-weight: 700; color: #2B4A6F; }"
+    },
+    {
+      "name": "Adesivo de Revisão",
+      "kind": "custom",
+      "refersTo": "adesivo-faixa",
+      "description": "Assinatura: vinil com faixa de 32px na cor do Tom; descola em hover/foco (sobe 3px, sombra cresce, canto dobra até 22px).",
+      "html": "<div class=\"ds-adesivo\" tabindex=\"0\"><div class=\"ds-adesivo-faixa ds-adesivo-critico\"><span>OS 000038</span><span>Atrasada</span></div><div class=\"ds-adesivo-corpo\"><div class=\"ds-adesivo-rotulo\">Prometida para</div><div class=\"ds-adesivo-valor\">Ontem</div><div class=\"ds-adesivo-nome\">Ana Paula Souza</div><div class=\"ds-adesivo-linha\"><span>PNX2C44 - Chevrolet Onix</span><strong>R$ 395,00</strong></div></div></div>",
+      "css": ".ds-adesivo { width: 314px; background: #FFFFFF; border: 1px solid #D3DAE2; border-radius: 12px; overflow: hidden; font-family: 'Segoe UI', Inter, 'Noto Sans', sans-serif; box-shadow: 0 1px 0 rgba(16,24,32,0.06), 0 3px 4px rgba(16,24,32,0.06), 0 6px 7px rgba(16,24,32,0.04); transition: transform 220ms cubic-bezier(0.16,1,0.3,1), box-shadow 220ms cubic-bezier(0.16,1,0.3,1); cursor: pointer; } .ds-adesivo:hover, .ds-adesivo:focus-visible { transform: translateY(-3px); box-shadow: 0 2px 0 rgba(16,24,32,0.06), 0 6px 6px rgba(16,24,32,0.06), 0 11px 10px rgba(16,24,32,0.04); border-top-right-radius: 0; } .ds-adesivo:focus-visible { outline: 2px solid #4A79AD; outline-offset: 2px; } .ds-adesivo-faixa { height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px 0 16px; background: #2B4A6F; color: #FFFFFF; font-size: 12px; font-weight: 700; text-transform: uppercase; } .ds-adesivo-critico { background: #C8372D; } .ds-adesivo-corpo { padding: 12px 16px 16px; } .ds-adesivo-rotulo { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #4E5B68; } .ds-adesivo-valor { font-size: 22px; font-weight: 700; color: #C8372D; } .ds-adesivo-nome { margin-top: 8px; font-size: 14px; font-weight: 700; color: #16202B; } .ds-adesivo-linha { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; color: #4E5B68; } .ds-adesivo-linha strong { color: #16202B; }"
+    },
+    {
+      "name": "Trilho",
+      "kind": "nav",
+      "refersTo": "trilho-item",
+      "description": "Navegação lateral de 248px em degradê azul-aço; item ativo em pílula de vinil.",
+      "html": "<nav class=\"ds-trilho\"><a class=\"ds-trilho-item ds-trilho-ativo\" href=\"#\">Início</a><a class=\"ds-trilho-item\" href=\"#\">Ordens de Serviço</a><a class=\"ds-trilho-item\" href=\"#\">Estoque</a><a class=\"ds-trilho-sub\" href=\"#\">Consulta</a></nav>",
+      "css": ".ds-trilho { width: 248px; padding: 8px 0; background: linear-gradient(180deg, #2B4A6F, #1F3A5A); font-family: 'Segoe UI', Inter, 'Noto Sans', sans-serif; display: flex; flex-direction: column; } .ds-trilho-item, .ds-trilho-sub { display: flex; align-items: center; margin: 2px 12px; padding-left: 40px; border-radius: 8px; text-decoration: none; transition: background 100ms cubic-bezier(0.16,1,0.3,1), color 100ms cubic-bezier(0.16,1,0.3,1); } .ds-trilho-item { height: 36px; color: #DCE6F1; font-size: 14px; font-weight: 700; } .ds-trilho-sub { height: 32px; color: #A9BDD3; font-size: 14px; font-weight: 400; } .ds-trilho-item:hover, .ds-trilho-sub:hover { background: rgba(255,255,255,0.08); color: #FFFFFF; } .ds-trilho-ativo, .ds-trilho-ativo:hover { background: #FFFFFF; color: #1F3A5A; } .ds-trilho-item:focus-visible, .ds-trilho-sub:focus-visible { outline: 2px solid #A9C6E6; outline-offset: -3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Adesivo de Revisão",
+    "overview": "O OfiSystem é a etiqueta de troca de óleo colada no para-brisa, transformada em interface: um retângulo de vinil branco com uma faixa azul-aço no topo, o estado que importa impresso em caixa alta na faixa e o valor que importa (data de entrega, total) grande no corpo. A janela é um chão de aço claro (grafite no tema escuro) sobre o qual esses vinis se apoiam com sombra macia; à esquerda, um trilho azul-aço em degradê carrega a marca e os módulos. O sistema é desktop Java 17 Swing + FlatLaf 3.4: os tokens vivem em `com.ofisystem.ui.style.Tema` (métodos de cor com par claro/escuro, constantes de tamanho e raio) e nos *global extra defaults* que `Tema.propriedades()` injeta no FlatLaf; não há CSS.\n\nA densidade é de balcão: três tamanhos de texto, controles de 40px, linhas de tabela de 36px, grade de 8px. A hierarquia vem de peso e caixa, não de muitos tamanhos. A cor é semântica antes de decorativa: azul-aço é a voz da marca e da ação principal; âmbar, vermelho e verde só aparecem carregando um estado (`Tema.Tom`). Os dois temas são de primeira classe e alternáveis em tempo real com um fade de 320ms.\n\nO momento memorável fica no login: a \"Engrenagem forjada\" monta a engrenagem a partir de placas recortadas do próprio `logo.png`, trava exatamente no logo e passa um único brilho de aço não cíclico. Fora dali, o movimento é curto e serve a estado (hover, foco, descolar do adesivo).",
+    "keyCharacteristics": [
+      "Vinil sobre chão de aço: superfícies brancas/grafite com borda de 1px e sombra macia empilhada.",
+      "Faixa de status de 32px em todo adesivo, cor pelo `Tom` do registro.",
+      "Uma família tipográfica, três tamanhos (12/14/22), dois pesos (400/700).",
+      "Trilho azul-aço em degradê vertical com item ativo em pílula.",
+      "Ícones desenhados em Java2D numa grade de 24 unidades, traço 1.9, pontas redondas.",
+      "Tema claro e escuro com tokens pareados; nenhuma cor fixa fora de `Tema` para superfícies."
+    ],
+    "rules": [
+      { "name": "The Cor Carrega Estado Rule", "body": "Âmbar, vermelho e verde só entram via `Tema.Tom` (faixa, etiqueta, texto de estado). Nunca como acento, ícone decorativo ou fundo de seção.", "section": "colors" },
+      { "name": "The Par Sempre Rule", "body": "Toda cor de superfície ou texto é um método de `Tema` com par claro/escuro (`cor(\"#claro\", \"#escuro\")`), lido na hora da pintura. Componente que guarda um `Color` fixo quebra a troca de tema.", "section": "colors" },
+      { "name": "The Faixa Legível Rule", "body": "Texto de faixa é branco, exceto sobre âmbar (tinta). Uma cor de faixa só entra se o texto de 12px negrito atingir 4.5:1; é por isso que a faixa verde é verde-faixa e a faixa escura de aço é aco-forte-escuro.", "section": "colors" },
+      { "name": "The Três Degraus Rule", "body": "Só existem 12, 14 e 22. `AbstractPanel.criarLabel` arredonda qualquer tamanho pedido para o degrau mais próximo; não crie um quarto.", "section": "typography" },
+      { "name": "The Rótulo Nomeia Dado Rule", "body": "Caixa alta de 12px nomeia um campo, um valor ou um bloco (\"Entrega prevista\", \"Caixa de hoje\"). Nunca decora acima de um título como sobretítulo.", "section": "typography" },
+      { "name": "The Sombra Macia Rule", "body": "Profundidade é desfoque empilhado para baixo com alfa baixo. Sombra dura deslocada não pertence a este mundo.", "section": "elevation" },
+      { "name": "The Folga Reservada Rule", "body": "Qualquer componente que pinte sombra soma `FOLGA_SOMBRA` (12px) ao inset inferior.", "section": "elevation" }
+    ],
+    "dos": [
+      "**Do** pegar toda cor de `Tema` na hora da pintura (`Tema.vinil()`, `Tema.texto(tom)`), para que a troca de tema repinte certo.",
+      "**Do** expressar estado de registro por `Tema.Tom` e deixar faixa, etiqueta e texto derivarem dele.",
+      "**Do** usar só 12/14/22 e pesos 400/700; rótulo é 12px negrito em caixa alta na tinta suave.",
+      "**Do** manter controles em 40px, linhas de tabela em 36px e gaps na grade de 8px (4 só como meio-passo).",
+      "**Do** reservar `FOLGA_SOMBRA` (12px) abaixo de qualquer vinil que pinte sombra.",
+      "**Do** alinhar números à direita em tabelas e linhas de valor.",
+      "**Do** usar `GradeCelulas` para grades de cartões, reflow por célula inteira com largura mínima.",
+      "**Do** animar com `Movimento.animar` e SAIDA_SUAVE, entre 100 e 220ms para estado."
+    ],
+    "donts": [
+      "**Don't** usar âmbar, vermelho ou verde como decoração ou acento de marca.",
+      "**Don't** colocar texto branco em faixa sem 4.5:1; sobre âmbar o texto é tinta.",
+      "**Don't** criar um quarto tamanho de texto nem um terceiro peso.",
+      "**Don't** pintar sombra dura deslocada; a sombra deste mundo é macia e empilhada.",
+      "**Don't** usar rótulo em caixa alta como sobretítulo decorativo acima de um título.",
+      "**Don't** reaproveitar a Engrenagem Forjada fora do login nem fazer o brilho de aço ciclar.",
+      "**Don't** assumir Barlow nas telas enquanto o empacotamento da fonte não for aprovado."
+    ]
+  }
+}

@@ -13,6 +13,8 @@ import com.ofisystem.entidade.Servico;
 import com.ofisystem.entidade.Venda;
 import com.ofisystem.ui.Navegador;
 import com.ofisystem.ui.panels.AbstractPanel;
+import com.ofisystem.ui.style.Adesivo;
+import com.ofisystem.ui.style.Superficie;
 import com.ofisystem.ui.style.Tema;
 import com.ofisystem.ui.style.Texto;
 import com.ofisystem.util.Formatador;
@@ -53,8 +55,11 @@ public class VendaPanel extends AbstractPanel {
     private JLabel lblPago;
     private JLabel lblRestante;
     private JButton btFinalizar;
+    private JButton btRemoverItem;
+    private JButton btRemoverPagamento;
 
     private Venda venda;
+    private Adesivo adesivoTotal;
     private boolean faltando;
 
     @Override
@@ -80,6 +85,7 @@ public class VendaPanel extends AbstractPanel {
         btFinalizar = adicionarBotao(rodape, "Finalizar venda", COR_SUCESSO, this::finalizar);
         add(rodape, BorderLayout.SOUTH);
 
+        atualizarEstados();
         carregarCadastros();
     }
 
@@ -127,18 +133,22 @@ public class VendaPanel extends AbstractPanel {
 
         modeloItens = criarModelo("Tipo", "Descrição", "Qtd.", "Valor unit.", "Subtotal");
         tabelaItens = criarTabela(modeloItens);
+        tabelaItens.putClientProperty(TEXTO_VAZIO, "Escolha um produto ou serviço acima e clique em Adicionar.");
+        comAjuda(cbProduto, "Escolha o produto");
+        comAjuda(cbServico, "Escolha o serviço");
         tabelaItens.getColumnModel().getColumn(0).setPreferredWidth(70);
         tabelaItens.getColumnModel().getColumn(1).setPreferredWidth(240);
         JScrollPane scroll = new JScrollPane(tabelaItens);
+        scroll.setBorder(Tema.linha());
         scroll.setPreferredSize(new Dimension(400, 232));
 
-        JPanel acoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 4));
+        JPanel acoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         acoes.setOpaque(false);
-        adicionarBotao(acoes, "Remover item", COR_PERIGO, this::removerItem);
+        btRemoverItem = adicionarBotao(acoes, "Remover item", COR_PERIGO, this::removerItem);
+        tabelaItens.getSelectionModel().addListSelectionListener(e -> atualizarEstados());
 
-        JPanel painel = new JPanel(new BorderLayout(0, 6));
-        painel.setOpaque(false);
-        painel.setBorder(BorderFactory.createEmptyBorder(12, 24, 8, 12));
+        Superficie painel = new Superficie(new BorderLayout(0, 8), 16, 16);
+        painel.comMargem(8, MARGEM_LATERAL, 8);
         painel.add(abas, BorderLayout.NORTH);
         painel.add(scroll, BorderLayout.CENTER);
         painel.add(acoes, BorderLayout.SOUTH);
@@ -156,11 +166,11 @@ public class VendaPanel extends AbstractPanel {
         barra.add(combo, gbc);
         gbc.weightx = 0;
         gbc.gridx++;
-        barra.add(criarLabel("Qtd.:", 13), gbc);
+        barra.add(Texto.rotulo("Qtd."), gbc);
         gbc.gridx++;
         barra.add(qtd, gbc);
         gbc.gridx++;
-        barra.add(criarLabel("R$:", 13), gbc);
+        barra.add(Texto.rotulo("Valor"), gbc);
         gbc.gridx++;
         barra.add(valor, gbc);
         gbc.gridx++;
@@ -192,52 +202,72 @@ public class VendaPanel extends AbstractPanel {
         gbc.weightx = 1;
         gbc.gridwidth = 2;
 
-        lblSubtotal = criarLabel("Subtotal: R$ 0,00", 15);
+        lblSubtotal = Texto.corpo("R$ 0,00");
         txtDesconto = criarCampo(8, 15);
         txtDesconto.setText("0,00");
-        lblTotal = new Texto("TOTAL: R$ 0,00", Tema.TAM_TITULO, Font.BOLD, Tema::aco);
+        txtDesconto.setHorizontalAlignment(JTextField.RIGHT);
+        lblTotal = new Texto("R$ 0,00", Tema.TAM_TITULO, Font.BOLD, Tema::tinta);
         cbForma = new JComboBox<>(FormaPagamento.values());
         txtValorPagamento = criarCampo(8, 15);
+        txtValorPagamento.setHorizontalAlignment(JTextField.RIGHT);
+        txtValorPagamento.putClientProperty("JTextField.placeholderText", "0,00");
         for (JComponent controle : new JComponent[]{txtDesconto, cbForma, txtValorPagamento}) {
             controle.setPreferredSize(new Dimension(96, ALTURA_CAMPO));
             controle.setMinimumSize(new Dimension(80, ALTURA_CAMPO));
         }
         modeloPagamentos = criarModelo("Forma", "Valor");
         tabelaPagamentos = criarTabela(modeloPagamentos);
+        tabelaPagamentos.putClientProperty(TEXTO_VAZIO, "Nenhum pagamento incluído.");
         JScrollPane scroll = new JScrollPane(tabelaPagamentos);
         scroll.setPreferredSize(new Dimension(200, 112));
-        lblPago = criarLabel("Pago: R$ 0,00", 15);
+        lblPago = Texto.corpo("R$ 0,00");
         lblRestante = new Texto("Adicione itens à venda", Tema.TAM_TEXTO, Font.BOLD,
                 () -> venda == null || venda.getItens().isEmpty() ? Tema.tintaSuave() : faltando ? Tema.critico() : Tema.sucesso());
 
+        adesivoTotal = new Adesivo("Total da venda", "Sem itens", Tema.Tom.INATIVO, new GridBagLayout());
+        GridBagConstraints ga = new GridBagConstraints();
+        ga.gridx = 0;
+        ga.gridwidth = 2;
+        ga.weightx = 1;
+        ga.fill = GridBagConstraints.HORIZONTAL;
+        adesivoTotal.add(lblTotal, ga);
+        ga.gridwidth = 1;
+        ga.gridy = 1;
+        ga.insets = new Insets(8, 0, 0, 0);
+        adesivoTotal.add(Texto.apoio("Subtotal"), ga);
+        ga.gridx = 1;
+        ga.weightx = 0;
+        ga.anchor = GridBagConstraints.EAST;
+        ga.fill = GridBagConstraints.NONE;
+        adesivoTotal.add(lblSubtotal, ga);
+        ga.gridx = 0;
+        ga.gridy = 2;
+        ga.weightx = 1;
+        ga.anchor = GridBagConstraints.WEST;
+        ga.fill = GridBagConstraints.HORIZONTAL;
+        adesivoTotal.add(Texto.apoio("Desconto (R$)"), ga);
+        ga.gridx = 1;
+        ga.weightx = 0;
+        adesivoTotal.add(txtDesconto, ga);
+
+        gbc.insets = new Insets(4, 0, 4, 0);
         int y = 0;
         gbc.gridy = y++;
-        painel.add(titulo("Pagamento"), gbc);
+        painel.add(adesivoTotal, gbc);
         gbc.gridy = y++;
-        painel.add(lblSubtotal, gbc);
-
-        gbc.gridwidth = 1;
-        gbc.gridy = y++;
-        gbc.weightx = 0;
-        painel.add(criarLabel("Desconto (R$):", 14), gbc);
-        gbc.gridx = 1;
-        gbc.weightx = 1;
-        painel.add(txtDesconto, gbc);
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-
-        gbc.gridy = y++;
-        painel.add(lblTotal, gbc);
-        gbc.gridy = y++;
-        painel.add(new JSeparator(), gbc);
+        painel.add(titulo("Forma de pagamento"), gbc);
         gbc.gridy = y++;
         painel.add(cbForma, gbc);
+        gbc.gridy = y++;
+        painel.add(titulo("Valor recebido"), gbc);
 
         gbc.gridwidth = 1;
         gbc.gridy = y++;
         painel.add(txtValorPagamento, gbc);
         gbc.gridx = 1;
+        gbc.insets = new Insets(4, 8, 4, 0);
         painel.add(adicionarBotao(new JPanel(), "Incluir", COR_PRIMARIA, this::adicionarPagamento), gbc);
+        gbc.insets = new Insets(4, 0, 4, 0);
         gbc.gridx = 0;
         gbc.gridwidth = 2;
 
@@ -251,12 +281,18 @@ public class VendaPanel extends AbstractPanel {
         gbc.gridy = y++;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.fill = GridBagConstraints.NONE;
-        painel.add(adicionarBotao(new JPanel(), "Remover", COR_PERIGO, this::removerPagamento), gbc);
+        btRemoverPagamento = adicionarBotao(new JPanel(), "Remover", COR_PERIGO, this::removerPagamento);
+        tabelaPagamentos.getSelectionModel().addListSelectionListener(e -> atualizarEstados());
+        painel.add(btRemoverPagamento, gbc);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         gbc.gridy = y++;
-        painel.add(lblPago, gbc);
+        JPanel linhaPago = new JPanel(new BorderLayout());
+        linhaPago.setOpaque(false);
+        linhaPago.add(Texto.apoio("Pago"), BorderLayout.WEST);
+        linhaPago.add(lblPago, BorderLayout.EAST);
+        painel.add(linhaPago, gbc);
         gbc.gridy = y;
         painel.add(lblRestante, gbc);
 
@@ -425,6 +461,15 @@ public class VendaPanel extends AbstractPanel {
         atualizarTotais();
     }
 
+    private void atualizarEstados() {
+        if (btFinalizar == null || btRemoverItem == null || btRemoverPagamento == null) return;
+        boolean temItens = venda != null && !venda.getItens().isEmpty();
+        btFinalizar.setEnabled(temItens);
+        btFinalizar.setToolTipText(temItens ? null : "Adicione itens à venda");
+        btRemoverItem.setEnabled(tabelaItens.getSelectedRow() >= 0);
+        btRemoverPagamento.setEnabled(tabelaPagamentos.getSelectedRow() >= 0);
+    }
+
     private void atualizarTotais() {
         try {
             Double desconto = Formatador.parseValor(txtDesconto.getText());
@@ -436,21 +481,25 @@ public class VendaPanel extends AbstractPanel {
         venda.recalcularTotais();
         double falta = venda.getValorTotal() - venda.getValorPago();
 
-        lblSubtotal.setText("Subtotal: " + Formatador.moeda(venda.getValorProdutos() + venda.getValorServicos()));
-        lblTotal.setText("TOTAL: " + Formatador.moeda(venda.getValorTotal()));
-        lblPago.setText("Pago: " + Formatador.moeda(venda.getValorPago()));
+        lblSubtotal.setText(Formatador.moeda(venda.getValorProdutos() + venda.getValorServicos()));
+        lblTotal.setText(Formatador.moeda(venda.getValorTotal()));
+        lblPago.setText(Formatador.moeda(venda.getValorPago()));
         faltando = falta > 0.004;
         if (venda.getItens().isEmpty()) {
             lblRestante.setText("Adicione itens à venda");
             txtValorPagamento.setText("");
+            adesivoTotal.setDados("Total da venda", "Sem itens", Tema.Tom.INATIVO);
         } else if (faltando) {
-            lblRestante.setText("Falta: " + Formatador.moeda(falta));
+            lblRestante.setText("Falta receber " + Formatador.moeda(falta));
             txtValorPagamento.setText(Formatador.decimal(falta));
+            adesivoTotal.setDados("Total da venda", "A receber", Tema.Tom.ATENCAO);
         } else {
-            lblRestante.setText("Troco: " + Formatador.moeda(venda.getTroco()));
+            lblRestante.setText(venda.getTroco() > 0 ? "Troco: " + Formatador.moeda(venda.getTroco()) : "Pagamento completo");
             txtValorPagamento.setText("");
+            adesivoTotal.setDados("Total da venda", "Pago", Tema.Tom.SUCESSO);
         }
         lblRestante.repaint();
+        atualizarEstados();
     }
 
     private void finalizar() {
@@ -463,7 +512,7 @@ public class VendaPanel extends AbstractPanel {
             try {
                 return CONTROLLER.finalizar(venda);
             } finally {
-                SwingUtilities.invokeLater(() -> btFinalizar.setEnabled(true));
+                SwingUtilities.invokeLater(this::atualizarEstados);
             }
         }, salva -> {
             String troco = salva.getTroco() > 0 ? "\nTroco: " + Formatador.moeda(salva.getTroco()) : "";

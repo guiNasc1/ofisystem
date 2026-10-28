@@ -31,7 +31,7 @@ public class Adesivo extends JPanel {
         this.estado = estado;
         this.tom = tom;
         setOpaque(false);
-        setBorder(BorderFactory.createEmptyBorder(ALTURA_FAIXA + 12, 16, 20, 16));
+        setBorder(BorderFactory.createEmptyBorder(ALTURA_FAIXA + 12, 16, 12 + Tema.FOLGA_SOMBRA + 4, 16));
         setFocusable(false);
     }
 
@@ -97,6 +97,11 @@ public class Adesivo extends JPanel {
         return descolar;
     }
 
+    public void setDescolar(float descolar) {
+        this.descolar = Math.max(0f, Math.min(1f, descolar));
+        repaint();
+    }
+
     public void setApagado(float apagado) {
         this.apagado = apagado;
         repaint();
@@ -127,7 +132,7 @@ public class Adesivo extends JPanel {
         Graphics2D g2 = Tema.suave(g);
         int w = getWidth() - 2;
         int elevacao = Math.round(3 + descolar * 9);
-        int h = getHeight() - 14;
+        int h = getHeight() - Tema.FOLGA_SOMBRA - 4;
         int y = Math.round(4 - descolar * 3);
         int dobra = Math.round(descolar * 22);
         int r = Tema.RAIO;

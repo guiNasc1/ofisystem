@@ -23,6 +23,7 @@ public final class Tema {
     public static final int TAM_TITULO = 22;
 
     public static final int RAIO = 12;
+    public static final int FOLGA_SOMBRA = 12;
     public static final int RAIO_CONTROLE = 8;
 
     private static final String CHAVE_PREFERENCIA = "tema";
@@ -84,12 +85,15 @@ public final class Tema {
     public static Color faixa(Tom tom) {
         return switch (tom) {
             case ATENCAO -> atencao();
-            case CRITICO -> critico();
-            case SUCESSO -> sucesso();
-            case INATIVO -> cor("#7A8796", "#4A5868");
-            case INFO, NEUTRO -> aco();
+            case CRITICO -> new Color(0xC8372D);
+            case SUCESSO -> new Color(0x23744A);
+            case INATIVO -> cor("#6B7785", "#4A5868");
+            case INFO, NEUTRO -> acoForte();
         };
     }
+
+    public static Color acoForte() { return cor("#2B4A6F", "#3D6A9C"); }
+    public static Color acoForteHover() { return cor("#223D5C", "#4A79AD"); }
 
     public static Color textoFaixa(Tom tom) {
         return tom == Tom.ATENCAO ? new Color(0x16202B) : Color.WHITE;
@@ -263,6 +267,22 @@ public final class Tema {
         return String.format("#%02X%02X%02X", c.getRed(), c.getGreen(), c.getBlue());
     }
 
+    public static javax.swing.border.Border linha() {
+        return new javax.swing.border.AbstractBorder() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int largura, int altura) {
+                g.setColor(borda());
+                g.drawRect(x, y, largura - 1, altura - 1);
+            }
+
+            @Override
+            public Insets getBorderInsets(Component c, Insets insets) {
+                insets.set(1, 1, 1, 1);
+                return insets;
+            }
+        };
+    }
+
     public static Graphics2D suave(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -274,11 +294,14 @@ public final class Tema {
 
     public static void sombra(Graphics2D g2, int x, int y, int largura, int altura, int raio, int elevacao) {
         Color base = sombra();
-        int camadas = Math.max(2, elevacao);
-        for (int i = camadas; i >= 1; i--) {
-            float alfa = base.getAlpha() / 255f * (1f - (float) i / (camadas + 1)) / camadas * 2.2f;
+        int desfoque = Math.min(FOLGA_SOMBRA - 1, 4 + elevacao);
+        float total = base.getAlpha() / 255f;
+        for (int i = desfoque; i >= 1; i--) {
+            float peso = 1f - (float) (i - 1) / desfoque;
+            float alfa = total * peso * peso * 0.42f;
             g2.setColor(new Color(base.getRed(), base.getGreen(), base.getBlue(), Math.min(255, Math.round(alfa * 255))));
-            g2.fillRoundRect(x - i / 2, y + elevacao / 2 + i / 2, largura + i, altura + i / 2, raio + i, raio + i);
+            int recuo = Math.max(0, (desfoque - i) / 3);
+            g2.fillRoundRect(x + recuo, y + i, largura - recuo * 2, altura, raio + 2, raio + 2);
         }
     }
 }

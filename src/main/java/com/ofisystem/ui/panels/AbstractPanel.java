@@ -27,7 +27,7 @@ public abstract class AbstractPanel extends JPanel {
     protected static final Botao.Estilo COR_PRIMARIA = Botao.Estilo.SECUNDARIO;
     protected static final Botao.Estilo COR_INFO = Botao.Estilo.CONTORNO;
     protected static final Botao.Estilo COR_NEUTRA = Botao.Estilo.DISCRETO;
-    protected static final Botao.Estilo COR_ALERTA = Botao.Estilo.ATENCAO;
+    protected static final Botao.Estilo COR_ALERTA = Botao.Estilo.SECUNDARIO;
     protected static final Botao.Estilo COR_PERIGO = Botao.Estilo.PERIGO;
 
     protected static final int MARGEM_LATERAL = 24;
@@ -168,6 +168,16 @@ public abstract class AbstractPanel extends JPanel {
         GridBagConstraints restricao = grade.getConstraints(campo);
         restricao.weightx = 0;
         grade.setConstraints(campo, restricao);
+    }
+
+    protected void comAjuda(JComboBox<?> combo, String ajuda) {
+        ListCellRenderer<? super Object> original = new DefaultListCellRenderer();
+        combo.setRenderer((lista, valor, indice, selecionado, foco) -> {
+            Component c = original.getListCellRendererComponent(lista, valor == null && indice < 0 ? ajuda : valor,
+                    indice, selecionado, foco);
+            if (valor == null && indice < 0) c.setForeground(Tema.tintaSuave());
+            return c;
+        });
     }
 
     protected JTextField criarCampo(int maxCaracteres) {

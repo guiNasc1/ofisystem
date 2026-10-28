@@ -116,7 +116,7 @@ public class Botao extends JButton {
 
     private Color corFundo() {
         return switch (estilo) {
-            case PRINCIPAL -> Movimento.misturar(Tema.aco(), Tema.acoHover(), hover);
+            case PRINCIPAL -> Movimento.misturar(Tema.acoForte(), Tema.acoForteHover(), hover);
             case SECUNDARIO -> Movimento.misturar(Tema.fundo(Tema.Tom.INFO), Tema.aco(), hover * 0.18f);
             case CONTORNO -> Movimento.misturar(Tema.vinil(), Tema.vinil2(), hover);
             case DISCRETO -> transparente(Tema.vinil2(), hover);
@@ -136,14 +136,11 @@ public class Botao extends JButton {
         int w = getWidth();
         int h = getHeight();
         int deslocamento = pressionado && isEnabled() ? 1 : 0;
-        if (!isEnabled()) {
-            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
-        }
 
-        g2.setColor(corFundo());
+        g2.setColor(isEnabled() || estilo == Estilo.TRILHO || estilo == Estilo.DISCRETO ? corFundo() : Tema.vinil2());
         g2.fillRoundRect(0, deslocamento, w, h - 1, Tema.RAIO_CONTROLE, Tema.RAIO_CONTROLE);
 
-        Color contorno = switch (estilo) {
+        Color contorno = !isEnabled() && estilo != Estilo.TRILHO && estilo != Estilo.DISCRETO ? Tema.borda() : switch (estilo) {
             case CONTORNO -> Tema.borda();
             case ATENCAO -> Movimento.misturar(Tema.borda(), Tema.atencao(), 0.6f);
             case PERIGO -> Movimento.misturar(Tema.borda(), Tema.critico(), 0.5f);
@@ -162,9 +159,6 @@ public class Botao extends JButton {
 
         g2.dispose();
         Graphics conteudo = g.create(0, deslocamento, w, h);
-        if (!isEnabled()) {
-            ((Graphics2D) conteudo).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
-        }
         super.paintComponent(conteudo);
         conteudo.dispose();
     }

@@ -30,7 +30,7 @@ public class Superficie extends JPanel {
 
     private void atualizarBorda() {
         setBorder(BorderFactory.createEmptyBorder(margem.top + vertical, margem.left + horizontal,
-                margem.bottom + vertical + elevacao * 2, margem.right + horizontal));
+                margem.bottom + vertical + Tema.FOLGA_SOMBRA, margem.right + horizontal));
     }
 
     protected Color corFundo() {
@@ -43,7 +43,7 @@ public class Superficie extends JPanel {
         int x = margem.left + 1;
         int y = margem.top + 1;
         int w = getWidth() - margem.left - margem.right - 2;
-        int h = getHeight() - margem.top - margem.bottom - elevacao * 2 - 2;
+        int h = getHeight() - margem.top - margem.bottom - Tema.FOLGA_SOMBRA - 1;
         Tema.sombra(g2, x, y, w, h, Tema.RAIO, elevacao);
         g2.setColor(corFundo());
         g2.fillRoundRect(x, y, w, h, Tema.RAIO, Tema.RAIO);

@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/assigned.html"
+        ],
+        "createdAt": "2026-10-28T18:35:22.287Z",
+        "reason": "Claude (sessão): esboço histórico da rodada de decisão, não distribuído; fontes de rascunho anteriores ao DESIGN.md"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/model-pick.html"
+        ],
+        "createdAt": "2026-10-28T18:35:22.299Z",
+        "reason": "Claude (sessão): esboço histórico da rodada de decisão, não distribuído; fontes de rascunho anteriores ao DESIGN.md"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/challenger-splitflap.html"
+        ],
+        "createdAt": "2026-10-28T18:35:22.307Z",
+        "reason": "Claude (sessão): esboço histórico da rodada de decisão, não distribuído; fontes de rascunho anteriores ao DESIGN.md"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-10-28T18:35:22.315Z",
+        "reason": "Claude (sessão): esboço histórico da rodada de decisão, não distribuído; fontes de rascunho anteriores ao DESIGN.md"
+      }
+    ]
+  }
+}

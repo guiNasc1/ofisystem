@@ -24,10 +24,8 @@ import com.ofisystem.ui.style.Superficie;
 import com.ofisystem.ui.style.Tema;
 import com.ofisystem.ui.style.Texto;
 import com.ofisystem.util.Formatador;
-import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -49,11 +47,13 @@ public class InicioPanel extends AbstractPanel {
     private static final VendaController VENDA_CONTROLLER = new VendaController();
     private static final EstoqueController ESTOQUE_CONTROLLER = new EstoqueController();
     private static final int LIMITE_ADESIVOS = 8;
+    private static final int LARGURA_ADESIVO = 264;
 
     private Texto lblResumo;
     private JPanel grade;
-    private DefaultTableModel modeloMovimento;
-    private JTable tabelaMovimento;
+    private JPanel listaMovimento;
+    private JPanel acoesTopo;
+    private JPanel topo;
     private JPanel listaCaixa;
     private JPanel listaAtencao;
 
@@ -68,7 +68,7 @@ public class InicioPanel extends AbstractPanel {
 
         conteudo.add(alinhado(Texto.rotulo("Na oficina agora")));
         conteudo.add(Box.createVerticalStrut(8));
-        grade = new JPanel(new GradeCelulas(232, 16));
+        grade = new JPanel(new GradeCelulas(LARGURA_ADESIVO, 16));
         grade.setOpaque(false);
         grade.setAlignmentX(Component.LEFT_ALIGNMENT);
         grade.addComponentListener(new ComponentAdapter() {
@@ -104,7 +104,7 @@ public class InicioPanel extends AbstractPanel {
         textos.add(titulo);
         textos.add(lblResumo);
 
-        JPanel acoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        JPanel acoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         acoes.setOpaque(false);
         Botao venda = new Botao("Venda de balcão", Botao.Estilo.CONTORNO, Icones.Tipo.VENDA);
         venda.setToolTipText("Atalho: F3");
@@ -113,35 +113,51 @@ public class InicioPanel extends AbstractPanel {
         novaOs.setToolTipText("Atalho: F2");
         novaOs.addActionListener(e -> Navegador.ir(new OrdemServicoPanel()));
         acoes.add(venda);
+        acoes.add(Box.createHorizontalStrut(8));
         acoes.add(novaOs);
 
-        JPanel topo = new JPanel(new BorderLayout(16, 0));
+        topo = new JPanel(new BorderLayout(16, 16)) {
+            @Override
+            public void doLayout() {
+                reorganizarTopo();
+                super.doLayout();
+            }
+        };
         topo.setOpaque(false);
-        topo.setBorder(BorderFactory.createEmptyBorder(MARGEM_TOPO_TITULO, MARGEM_LATERAL, 24, MARGEM_LATERAL));
+        topo.setBorder(BorderFactory.createEmptyBorder(MARGEM_TOPO_TITULO, MARGEM_LATERAL, 24, MARGEM_LATERAL + 3));
         topo.add(textos, BorderLayout.CENTER);
-        JPanel acoesTopo = new JPanel(new GridBagLayout());
+        acoesTopo = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         acoesTopo.setOpaque(false);
         acoesTopo.add(acoes);
         topo.add(acoesTopo, BorderLayout.EAST);
+        topo.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                reorganizarTopo();
+            }
+        });
         return topo;
     }
 
+    private void reorganizarTopo() {
+        if (topo == null || acoesTopo == null || topo.getWidth() <= 0) return;
+        String posicao = topo.getWidth() < 1000 ? BorderLayout.SOUTH : BorderLayout.EAST;
+        BorderLayout layout = (BorderLayout) topo.getLayout();
+        if (layout.getLayoutComponent(posicao) == acoesTopo) return;
+        topo.remove(acoesTopo);
+        topo.add(acoesTopo, posicao);
+        topo.revalidate();
+    }
+
     private JPanel criarRodapeDia() {
-        modeloMovimento = criarModelo("Hora", "Documento", "Cliente", "Valor");
-        tabelaMovimento = criarTabela(modeloMovimento);
-        tabelaMovimento.putClientProperty(TEXTO_VAZIO, "Carregando...");
-        int[] larguras = {64, 128, 176, 112};
-        for (int i = 0; i < larguras.length; i++) {
-            tabelaMovimento.getColumnModel().getColumn(i).setPreferredWidth(larguras[i]);
-            tabelaMovimento.getColumnModel().getColumn(i).setMinWidth(i == 2 ? 96 : larguras[i]);
-        }
-        JScrollPane rolagem = new JScrollPane(tabelaMovimento);
-        rolagem.setBorder(BorderFactory.createEmptyBorder());
-        rolagem.setPreferredSize(new Dimension(360, 36 * 7));
+        listaMovimento = new JPanel();
+        listaMovimento.setOpaque(false);
+        listaMovimento.setLayout(new BoxLayout(listaMovimento, BoxLayout.Y_AXIS));
+        listaMovimento.add(alinhado(Texto.apoio("Carregando...")));
 
         Superficie movimento = new Superficie(new BorderLayout(0, 12), 16, 16);
         movimento.add(Texto.rotulo("Movimento de hoje"), BorderLayout.NORTH);
-        movimento.add(rolagem, BorderLayout.CENTER);
+        movimento.add(listaMovimento, BorderLayout.CENTER);
 
         listaCaixa = new JPanel();
         listaCaixa.setOpaque(false);
@@ -157,23 +173,12 @@ public class InicioPanel extends AbstractPanel {
         atencao.add(Texto.rotulo("Precisa de atenção"), BorderLayout.NORTH);
         atencao.add(listaAtencao, BorderLayout.CENTER);
 
-        JPanel lateral = new JPanel(new GridBagLayout());
-        lateral.setOpaque(false);
-        GridBagConstraints g = new GridBagConstraints();
-        g.gridx = 0;
-        g.fill = GridBagConstraints.HORIZONTAL;
-        g.weightx = 1;
-        lateral.add(caixa, g);
-        g.insets = new Insets(8, 0, 0, 0);
-        lateral.add(atencao, g);
-        g.weighty = 1;
-        lateral.add(Box.createGlue(), g);
-
-        JPanel linha = new JPanel(new GradeCelulas(400, 16));
+        JPanel linha = new JPanel(new GradeCelulas(272, 16));
         linha.setOpaque(false);
         linha.setAlignmentX(Component.LEFT_ALIGNMENT);
         linha.add(movimento);
-        linha.add(lateral);
+        linha.add(caixa);
+        linha.add(atencao);
         linha.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -187,7 +192,7 @@ public class InicioPanel extends AbstractPanel {
         grade.removeAll();
         for (int i = 0; i < 4; i++) {
             Adesivo vazio = new Adesivo("", "Carregando", Tema.Tom.INATIVO, new BorderLayout());
-            vazio.setPreferredSize(new Dimension(232, 176));
+            vazio.setPreferredSize(new Dimension(LARGURA_ADESIVO, 168));
             grade.add(vazio);
         }
         grade.revalidate();
@@ -238,18 +243,17 @@ public class InicioPanel extends AbstractPanel {
             vazio.add(Texto.corpo("Nenhuma OS em aberto agora."), BorderLayout.NORTH);
             vazio.add(Texto.apoio("<html>Quando um cliente chegar, abra a OS em Nova OS (F2). Ela fica aqui até ser concluída.</html>"),
                     BorderLayout.CENTER);
-            vazio.setPreferredSize(new Dimension(232, 128));
+            vazio.setPreferredSize(new Dimension(LARGURA_ADESIVO, 128));
             grade.setLayout(new BorderLayout());
             grade.add(vazio, BorderLayout.CENTER);
             grade.revalidate();
             return;
         }
-        grade.setLayout(new GradeCelulas(232, 16));
+        grade.setLayout(new GradeCelulas(LARGURA_ADESIVO, 16));
 
         List<Adesivo> adesivos = new ArrayList<>();
-        String oficina = Sessao.getUsuariologado().getNomeOficina();
         for (OrdemServico os : abertas.subList(0, Math.min(LIMITE_ADESIVOS, abertas.size()))) {
-            Adesivo adesivo = criarAdesivo(os, oficina == null || oficina.isBlank() ? "OfiSystem" : oficina);
+            Adesivo adesivo = criarAdesivo(os);
             adesivos.add(adesivo);
             grade.add(adesivo);
         }
@@ -262,7 +266,7 @@ public class InicioPanel extends AbstractPanel {
             JPanel celula = new JPanel(new GridBagLayout());
             celula.setOpaque(false);
             celula.add(todas);
-            celula.setPreferredSize(new Dimension(232, 176));
+            celula.setPreferredSize(new Dimension(LARGURA_ADESIVO, 168));
             grade.add(celula);
         }
         grade.revalidate();
@@ -277,11 +281,11 @@ public class InicioPanel extends AbstractPanel {
         }
     }
 
-    private Adesivo criarAdesivo(OrdemServico os, String oficina) {
+    private Adesivo criarAdesivo(OrdemServico os) {
         Tema.Tom tom = OrdemServicoConsultaPanel.tomDa(os);
         String estado = tom == Tema.Tom.CRITICO ? "Atrasada" : os.getStatus().getDescricao();
-        Adesivo adesivo = new Adesivo(oficina, estado, tom, new GridBagLayout());
-        adesivo.setPreferredSize(new Dimension(232, 176));
+        Adesivo adesivo = new Adesivo("OS " + os.getNumero(), estado, tom, new GridBagLayout());
+        adesivo.setPreferredSize(new Dimension(LARGURA_ADESIVO, 168));
 
         GridBagConstraints g = new GridBagConstraints();
         g.gridx = 0;
@@ -290,34 +294,39 @@ public class InicioPanel extends AbstractPanel {
         g.fill = GridBagConstraints.HORIZONTAL;
         g.anchor = GridBagConstraints.WEST;
 
-        adesivo.add(new Texto("OS " + os.getNumero(), Tema.TAM_TITULO, Font.BOLD, Tema::tinta), g);
-        g.insets = new Insets(4, 0, 0, 0);
+        g.gridy = 0;
+        adesivo.add(Texto.rotulo(tom == Tema.Tom.CRITICO ? "Prometida para" : "Entrega prevista"), g);
+        g.gridy = 1;
+        adesivo.add(new Texto(textoPrevisao(os), Tema.TAM_TITULO, Font.BOLD,
+                () -> tom == Tema.Tom.CRITICO ? Tema.critico() : Tema.tinta()), g);
+        g.gridy = 2;
+        g.insets = new Insets(8, 0, 0, 0);
         adesivo.add(new Texto(os.getCliente().getNome(), Tema.TAM_TEXTO, Font.BOLD, Tema::tinta), g);
-        g.insets = new Insets(0, 0, 8, 0);
-        adesivo.add(Texto.apoio(os.isPossuiVeiculo() ? os.getVeiculoDescricao() : "Sem veículo"), g);
 
+        g.gridy = 3;
         g.gridwidth = 1;
         g.insets = new Insets(0, 0, 0, 8);
-        g.gridy = 3;
-        adesivo.add(Texto.rotulo("Previsão"), g);
+        adesivo.add(Texto.apoio(os.isPossuiVeiculo() ? os.getVeiculoDescricao() : "Sem veículo"), g);
         g.gridx = 1;
+        g.weightx = 0;
         g.anchor = GridBagConstraints.EAST;
         g.fill = GridBagConstraints.NONE;
-        adesivo.add(Texto.rotulo("Total"), g);
-        g.gridy = 4;
-        g.gridx = 0;
-        g.anchor = GridBagConstraints.WEST;
-        g.fill = GridBagConstraints.HORIZONTAL;
-        adesivo.add(new Texto(os.getDataPrevisao() == null ? "—" : Formatador.data(os.getDataPrevisao()),
-                Tema.TAM_TEXTO, Font.BOLD, () -> tom == Tema.Tom.CRITICO ? Tema.critico() : Tema.tinta()), g);
-        g.gridx = 1;
-        g.anchor = GridBagConstraints.EAST;
-        g.fill = GridBagConstraints.NONE;
+        g.insets = new Insets(0, 0, 0, 0);
         adesivo.add(new Texto(Formatador.moeda(os.getValorTotal()), Tema.TAM_TEXTO, Font.BOLD, Tema::tinta), g);
 
         adesivo.setToolTipText("Abrir OS " + os.getNumero());
         adesivo.setAoAbrir(() -> Navegador.ir(OrdemServicoPanel.editar(os.getId())));
         return adesivo;
+    }
+
+    private String textoPrevisao(OrdemServico os) {
+        LocalDate previsao = os.getDataPrevisao();
+        if (previsao == null) return "Sem data";
+        LocalDate hoje = LocalDate.now();
+        if (previsao.equals(hoje)) return "Hoje";
+        if (previsao.equals(hoje.plusDays(1))) return "Amanhã";
+        if (previsao.equals(hoje.minusDays(1))) return "Ontem";
+        return Formatador.data(previsao).substring(0, 5);
     }
 
     private void preencherMovimento(Dados dados) {
@@ -332,13 +341,28 @@ public class InicioPanel extends AbstractPanel {
             linhas.add(new Linha(os.getDataConclusao(), "OS " + os.getNumero(), os.getCliente().getNome(), os.getValorTotal()));
         }
         linhas.sort(Comparator.comparing(Linha::quando).reversed());
-        modeloMovimento.setRowCount(0);
-        for (Linha l : linhas) {
-            modeloMovimento.addRow(new Object[]{Formatador.dataHora(l.quando()).substring(11), l.documento(), l.cliente(),
-                    Formatador.moeda(l.valor())});
+        listaMovimento.removeAll();
+        if (linhas.isEmpty()) {
+            listaMovimento.add(alinhado(Texto.apoio("Nenhuma venda ou OS concluída hoje.")));
         }
-        tabelaMovimento.putClientProperty(TEXTO_VAZIO, "Nenhuma venda ou OS concluída hoje.");
-        tabelaMovimento.repaint();
+        for (Linha l : linhas.subList(0, Math.min(4, linhas.size()))) {
+            JPanel item = new JPanel(new BorderLayout(8, 0));
+            item.setOpaque(false);
+            item.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+            JPanel textos = new JPanel(new GridLayout(2, 1));
+            textos.setOpaque(false);
+            textos.add(new Texto(l.documento(), Tema.TAM_TEXTO, Font.BOLD, Tema::tinta));
+            textos.add(new Texto(Formatador.dataHora(l.quando()).substring(11) + " · " + l.cliente(),
+                    Tema.TAM_PEQUENO, Font.PLAIN, Tema::tintaSuave));
+            item.add(textos, BorderLayout.CENTER);
+            item.add(Texto.corpo(Formatador.moeda(l.valor())), BorderLayout.EAST);
+            listaMovimento.add(alinhado(item));
+            listaMovimento.add(Box.createVerticalStrut(4));
+        }
+        if (linhas.size() > 4) {
+            listaMovimento.add(alinhado(Texto.apoio("e mais " + (linhas.size() - 4) + " hoje")));
+        }
+        listaMovimento.revalidate();
     }
 
     private void preencherCaixa(Dados dados) {

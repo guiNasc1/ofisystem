@@ -14,6 +14,7 @@ import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,6 +33,8 @@ public class LoginFrame {
     private JLabel lblErro;
     private JLabel qtdUsuario;
     private KeyEventDispatcher pularComTecla;
+    private AWTEventListener pularComClique;
+    private Adesivo adesivoCartao;
 
     private final UsuarioDAO usuarioDAO;
 
@@ -41,18 +44,33 @@ public class LoginFrame {
     }
 
     public void exibir() {
+        definirInterativo(false);
         frame.setVisible(true);
-        txtUsuario.requestFocusInWindow();
         entrada.setProgresso(0f);
-        palco.forjar(this::mostrarCartao);
         pularComTecla = e -> {
             if (e.getID() == KeyEvent.KEY_PRESSED && !palco.isConcluido()) {
                 palco.pular();
+                return true;
             }
             return false;
         };
+        pularComClique = e -> {
+            if (e.getID() == MouseEvent.MOUSE_PRESSED && !palco.isConcluido()) {
+                palco.pular();
+            }
+        };
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(pularComTecla);
+        Toolkit.getDefaultToolkit().addAWTEventListener(pularComClique, AWTEvent.MOUSE_EVENT_MASK);
+        palco.forjar(this::mostrarCartao);
         carregarContagem();
+    }
+
+    private void definirInterativo(boolean interativo) {
+        for (JComponent c : new JComponent[]{txtUsuario, txtPassword, btnLogin, btnCadastrar}) {
+            c.setFocusable(interativo);
+        }
+        btnLogin.setEnabled(interativo);
+        btnCadastrar.setEnabled(interativo);
     }
 
     private void construirTela() {
@@ -106,7 +124,8 @@ public class LoginFrame {
     }
 
     private Adesivo criarCartao() {
-        Adesivo cartao = new Adesivo("OfiSystem", "Acesso", Tema.Tom.NEUTRO, new GridBagLayout());
+        Adesivo cartao = new Adesivo("", "", Tema.Tom.NEUTRO, new GridBagLayout());
+        adesivoCartao = cartao;
         cartao.setBorder(BorderFactory.createEmptyBorder(Adesivo.ALTURA_FAIXA + 24, 32, 36, 32));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -167,7 +186,16 @@ public class LoginFrame {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(pularComTecla);
             pularComTecla = null;
         }
-        Movimento.animar(460, Movimento.SAIDA_SUAVE, entrada::setProgresso, () -> {
+        if (pularComClique != null) {
+            Toolkit.getDefaultToolkit().removeAWTEventListener(pularComClique);
+            pularComClique = null;
+        }
+        definirInterativo(true);
+        Movimento.animar(520, Movimento.SAIDA_SUAVE, p -> {
+            adesivoCartao.setDescolar(1f - p);
+            entrada.setProgresso(p);
+        }, () -> {
+            adesivoCartao.setDescolar(0f);
             entrada.setProgresso(1f);
             txtUsuario.requestFocusInWindow();
         });
