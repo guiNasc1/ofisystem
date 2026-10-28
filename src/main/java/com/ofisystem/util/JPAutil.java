@@ -21,6 +21,8 @@ public class JPAutil {
             String valor = System.getProperty(chave);
             if (valor != null) propriedades.put(chave, valor);
         }
+        // Cada EntityManager passa a enxergar apenas os registros do usuário logado.
+        propriedades.put("hibernate.tenant_identifier_resolver", new UsuarioLogadoResolver());
         return Persistence.createEntityManagerFactory("ofisystem", propriedades);
     }
 

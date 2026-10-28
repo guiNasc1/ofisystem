@@ -3,14 +3,12 @@ package com.ofisystem.ui.panels.os;
 import Enums.FormaPagamento;
 import Enums.StatusOS;
 import com.ofisystem.controle.os.OrdemServicoController;
-import com.ofisystem.entidade.NotaFiscal;
 import com.ofisystem.entidade.OrdemServico;
 import com.ofisystem.ui.Navegador;
 import com.ofisystem.ui.panels.AbstractConsultaPanel;
 import com.ofisystem.ui.style.Tema;
 import com.ofisystem.util.Formatador;
 import com.ofisystem.util.RelatorioJasper;
-import com.ofisystem.util.Sessao;
 import net.sf.jasperreports.engine.JasperPrint;
 
 import javax.swing.*;
@@ -127,7 +125,6 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
         adicionarBotao(painel, "Status", COR_PRIMARIA, this::alterarStatus);
         adicionarBotao(painel, "Concluir e receber", COR_SUCESSO, this::concluir);
         adicionarBotao(painel, "Cancelar", COR_PERIGO, this::cancelar);
-        adicionarBotao(painel, "Documento interno", COR_ALERTA, this::notaFiscal);
         adicionarBotao(painel, "Imprimir", COR_NEUTRA, this::imprimir);
     }
 
@@ -190,11 +187,7 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
         FormaPagamento forma = (FormaPagamento) cbForma.getSelectedItem();
         executarAsync(() -> CONTROLLER.concluir(os, forma), null, () -> {
             pesquisar();
-            if (Sessao.isAdmin() && confirmar("OS " + os.getNumero() + " concluída e recebida!\nDeseja emitir o documento interno agora?")) {
-                emitirNota(os);
-            } else {
-                mostrarSucesso("OS " + os.getNumero() + " concluída e recebida integralmente!");
-            }
+            mostrarSucesso("OS " + os.getNumero() + " concluída e recebida integralmente!");
         });
     }
 
@@ -205,36 +198,6 @@ public class OrdemServicoConsultaPanel extends AbstractConsultaPanel<OrdemServic
                 + "\nO cancelamento devolverá essas quantidades ao estoque.")) {
             executarAsync(() -> CONTROLLER.cancelar(os), "OS " + os.getNumero() + " cancelada.", this::pesquisar);
         }
-    }
-
-    private void notaFiscal() {
-        OrdemServico os = selecionado();
-        if (os == null) return;
-        if (os.getStatus() != StatusOS.CONCLUIDA) {
-            mostrarAviso("O documento interno só pode ser emitido para OS concluída.");
-            return;
-        }
-        executarAsync(() -> CONTROLLER.buscarNotaFiscal(os), nota -> {
-            if (nota != null) {
-                exibirNota(nota);
-            } else if (!Sessao.isAdmin()) {
-                mostrarAviso("Ainda não há documento interno para esta OS.\nSomente administradores podem emitir.");
-            } else if (confirmar("Emitir documento interno para a OS " + os.getNumero() + "?")) {
-                emitirNota(os);
-            }
-        });
-    }
-
-    private void emitirNota(OrdemServico os) {
-        executarAsync(() -> CONTROLLER.emitirNotaFiscal(os), nota -> {
-            mostrarSucesso("Documento interno Nº " + nota.getNumero() + " emitido!");
-            exibirNota(nota);
-        });
-    }
-
-    private void exibirNota(NotaFiscal nota) {
-        executarAsync(() -> gerar(() -> ImpressaoOS.notaFiscal(nota)),
-                print -> RelatorioJasper.exibir(print, "Documento interno " + nota.getNumero()));
     }
 
     private void imprimir() {

@@ -1,7 +1,9 @@
 package com.ofisystem.dao;
 
 import com.ofisystem.util.JPAutil;
+import com.ofisystem.util.RegraNegocioException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.TypedQuery;
 
 import java.io.Serializable;
@@ -19,12 +21,18 @@ public abstract class AbstractFacade<T> implements Serializable {
     }
 
     public T salvar(T entidade) {
-        return emTransacao(em -> em.merge(entidade));
+        return emTransacao(em -> {
+            Object id = em.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entidade);
+            if (id != null && achar(em, classe, id, null) == null) {
+                throw new RegraNegocioException("Registro não encontrado.");
+            }
+            return em.merge(entidade);
+        });
     }
 
     public void excluir(Object id) {
         emTransacao(em -> {
-            T entidade = em.find(classe, id);
+            T entidade = achar(em, classe, id, null);
             if (entidade != null) {
                 em.remove(entidade);
             }
@@ -33,7 +41,20 @@ public abstract class AbstractFacade<T> implements Serializable {
     }
 
     public T buscarPorId(Object id) {
-        return consultar(em -> em.find(classe, id));
+        return consultar(em -> achar(em, classe, id, null));
+    }
+
+    /**
+     * Busca por chave respeitando o dono do registro. O {@code em.find} do Hibernate 6.4 não aplica o
+     * filtro de usuário ({@code @TenantId}), então o acesso por id passa por uma consulta.
+     */
+    protected static <E> E achar(EntityManager em, Class<E> tipo, Object id, LockModeType bloqueio) {
+        TypedQuery<E> query = em.createQuery(
+                "SELECT e FROM " + tipo.getSimpleName() + " e WHERE e.id = :id", tipo).setParameter("id", id);
+        if (bloqueio != null) {
+            query.setLockMode(bloqueio);
+        }
+        return query.getResultStream().findFirst().orElse(null);
     }
 
     public List<T> listarTodos() {

@@ -18,17 +18,14 @@ Em uma base antiga sem ADMIN, V002 atribui esse perfil à conta mais antiga.
 5. Alterar para três peças. Salvar: total **R$ 155,00**, saldo **7**.
 6. Clicar em **Concluir e receber**, escolher PIX e confirmar recebimento integral.
    O saldo continua **7** e a consulta de vendas permanece sem uma nova venda dessa OS.
-7. Com ADMIN, emitir o **Documento interno** e mostrar o aviso demonstrativo.
-8. Consultar o financeiro e localizar a origem **OS**, com **R$ 155,00** recebidos.
-9. Abrir outra OS com uma peça: saldo **6**. Cancelar confirmando a devolução integral:
+7. Consultar o financeiro e localizar a origem **OS**, com **R$ 155,00** recebidos.
+8. Abrir outra OS com uma peça: saldo **6**. Cancelar confirmando a devolução integral:
    saldo **7**. Essa OS não entra nos recebimentos.
-10. Criar uma venda de balcão independente com uma peça e PIX de **R$ 25,00**.
-    O saldo passa a **6** e o financeiro mostra a origem **Balcão**. Total dos dois
-    recebimentos de demonstração: **R$ 180,00**.
-11. Mostrar os bloqueios de estoque insuficiente, desconto integral e conclusão
-    sem itens. Confirmar que OS encerradas não podem ser editadas.
-12. Entrar com USUARIO e mostrar que um documento existente pode ser consultado,
-    enquanto a emissão de um novo documento é exclusiva de ADMIN.
+9. Criar uma venda de balcão independente com uma peça e PIX de **R$ 25,00**.
+   O saldo passa a **6** e o financeiro mostra a origem **Balcão**. Total dos dois
+   recebimentos de demonstração: **R$ 180,00**.
+10. Mostrar os bloqueios de estoque insuficiente, desconto integral e conclusão
+   sem itens. Confirmar que OS encerradas não podem ser editadas.
 
 ## Limites a explicar à banca
 

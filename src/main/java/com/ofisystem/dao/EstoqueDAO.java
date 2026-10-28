@@ -53,6 +53,9 @@ public class EstoqueDAO extends AbstractFacade<Estoque> {
                 }
                 return estoque;
             }
+            if (achar(em, Peca.class, peca.getId(), null) == null) {
+                throw new RegraNegocioException("Peça não encontrada.");
+            }
             Peca gerenciada = em.merge(peca);
             Estoque estoque = travarEstoque(em, gerenciada.getId());
             estoque.setQuantidadeMinima(quantidadeMinima);

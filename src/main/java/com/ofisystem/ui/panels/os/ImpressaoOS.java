@@ -1,10 +1,7 @@
 package com.ofisystem.ui.panels.os;
 
-import com.ofisystem.controle.os.OrdemServicoController;
-import com.ofisystem.entidade.ItemNota;
 import com.ofisystem.entidade.ItemOs;
 import com.ofisystem.entidade.ItemPeca;
-import com.ofisystem.entidade.NotaFiscal;
 import com.ofisystem.entidade.OrdemServico;
 import com.ofisystem.entidade.Pessoa;
 import com.ofisystem.util.Formatador;
@@ -56,35 +53,6 @@ final class ImpressaoOS {
 
         return RelatorioJasper.gerar("Ordem de Serviço Nº " + os.getNumero(), cabecalho,
                 new String[]{"Tipo", "Descrição", "Qtd.", "Valor unit.", "Subtotal"}, linhas, resumo);
-    }
-
-    static JasperPrint notaFiscal(NotaFiscal nota) throws JRException {
-        OrdemServico os = nota.getOrdemServico();
-        List<String> cabecalho = new ArrayList<>();
-        cabecalho.add("Emissão: " + Formatador.dataHora(nota.getDataEmissao())
-                + "   |   Referente à OS " + os.getNumero()
-                + "   |   Situação: " + nota.getStatus().getDescricao());
-        cabecalho.addAll(dadosCliente(os.getCliente()));
-
-        List<Object[]> linhas = new ArrayList<>();
-        for (ItemNota item : nota.getItens()) {
-            linhas.add(new Object[]{item.getDescricao(), item.getQuantidade(),
-                    Formatador.moeda(item.getValorUnitario()), Formatador.moeda(item.getSubtotal())});
-        }
-
-        List<String> resumo = new ArrayList<>();
-        if (os.getDesconto() != null && os.getDesconto() > 0) {
-            resumo.add("Desconto: " + Formatador.moeda(os.getDesconto()));
-        }
-        resumo.add("Simulação didática de tributos ("
-                + Formatador.decimal(OrdemServicoController.ALIQUOTA_IMPOSTO * 100) + "%): "
-                + Formatador.moeda(nota.getImpostos()));
-        resumo.add("VALOR TOTAL DO DOCUMENTO: " + Formatador.moeda(nota.getValorTotal()));
-        resumo.add(" ");
-        resumo.add("Documento de controle interno — não substitui a NF-e/NFS-e.");
-
-        return RelatorioJasper.gerar("Documento interno Nº " + nota.getNumero(), cabecalho,
-                new String[]{"Descrição", "Qtd.", "Valor unit.", "Subtotal"}, linhas, resumo);
     }
 
     private static List<String> dadosCliente(Pessoa cliente) {

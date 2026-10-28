@@ -3,12 +3,15 @@ package com.ofisystem;
 import Enums.FormaPagamento;
 import Enums.Perfil;
 import Enums.StatusOS;
+import Enums.TipoMovimentacao;
 import com.ofisystem.controle.os.OrdemServicoController;
 import com.ofisystem.controle.usuario.UsuarioController;
 import com.ofisystem.controle.venda.VendaController;
 import com.ofisystem.dao.EstoqueDAO;
 import com.ofisystem.dao.OrdemServicoDAO;
+import com.ofisystem.dao.PessoaDAO;
 import com.ofisystem.dao.RelatorioDAO;
+import com.ofisystem.dao.ServicoDAO;
 import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.*;
 import com.ofisystem.util.JPAutil;
@@ -43,16 +46,19 @@ class FluxoAcademicoTest {
 
     @BeforeEach
     void preparar() {
+        Usuario admin = new Usuario();
+        admin.setNome("Administrador teste");
+        admin.setPerfil(Perfil.ADMIN);
+        Sessao.iniciar(admin);
         EntityManager em = JPAutil.getEntityManager();
         try {
             assertTrue(em.getEntityManagerFactory().getProperties().get("jakarta.persistence.jdbc.url")
                     .toString().startsWith("jdbc:h2:mem:"));
             em.getTransaction().begin();
-            for (String entidade : new String[]{"ItemNota", "NotaFiscal", "MovimentacaoEstoque", "ItemOs",
-                    "ItemPeca", "PagamentoVenda", "ItemVenda", "Venda", "OrdemServico", "Estoque",
-                    "Peca", "Servico", "Endereco", "Pessoa", "Usuario"}) {
-                em.createQuery("DELETE FROM " + entidade).executeUpdate();
-            }
+            em.createQuery("DELETE FROM Usuario").executeUpdate();
+            em.getTransaction().commit();
+            limparDadosDoUsuarioLogado();
+            em.getTransaction().begin();
             cliente = new Pessoa();
             cliente.setNome("Cliente demonstracao");
             cliente.setDocumento("52998224725");
@@ -67,14 +73,26 @@ class FluxoAcademicoTest {
         } finally {
             em.close();
         }
-        Usuario admin = new Usuario();
-        admin.setNome("Administrador teste");
-        admin.setPerfil(Perfil.ADMIN);
-        Sessao.iniciar(admin);
         Peca nova = new Peca();
         nova.setNome("Oleo demonstracao");
         nova.setValorUnitario(25.0);
         peca = estoqueDAO.salvarPeca(nova, 2, 10, Sessao.getNome()).getPeca();
+    }
+
+    /** Apaga os registros do usuário logado; cada conta só alcança os próprios dados. */
+    private void limparDadosDoUsuarioLogado() {
+        EntityManager em = JPAutil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            for (String entidade : new String[]{"MovimentacaoEstoque", "ItemOs",
+                    "ItemPeca", "PagamentoVenda", "ItemVenda", "Venda", "OrdemServico", "Estoque",
+                    "Peca", "Servico", "Endereco", "Pessoa"}) {
+                em.createQuery("DELETE FROM " + entidade).executeUpdate();
+            }
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
 
     @AfterAll
@@ -101,7 +119,7 @@ class FluxoAcademicoTest {
     }
 
     @Test
-    void osAjustaEstoqueConcluiSemVendaEDocumentoInternoRespeitaPerfil() {
+    void osAjustaEstoqueEConcluiSemGerarVenda() {
         OrdemServico os = osController.salvar(ordem(2));
         assertEquals(8, saldo());
         os.getItensPeca().get(0).setQuantidade(3);
@@ -119,18 +137,80 @@ class FluxoAcademicoTest {
         assertThrows(RegraNegocioException.class, () -> osController.salvar(concluida));
         assertThrows(RegraNegocioException.class, () -> osController.cancelar(concluida));
         assertThrows(RegraNegocioException.class, () -> osController.concluir(concluida, FormaPagamento.PIX));
-        Usuario comum = new Usuario();
-        comum.setPerfil(Perfil.USUARIO);
-        Sessao.iniciar(comum);
-        assertThrows(RegraNegocioException.class, () -> osController.emitirNotaFiscal(concluida));
-        comum.setPerfil(Perfil.ADMIN);
-        NotaFiscal documento = osController.emitirNotaFiscal(concluida);
-        assertEquals(155.0, documento.getValorTotal(), 0.001);
-        assertEquals(2, documento.getItens().size());
-        assertThrows(RegraNegocioException.class, () -> osController.emitirNotaFiscal(concluida));
-        comum.setPerfil(Perfil.USUARIO);
-        assertEquals(documento.getId(), osController.buscarNotaFiscal(concluida).getId(),
-                "Usuario comum pode consultar o documento ja emitido");
+    }
+
+    @Test
+    void cadaUsuarioEnxergaSomenteOsProprioDados() {
+        UsuarioController usuarios = new UsuarioController();
+        Usuario ana = usuario("ana", "ana@exemplo.com");
+        Usuario bia = usuario("bia", "bia@exemplo.com");
+        usuarios.cadastrar(ana);
+        usuarios.cadastrar(bia);
+
+        Sessao.iniciar(ana);
+        assertEquals(0, contar("Pessoa"), "A conta nova nao herda dados de outras contas");
+        Pessoa clienteAna = new PessoaDAO().salvar(pessoa("Cliente da Ana"));
+        Servico servicoAna = new ServicoDAO().salvar(servico("Alinhamento"));
+        Peca pecaAna = estoqueDAO.salvarPeca(peca("Filtro da Ana"), 1, 5, Sessao.getNome()).getPeca();
+        OrdemServico osAna = osController.salvar(ordem(clienteAna, servicoAna, pecaAna, 2));
+        assertEquals("000001", osAna.getNumero());
+
+        Sessao.iniciar(bia);
+        assertEquals(0, contar("Pessoa"));
+        assertEquals(0, contar("Servico"));
+        assertEquals(0, contar("Peca"));
+        assertEquals(0, contar("Estoque"));
+        assertEquals(0, contar("OrdemServico"));
+        assertEquals(0, contar("MovimentacaoEstoque"));
+        assertTrue(new PessoaDAO().filtrar(null, null, null, null, null, null).isEmpty());
+        assertTrue(osController.filtrar(null, null, null, null, false, null, null).isEmpty());
+        assertNull(new PessoaDAO().buscarPorId(clienteAna.getId()));
+        assertNull(osController.buscarCompleta(osAna.getId()));
+        assertNull(estoqueDAO.buscarPorPeca(pecaAna.getId()));
+        assertThrows(RegraNegocioException.class, () -> osController.cancelar(osAna));
+        assertThrows(RegraNegocioException.class, () -> osController.concluir(osAna, FormaPagamento.PIX));
+        assertThrows(RegraNegocioException.class, () -> osController.salvar(osAna));
+        assertThrows(RegraNegocioException.class, () -> estoqueDAO.movimentar(pecaAna.getId(),
+                TipoMovimentacao.SAIDA, 1, "Tentativa", Sessao.getNome()));
+        assertTrue(new RelatorioDAO().vendasPorCliente(LocalDate.now(), LocalDate.now(), true, true).isEmpty());
+
+        // Documento e numeracao sao independentes entre as contas.
+        Pessoa clienteBia = new PessoaDAO().salvar(pessoa("Cliente da Bia"));
+        OrdemServico osBia = osController.salvar(ordem(clienteBia, new ServicoDAO().salvar(servico("Alinhamento")),
+                estoqueDAO.salvarPeca(peca("Filtro da Bia"), 1, 5, Sessao.getNome()).getPeca(), 1));
+        assertEquals("000001", osBia.getNumero());
+        assertEquals(1, contar("OrdemServico"));
+
+        Sessao.iniciar(ana);
+        assertEquals(1, contar("OrdemServico"));
+        assertEquals(osAna.getId(), osController.filtrar(null, null, null, null, false, null, null).get(0).getId());
+        assertEquals(3, estoqueDAO.buscarPorPeca(pecaAna.getId()).getQuantidade());
+        limparDadosDoUsuarioLogado();
+        Sessao.iniciar(bia);
+        limparDadosDoUsuarioLogado();
+    }
+
+    private Pessoa pessoa(String nome) {
+        Pessoa p = new Pessoa();
+        p.setNome(nome);
+        p.setDocumento("52998224725");
+        return p;
+    }
+
+    private Servico servico(String nome) {
+        Servico s = new Servico();
+        s.setNome(nome);
+        s.setDescricao("Servico de demonstracao");
+        s.setDuracaoMin(30);
+        s.setValor(80.0);
+        return s;
+    }
+
+    private Peca peca(String nome) {
+        Peca p = new Peca();
+        p.setNome(nome);
+        p.setValorUnitario(25.0);
+        return p;
     }
 
     @Test
@@ -191,6 +271,23 @@ class FluxoAcademicoTest {
     }
 
     @Test
+    void cadastroRespeitaPerfilEscolhidoExcetoNaPrimeiraConta() {
+        UsuarioController controller = new UsuarioController();
+        Usuario primeiro = usuario("primeira", "primeira@exemplo.com");
+        primeiro.setPerfil(Perfil.USUARIO);
+        controller.cadastrar(primeiro);
+        assertEquals(Perfil.ADMIN, primeiro.getPerfil(), "A primeira conta da base e sempre ADMIN");
+        Usuario admin = usuario("chefe", "chefe@exemplo.com");
+        admin.setPerfil(Perfil.ADMIN);
+        controller.cadastrar(admin);
+        assertEquals(Perfil.ADMIN, new UsuarioDAO().buscarPorNome("chefe").getPerfil());
+        Usuario comum = usuario("colega", "colega@exemplo.com");
+        comum.setPerfil(Perfil.USUARIO);
+        controller.cadastrar(comum);
+        assertEquals(Perfil.USUARIO, new UsuarioDAO().buscarPorNome("colega").getPerfil());
+    }
+
+    @Test
     void cadastroRejeitadoPodeSerCorrigidoSemPerderSenhaOuCriarContaParcial() {
         UsuarioController controller = new UsuarioController();
         controller.cadastrar(usuario("admin", "admin@example.com"));
@@ -248,9 +345,6 @@ class FluxoAcademicoTest {
         OrdemServico concluida = osController.buscarCompleta(id);
         assertEquals(120.0, concluida.getValorTotal(), 0.001);
         assertEquals(8, saldo());
-        NotaFiscal documento = osController.emitirNotaFiscal(concluida);
-        assertEquals(120.0, documento.getValorTotal(), 0.001);
-        assertEquals(7.20, documento.getImpostos(), 0.001);
     }
 
     @Test
@@ -265,13 +359,10 @@ class FluxoAcademicoTest {
             }
         }
         assertThrows(RegraNegocioException.class, () -> new OrdemServicoDAO().alterarStatus(os.getId(), null));
-        assertThrows(RegraNegocioException.class, () -> osController.emitirNotaFiscal(os));
         osController.cancelar(os);
         OrdemServico cancelada = osController.buscarCompleta(os.getId());
         assertThrows(RegraNegocioException.class, () -> osController.salvar(cancelada));
         assertThrows(RegraNegocioException.class, () -> osController.concluir(cancelada, FormaPagamento.PIX));
-        assertThrows(RegraNegocioException.class, () -> osController.emitirNotaFiscal(cancelada));
-        assertEquals(0, contar("NotaFiscal"));
     }
 
     @Test
@@ -321,6 +412,10 @@ class FluxoAcademicoTest {
     }
 
     private OrdemServico ordem(int quantidade) {
+        return ordem(cliente, servico, peca, quantidade);
+    }
+
+    private OrdemServico ordem(Pessoa cliente, Servico servico, Peca peca, int quantidade) {
         OrdemServico os = new OrdemServico();
         os.setCliente(cliente);
         os.setDescricao("Manutencao de demonstracao");

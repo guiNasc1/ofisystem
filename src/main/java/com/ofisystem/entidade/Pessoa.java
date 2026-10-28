@@ -11,8 +11,9 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 @Entity
-@Table(name = "pessoa")
-public class Pessoa implements Serializable {
+@Table(name = "pessoa", uniqueConstraints = @UniqueConstraint(
+        name = "uk_pessoa_usuario_documento", columnNames = {"usuario_id", "pessoa_documento"}))
+public class Pessoa extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class Pessoa implements Serializable {
     @Column(nullable = false, name = "pessoa_nome")
     private String nome;
 
-    @Column(nullable = false, unique = true, name = "pessoa_documento")
+    @Column(nullable = false, name = "pessoa_documento")
     private String documento;
 
     @Column(name = "pessoa_rg_ie")

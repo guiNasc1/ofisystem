@@ -32,19 +32,6 @@ class ItemPeca {
 - Integer quantidade
 - Double subtotal
 }
-class NotaFiscal {
-- Integer id
-- String numero
-- Double valorTotal
-- StatusNota status
-}
-class ItemNota {
-- Integer id
-- Integer quantidade
-- Double subtotal
-}
 OrdemServico "1" *-- "0..*" ItemOs
 OrdemServico "1" *-- "0..*" ItemPeca
-OrdemServico "1" -- "0..1" NotaFiscal
-NotaFiscal "1" *-- "1..*" ItemNota
 @enduml

@@ -22,11 +22,11 @@ Projeto Integrador de Sistemas de Informação. Utiliza uma base única de demon
 
 ## Operating Context
 
-- Fluxo central: pessoa cadastrada → OS aberta → serviços e peças lançados → salvamento com baixa de estoque → Concluir e receber com confirmação integral → documento interno opcional → recebimento exibido no financeiro.
+- Fluxo central: pessoa cadastrada → OS aberta → serviços e peças lançados → salvamento com baixa de estoque → Concluir e receber com confirmação integral → recebimento exibido no financeiro.
 - OS e venda de balcão são independentes; concluir OS não cria venda nem baixa peças novamente.
 - A OS usa uma única forma de pagamento e recebimento integral na conclusão. Parcelamento, pagamentos parciais e contas a receber ficam para trabalhos futuros.
 - Cancelar OS em aberto pressupõe devolução integral das peças. Devoluções parciais e reabertura após conclusão estão fora do escopo.
-- Perfis funcionais: ADMIN e USUARIO. A primeira conta da base vazia recebe ADMIN e as seguintes USUARIO. A emissão de documento interno exige ADMIN; ambos acessam os demais fluxos e consultam documentos existentes.
+- Perfis funcionais: ADMIN e USUARIO. A primeira conta da base vazia recebe ADMIN e as seguintes USUARIO. Ambos os perfis acessam os mesmos fluxos, e cada conta enxerga somente os próprios dados. O perfil é escolhido no cadastro (a primeira conta da base é sempre ADMIN) e aparece no início.
 - OS Concluída ou Cancelada não é mais editável.
 - Peças usadas e movimentações (entrada/saída) alteram o estoque.
 - Relatórios impressos/exportados via JasperReports: ordens de serviço, vendas, pessoas, estoque, financeiro.

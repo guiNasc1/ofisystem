@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "estoque")
-public class Estoque implements Serializable {
+public class Estoque extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

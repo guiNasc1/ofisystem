@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "pagamento_venda")
-public class PagamentoVenda implements Serializable {
+public class PagamentoVenda extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

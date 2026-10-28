@@ -11,10 +11,8 @@
         <class>com.ofisystem.entidade.Endereco</class>
         <class>com.ofisystem.entidade.Estoque</class>
         <class>com.ofisystem.entidade.MovimentacaoEstoque</class>
-        <class>com.ofisystem.entidade.ItemNota</class>
         <class>com.ofisystem.entidade.ItemOs</class>
         <class>com.ofisystem.entidade.ItemPeca</class>
-        <class>com.ofisystem.entidade.NotaFiscal</class>
         <class>com.ofisystem.entidade.OrdemServico</class>
         <class>com.ofisystem.entidade.Peca</class>
         <class>com.ofisystem.entidade.Servico</class>

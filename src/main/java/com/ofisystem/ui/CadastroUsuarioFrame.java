@@ -1,5 +1,6 @@
 package com.ofisystem.ui;
 
+import Enums.Perfil;
 import com.ofisystem.controle.usuario.UsuarioController;
 import com.ofisystem.entidade.Usuario;
 import com.ofisystem.util.RegraNegocioException;
@@ -19,6 +20,7 @@ public class CadastroUsuarioFrame {
     private JTextField txtEmail;
     private JPasswordField txtSenha;
     private JPasswordField txtConfirmarSenha;
+    private JComboBox<Perfil> cbPerfil;
     private JLabel lblErro;
     private Botao btCadastrar;
 
@@ -64,6 +66,21 @@ public class CadastroUsuarioFrame {
         adicionar(cartao, gbc, "E-mail", txtEmail);
         adicionar(cartao, gbc, "Senha", txtSenha);
         adicionar(cartao, gbc, "Confirmar senha", txtConfirmarSenha);
+
+        cbPerfil = new JComboBox<>(Perfil.values());
+        cbPerfil.setSelectedItem(Perfil.USUARIO);
+        cbPerfil.setPreferredSize(new Dimension(360, 40));
+        cbPerfil.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> lista, Object valor, int indice,
+                                                          boolean selecionado, boolean foco) {
+                return super.getListCellRendererComponent(lista,
+                        valor instanceof Perfil p ? p.getDescricao() : valor, indice, selecionado, foco);
+            }
+        });
+        adicionar(cartao, gbc, "Perfil", cbPerfil);
+        gbc.insets = new Insets(-8, 0, 16, 0);
+        cartao.add(Texto.apoio("A primeira conta criada na base é sempre Administrador."), gbc);
 
         lblErro = Texto.erro();
         gbc.insets = new Insets(0, 0, 12, 0);
@@ -134,6 +151,7 @@ public class CadastroUsuarioFrame {
         usuario.setNome(nome);
         usuario.setEmail(email);
         usuario.setSenha(senha);
+        usuario.setPerfil((Perfil) cbPerfil.getSelectedItem());
 
         try {
             UsuarioController.validarCadastro(usuario);

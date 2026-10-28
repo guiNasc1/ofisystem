@@ -43,20 +43,10 @@ servico_id : INTEGER
 entity "peca" as Peca {
 peca_id : INTEGER
 }
-entity "nota_fiscal" as NotaFiscal {
-nota_fiscal_id : INTEGER
-ordem_servico_id : INTEGER
-}
-entity "item_nota" as ItemNota {
-item_nota_id : INTEGER
-nota_fiscal_id : INTEGER
-}
 Pessoa ||--o{ Endereco
 Pessoa ||--o{ OrdemServico
 OrdemServico ||--o{ ItemOs
 OrdemServico ||--o{ ItemPeca
 Servico |o--o{ ItemOs
 Peca ||--o{ ItemPeca
-OrdemServico ||--o| NotaFiscal
-NotaFiscal ||--|{ ItemNota
 @enduml

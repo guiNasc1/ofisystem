@@ -16,34 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ImpressaoOsTest {
 
     @Test
-    void documentoInternoGeraImpressaoComTotalTributoDidaticoEAviso() throws Exception {
-        NotaFiscal documento = new NotaFiscal();
-        documento.setNumero("000001");
-        documento.setDataEmissao(java.time.LocalDateTime.now());
-        documento.setOrdemServico(ordem());
-        documento.setValorTotal(120.0);
-        documento.setImpostos(7.2);
-        ItemNota item = new ItemNota();
-        item.setDescricao("Servico de demonstracao");
-        item.setQuantidade(1);
-        item.setValorUnitario(130.0);
-        item.setSubtotal(130.0);
-        documento.adicionarItem(item);
-        JasperPrint print = ImpressaoOS.notaFiscal(documento);
-        String texto = texto(print);
-        assertTrue(texto.contains("Documento interno Nº 000001"));
-        assertTrue(texto.contains("Simulação didática de tributos (6,00%)"));
-        assertTrue(texto.contains("7,20"));
-        assertTrue(texto.contains("VALOR TOTAL DO DOCUMENTO:"));
-        assertTrue(texto.contains("120,00"));
-        assertTrue(texto.contains("Desconto:"));
-        assertTrue(texto.contains("10,00"));
-        assertTrue(texto.contains("não substitui a NF-e/NFS-e"));
-        assertFalse(texto.contains("Nota Fiscal Nº"));
-        salvarEvidencia(print, "documento-interno");
-    }
-
-    @Test
     void impressaoDaOsPreservaItensDescontoETotal() throws Exception {
         JasperPrint print = ImpressaoOS.ordemServico(ordem());
         String texto = texto(print);

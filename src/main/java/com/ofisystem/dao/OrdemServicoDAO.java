@@ -80,7 +80,7 @@ public class OrdemServicoDAO extends AbstractFacade<OrdemServico> {
         return emTransacao(em -> {
             Map<Integer, Integer> anterior = new HashMap<>();
             if (os.getId() != null) {
-                OrdemServico atual = em.find(OrdemServico.class, os.getId(), LockModeType.PESSIMISTIC_WRITE);
+                OrdemServico atual = achar(em, OrdemServico.class, os.getId(), LockModeType.PESSIMISTIC_WRITE);
                 if (atual == null) {
                     throw new RegraNegocioException("Ordem de serviço não encontrada.");
                 }
@@ -163,7 +163,7 @@ public class OrdemServicoDAO extends AbstractFacade<OrdemServico> {
     }
 
     private OrdemServico travarEditavel(EntityManager em, Integer id) {
-        OrdemServico os = em.find(OrdemServico.class, id, LockModeType.PESSIMISTIC_WRITE);
+        OrdemServico os = achar(em, OrdemServico.class, id, LockModeType.PESSIMISTIC_WRITE);
         if (os == null) {
             throw new RegraNegocioException("Ordem de serviço não encontrada.");
         }

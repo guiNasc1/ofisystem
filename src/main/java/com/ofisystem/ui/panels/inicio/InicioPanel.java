@@ -1,16 +1,16 @@
 package com.ofisystem.ui.panels.inicio;
 
 import Enums.FormaPagamento;
+import Enums.Perfil;
 import Enums.StatusOS;
 import Enums.StatusVenda;
-import com.ofisystem.controle.estoque.EstoqueController;
 import com.ofisystem.controle.os.OrdemServicoController;
 import com.ofisystem.controle.venda.VendaController;
 import com.ofisystem.entidade.OrdemServico;
+import com.ofisystem.entidade.Usuario;
 import com.ofisystem.entidade.Venda;
 import com.ofisystem.ui.Navegador;
 import com.ofisystem.ui.panels.AbstractPanel;
-import com.ofisystem.ui.panels.estoque.EstoqueConsultaPanel;
 import com.ofisystem.ui.panels.os.OrdemServicoConsultaPanel;
 import com.ofisystem.ui.panels.os.OrdemServicoPanel;
 import com.ofisystem.ui.panels.venda.VendaPanel;
@@ -24,13 +24,12 @@ import com.ofisystem.ui.style.Superficie;
 import com.ofisystem.ui.style.Tema;
 import com.ofisystem.ui.style.Texto;
 import com.ofisystem.util.Formatador;
+import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
@@ -45,7 +44,6 @@ public class InicioPanel extends AbstractPanel {
 
     private static final OrdemServicoController OS_CONTROLLER = new OrdemServicoController();
     private static final VendaController VENDA_CONTROLLER = new VendaController();
-    private static final EstoqueController ESTOQUE_CONTROLLER = new EstoqueController();
     private static final int LIMITE_ADESIVOS = 8;
     private static final int LARGURA_ADESIVO = 264;
 
@@ -55,7 +53,6 @@ public class InicioPanel extends AbstractPanel {
     private JPanel acoesTopo;
     private JPanel topo;
     private JPanel listaCaixa;
-    private JPanel listaAtencao;
 
     @Override
     protected void inicializarTela() {
@@ -99,10 +96,11 @@ public class InicioPanel extends AbstractPanel {
         Texto titulo = Texto.titulo("Fila de " + dia + ", " + Formatador.data(hoje).substring(0, 5));
         lblResumo = Texto.apoio("Carregando a fila do dia...");
 
-        JPanel textos = new JPanel(new GridLayout(2, 1, 0, 4));
+        JPanel textos = new JPanel(new GridLayout(3, 1, 0, 4));
         textos.setOpaque(false);
         textos.add(titulo);
         textos.add(lblResumo);
+        textos.add(criarIdentificacao());
 
         JPanel acoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         acoes.setOpaque(false);
@@ -139,6 +137,19 @@ public class InicioPanel extends AbstractPanel {
         return topo;
     }
 
+    private JPanel criarIdentificacao() {
+        JPanel linha = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        linha.setOpaque(false);
+        Usuario usuario = Sessao.getUsuariologado();
+        if (usuario != null && usuario.getPerfil() != null) {
+            boolean admin = usuario.getPerfil() == Perfil.ADMIN;
+            linha.add(new Etiqueta(usuario.getPerfil().getDescricao(), admin ? Tema.Tom.INFO : Tema.Tom.NEUTRO));
+            linha.add(Box.createHorizontalStrut(8));
+            linha.add(Texto.apoio("Conectado como " + usuario.getNome()));
+        }
+        return linha;
+    }
+
     private void reorganizarTopo() {
         if (topo == null || acoesTopo == null || topo.getWidth() <= 0) return;
         String posicao = topo.getWidth() < 1000 ? BorderLayout.SOUTH : BorderLayout.EAST;
@@ -166,19 +177,11 @@ public class InicioPanel extends AbstractPanel {
         caixa.add(Texto.rotulo("Caixa de hoje"), BorderLayout.NORTH);
         caixa.add(listaCaixa, BorderLayout.CENTER);
 
-        listaAtencao = new JPanel();
-        listaAtencao.setOpaque(false);
-        listaAtencao.setLayout(new BoxLayout(listaAtencao, BoxLayout.Y_AXIS));
-        Superficie atencao = new Superficie(new BorderLayout(0, 12), 16, 16);
-        atencao.add(Texto.rotulo("Precisa de atenção"), BorderLayout.NORTH);
-        atencao.add(listaAtencao, BorderLayout.CENTER);
-
         JPanel linha = new JPanel(new GradeCelulas(272, 16));
         linha.setOpaque(false);
         linha.setAlignmentX(Component.LEFT_ALIGNMENT);
         linha.add(movimento);
         linha.add(caixa);
-        linha.add(atencao);
         linha.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -203,8 +206,7 @@ public class InicioPanel extends AbstractPanel {
         executarAsync(() -> new Dados(
                 OS_CONTROLLER.filtrar(null, null, null, null, true, null, null),
                 OS_CONTROLLER.concluidasNoPeriodo(hoje, hoje),
-                VENDA_CONTROLLER.filtrar(null, null, StatusVenda.FINALIZADA, hoje, hoje),
-                ESTOQUE_CONTROLLER.filtrar(null, null, true, true).size()), this::preencher);
+                VENDA_CONTROLLER.filtrar(null, null, StatusVenda.FINALIZADA, hoje, hoje)), this::preencher);
     }
 
     private void preencher(Dados dados) {
@@ -223,7 +225,6 @@ public class InicioPanel extends AbstractPanel {
         preencherGrade(abertas);
         preencherMovimento(dados);
         preencherCaixa(dados);
-        preencherAtencao(atrasadas, aguardando, dados.estoqueBaixo);
         revalidate();
         repaint();
     }
@@ -400,44 +401,6 @@ public class InicioPanel extends AbstractPanel {
         return linha;
     }
 
-    private void preencherAtencao(long atrasadas, long aguardando, int estoqueBaixo) {
-        listaAtencao.removeAll();
-        if (atrasadas > 0) {
-            listaAtencao.add(alinhado(itemAtencao(atrasadas + (atrasadas == 1 ? " OS atrasada" : " OS atrasadas"),
-                    Tema.Tom.CRITICO, () -> Navegador.ir(new OrdemServicoConsultaPanel()))));
-        }
-        if (aguardando > 0) {
-            listaAtencao.add(alinhado(itemAtencao(aguardando + " aguardando peça", Tema.Tom.ATENCAO,
-                    () -> Navegador.ir(new OrdemServicoConsultaPanel()))));
-        }
-        if (estoqueBaixo > 0) {
-            listaAtencao.add(alinhado(itemAtencao(estoqueBaixo + (estoqueBaixo == 1 ? " peça abaixo do mínimo" : " peças abaixo do mínimo"),
-                    Tema.Tom.CRITICO, () -> Navegador.ir(new EstoqueConsultaPanel()))));
-        }
-        if (listaAtencao.getComponentCount() == 0) {
-            listaAtencao.add(alinhado(new Etiqueta("Tudo em dia", Tema.Tom.SUCESSO)));
-        }
-        listaAtencao.revalidate();
-    }
-
-    private JComponent itemAtencao(String texto, Tema.Tom tom, Runnable abrir) {
-        Etiqueta etiqueta = new Etiqueta(texto, tom);
-        etiqueta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        etiqueta.setToolTipText("Abrir lista");
-        etiqueta.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                abrir.run();
-            }
-        });
-        JPanel linha = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 4));
-        linha.setOpaque(false);
-        linha.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
-        linha.add(etiqueta);
-        return linha;
-    }
-
-    private record Dados(List<OrdemServico> abertas, List<OrdemServico> concluidasHoje, List<Venda> vendasHoje,
-                         int estoqueBaixo) {
+    private record Dados(List<OrdemServico> abertas, List<OrdemServico> concluidasHoje, List<Venda> vendasHoje) {
     }
 }

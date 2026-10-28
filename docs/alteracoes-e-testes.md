@@ -54,19 +54,14 @@ e vendas finalizadas de forma independente.
   e apresenta mensagens de regra de negócio, inclusive quando o processamento
   acontece em segundo plano.
 
-## 3. Documento interno
+## 3. Documento interno (removido)
 
-- Os textos da tela, mensagens de erro e título da impressão foram alterados para
-  **Documento interno**, deixando explícito seu caráter demonstrativo.
-- O resumo informa **Simulação didática de tributos (6%)** e **Valor total do
-  documento**, mantendo o aviso de que não substitui NF-e/NFS-e.
-- Na rodada final de testes, foi identificado que o total descontado aparecia sem
-  explicar a diferença entre a soma dos itens e o total. A impressão passou a
-  exibir a linha **Desconto** quando o valor é positivo.
-- Os nomes técnicos `NotaFiscal` e `ItemNota` foram preservados para compatibilidade
-  com as tabelas e o código existentes.
-- A emissão continua restrita a ADMIN e a uma emissão por OS concluída. USUARIO pode
-  consultar um documento já emitido. Essas permissões foram verificadas nos testes.
+- A funcionalidade foi removida por completo: botão e fluxos na tela de OS,
+  `NotaFiscal`, `ItemNota`, `StatusNota`, `NotaFiscalDAO`, a impressão específica,
+  os métodos do controller, o registro no `persistence.xml` e os testes relacionados.
+- As tabelas `nota_fiscal` e `item_nota` não são mais mapeadas. Em bases já criadas
+  elas continuam existindo, sem uso; podem ser descartadas manualmente com
+  `DROP TABLE item_nota, nota_fiscal;`.
 
 ## 4. Migrações e correção da base de demonstração
 
@@ -110,13 +105,13 @@ executadas em PostgreSQL local descartável.
   escopo, regras, tecnologias, arquitetura, modelagem, conclusões e trabalhos futuros.
   O arquivo original em Downloads foi preservado.
 - Os textos foram alinhados ao funcionamento existente: base única compartilhada,
-  pagamento integral na conclusão, OS independente de balcão e documento interno.
+  pagamento integral na conclusão e OS independente de balcão.
 - A revisão contém 16 figuras, 16 tabelas, dicionário de 15 entidades e os diagramas
   de classes, relacionamentos e sequências correspondentes ao código.
 - Os 16 diagramas possuem fontes PlantUML editáveis e versões PNG em `docs/modelagem`.
 - A quebra da folha de aprovação foi ajustada para manter os autores junto da banca.
   O sumário e as listas de figuras/tabelas foram preenchidos com a paginação real.
-- A seção de verificação foi atualizada para os 26 testes aprovados nesta rodada.
+- A seção de verificação foi atualizada para os 27 testes aprovados nesta rodada.
 - `README.md` documenta execução, migrações, regras e testes; `PRODUCT.md` registra
   o escopo acadêmico e os dois perfis; `roteiro-demonstracao.md` orienta a apresentação.
 
@@ -128,14 +123,14 @@ PostgreSQL 18 local. As versões são as efetivamente utilizadas nesta verifica�
 | Verificação | Resultado |
 | --- | --- |
 | `mvn -o -B verify` | Compilação, testes e empacotamento aprovados. |
-| `FluxoAcademicoTest` | 11 testes de integração aprovados. |
+| `FluxoAcademicoTest` | 13 testes de integração aprovados. |
 | `UsuarioValidacaoTest` | 13 testes de validação aprovados. |
-| `ImpressaoOsTest` | 2 testes reais de geração Jasper/PDF aprovados. |
-| Total JUnit | **26 testes, zero falhas, zero erros e zero ignorados.** |
+| `ImpressaoOsTest` | 1 teste real de geração Jasper/PDF aprovados. |
+| Total JUnit | **27 testes, zero falhas, zero erros e zero ignorados.** |
 | V001 em PostgreSQL | Falha antiga reproduzida; correção, repetição, preservação de outras chaves, validação e reversão por órfãos aprovadas. |
 | V002 em PostgreSQL | Perfis, administrador existente, preservação de senhas, normalização, unicidade, repetição, rollback e correção de duplicidades aprovados. |
-| Interface Swing | Conferidos botões, bloqueio sem confirmação, conclusão com confirmação, emissão e financeiro com origens separadas. |
-| Impressão | Conferidos visualmente OS e documento interno, incluindo total, desconto e aviso demonstrativo. |
+| Interface Swing | Conferidos botões, bloqueio sem confirmação, conclusão com confirmação e financeiro com origens separadas. |
+| Impressão | Conferida visualmente a impressão da OS, incluindo total e desconto. |
 | Documentação | ODT e DOCX com 40 páginas cada, mesmo texto por página, 16 figuras e 16 tabelas; índices e formatação conferidos. |
 | Repositório | Diferenças verificadas com `git diff --check`; arquivos pessoais da IDE preservados fora do commit. |
 

@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "item_os")
-public class ItemOs implements Serializable {
+public class ItemOs extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

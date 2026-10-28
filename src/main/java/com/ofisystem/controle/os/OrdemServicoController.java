@@ -3,11 +3,9 @@ package com.ofisystem.controle.os;
 import Enums.FormaPagamento;
 import Enums.StatusOS;
 import com.ofisystem.controle.AbstractController;
-import com.ofisystem.dao.NotaFiscalDAO;
 import com.ofisystem.dao.OrdemServicoDAO;
 import com.ofisystem.entidade.ItemOs;
 import com.ofisystem.entidade.ItemPeca;
-import com.ofisystem.entidade.NotaFiscal;
 import com.ofisystem.entidade.OrdemServico;
 import com.ofisystem.util.RegraNegocioException;
 import com.ofisystem.util.Sessao;
@@ -18,10 +16,7 @@ import java.util.List;
 
 public class OrdemServicoController extends AbstractController<OrdemServico> {
 
-    public static final double ALIQUOTA_IMPOSTO = 0.06;
-
     private final OrdemServicoDAO ordemServicoDAO = new OrdemServicoDAO();
-    private final NotaFiscalDAO notaFiscalDAO = new NotaFiscalDAO();
 
     public OrdemServico salvar(OrdemServico os) {
         if (os.getCliente() == null) {
@@ -104,17 +99,6 @@ public class OrdemServicoController extends AbstractController<OrdemServico> {
 
     public void cancelar(OrdemServico os) {
         ordemServicoDAO.cancelar(os.getId(), Sessao.getNome());
-    }
-
-    public NotaFiscal emitirNotaFiscal(OrdemServico os) {
-        if (!Sessao.isAdmin()) {
-            throw new RegraNegocioException("Somente administradores podem emitir o documento interno.");
-        }
-        return notaFiscalDAO.emitir(os.getId(), ALIQUOTA_IMPOSTO);
-    }
-
-    public NotaFiscal buscarNotaFiscal(OrdemServico os) {
-        return notaFiscalDAO.buscarPorOrdemServico(os.getId());
     }
 
     public List<OrdemServico> filtrar(String numero, String cliente, String placa, StatusOS status,

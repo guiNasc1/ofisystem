@@ -9,9 +9,13 @@ de demonstração; o nome de oficina do usuário não separa dados por empresa.
 - Executar a classe `com.ofisystem.Main` pela IDE, com as dependências do Maven.
 - A configuração da base PostgreSQL está em `src/main/resources/META-INF/persistence.xml`.
   O uso do Supabase exige conexão com a rede.
-- Em uma base vazia, a primeira conta recebe **Administrador**. As próximas recebem
-  **Usuário**. O login usa o nome de usuário e ignora diferenças de maiúsculas.
-- Em uma base existente, aplicar **V002 antes de iniciar esta versão**, conforme abaixo.
+- Em uma base vazia, a primeira conta é sempre **Administrador**. Nas demais, o perfil
+  (Administrador ou Usuário) é escolhido na tela de cadastro. O início mostra o perfil
+  de quem está conectado. O login usa o nome de usuário e ignora diferenças de maiúsculas.
+- **Cada usuário enxerga somente os próprios dados** (clientes, serviços, peças, estoque,
+  OS, vendas e relatórios). A numeração de OS e vendas e a unicidade de documento são
+  por usuário. O perfil Administrador não dá acesso aos dados de outras contas.
+- Em uma base existente, aplicar **V002 e V003 antes de iniciar esta versão**, conforme abaixo.
 
 ## Regras da versão acadêmica
 
@@ -23,10 +27,7 @@ de demonstração; o nome de oficina do usuário não separa dados por empresa.
   estão fora do escopo. Um rascunho sem itens pode ser salvo, mas não concluído.
 - Cancelar uma OS aberta pressupõe a devolução integral das peças. OS concluídas
   e canceladas ficam bloqueadas para edição.
-- **Documento interno** é uma impressão demonstrativa, opcional e única por OS
-  concluída. Administradores emitem; ambos os perfis consultam documentos existentes.
-  A taxa fixa de 6% é didática. Não há emissão fiscal eletrônica.
-- Os nomes técnicos `NotaFiscal`, `ItemNota` e suas tabelas foram mantidos por compatibilidade.
+- Não há emissão fiscal nem documento interno derivado da OS; a única impressão é a da própria OS.
 
 A documentação revisada e os diagramas editáveis estão em [`docs/`](docs/).
 O roteiro de apresentação está em [`docs/roteiro-demonstracao.md`](docs/roteiro-demonstracao.md).
@@ -36,9 +37,9 @@ O histórico completo das alterações, resultados e limites da verificação es
 ## Testes isolados
 
 `mvn test` executa os testes JUnit com H2 em memória, sem acessar o Supabase.
-A suíte possui **26 testes**: 11 de integração dos fluxos, 13 de validação de
-cadastro e dois de geração de impressão. Cobre autenticação, perfis, duplicidades,
-estoque, conclusão, cancelamento, documento interno, descontos, venda de balcão e
+A suíte possui **27 testes**: 13 de integração dos fluxos, 13 de validação de
+cadastro e um de geração de impressão. Cobre autenticação, perfis, duplicidades,
+estoque, conclusão, cancelamento, descontos, venda de balcão e
 relatórios combinados. As impressões de teste são geradas em `target/evidencias-testes/`.
 
 Para compilar, testar e empacotar: `mvn verify`.
@@ -60,6 +61,13 @@ teste `com.ofisystem.VerificacaoVisual`, com o classpath de testes. Ela abre as
 telas reais de OS e financeiro sobre H2 em memória, com duas OS abertas e uma
 venda de balcão fictícia. Ao fechar, os dados da sessão são descartados. O argumento
 opcional `--sempre-visivel` mantém essa janela de teste em primeiro plano.
+
+## Dados por usuário na base existente
+
+Executar [`V003__dados_por_usuario.sql`](src/main/resources/db/migration/V003__dados_por_usuario.sql)
+depois da V002. Ela acrescenta `usuario_id` às tabelas de dados, atribui todos os registros
+existentes à conta mais antiga, e troca as chaves únicas globais de documento, número de OS
+e número de venda por chaves únicas por usuário. Pode ser repetida.
 
 ## Atualização dos usuários da base existente
 

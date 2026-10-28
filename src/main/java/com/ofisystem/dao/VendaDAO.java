@@ -69,7 +69,7 @@ public class VendaDAO extends AbstractFacade<Venda> {
 
     public void cancelar(Integer id, String usuario) {
         emTransacao(em -> {
-            Venda venda = em.find(Venda.class, id, LockModeType.PESSIMISTIC_WRITE);
+            Venda venda = achar(em, Venda.class, id, LockModeType.PESSIMISTIC_WRITE);
             if (venda == null) {
                 throw new RegraNegocioException("Venda não encontrada.");
             }

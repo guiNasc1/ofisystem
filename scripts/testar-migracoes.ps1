@@ -27,7 +27,7 @@ try {
     $processo.WaitForExit()
     if ($processo.ExitCode -ne 0) { throw 'Falha ao iniciar o servidor isolado. Confira a porta e servidor.log.' }
     $iniciado = $true
-    foreach ($roteiro in @('corrigir_fk_item_os_test.sql', 'usuarios_escopo_academico_test.sql')) {
+    foreach ($roteiro in @('corrigir_fk_item_os_test.sql', 'usuarios_escopo_academico_test.sql', 'dados_por_usuario_test.sql')) {
         $log = Join-Path $pastaTeste ($roteiro + '.log')
         & (Join-Path $PostgresBin 'psql.exe') -X -w -h 127.0.0.1 -p $Porta -U ofisystem_teste -d postgres -v ON_ERROR_STOP=1 -f (Join-Path $projeto "src/test/sql/$roteiro") *> $log
         if ($LASTEXITCODE -ne 0 -or -not (Select-String -LiteralPath $log -Pattern '^OK:' -Quiet)) {

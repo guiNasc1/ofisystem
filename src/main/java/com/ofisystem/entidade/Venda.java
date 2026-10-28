@@ -11,15 +11,16 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "venda")
-public class Venda implements Serializable {
+@Table(name = "venda", uniqueConstraints = @UniqueConstraint(
+        name = "uk_venda_usuario_numero", columnNames = {"usuario_id", "venda_numero"}))
+public class Venda extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "venda_id")
     private Integer id;
 
-    @Column(nullable = false, unique = true, name = "venda_numero")
+    @Column(nullable = false, name = "venda_numero")
     private String numero;
 
     @Column(nullable = false, name = "venda_data")

@@ -26,8 +26,12 @@ public class UsuarioDAO {
                 throw new RegraNegocioException("Já existe uma conta com esse usuário ou e-mail.");
             }
             Long total = em.createQuery("SELECT COUNT(u) FROM Usuario u", Long.class).getSingleResult();
-            // A primeira conta administra a base única de demonstração acadêmica.
-            usuario.setPerfil(total == 0 ? Perfil.ADMIN : Perfil.USUARIO);
+            // A primeira conta da base é sempre ADMIN; nas demais vale o perfil escolhido no cadastro.
+            if (total == 0) {
+                usuario.setPerfil(Perfil.ADMIN);
+            } else if (usuario.getPerfil() == null) {
+                usuario.setPerfil(Perfil.USUARIO);
+            }
             usuario.setSenha(SenhaUtil.criptografar(senhaOriginal));
             em.persist(usuario);
             em.getTransaction().commit();

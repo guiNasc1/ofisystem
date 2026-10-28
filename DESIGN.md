@@ -286,7 +286,6 @@ Firmes e retangulares, sempre 40px de altura, rótulo em negrito 14px.
 ### Chips (Etiqueta)
 - **Style:** par fundo/texto do `Tom`, rótulo 12px negrito em caixa alta, padding 4px 10px, cantos de 6px, sem borda. NEUTRO é mostrado como INFO.
 - **Em tabela:** a coluna nomeada por `colunaEtiqueta()` desenha a mesma etiqueta (22px de altura, recuo 8px) com o `Tom` da linha; linhas INATIVO ficam em tinta suave.
-- **State:** etiquetas no "Precisa de atenção" são clicáveis (cursor de mão, abrem a lista filtrada).
 
 ### Cards / Containers (Superfície de vinil)
 - **Corner Style:** 12px.

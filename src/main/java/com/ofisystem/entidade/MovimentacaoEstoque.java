@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movimentacao_estoque")
-public class MovimentacaoEstoque implements Serializable {
+public class MovimentacaoEstoque extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

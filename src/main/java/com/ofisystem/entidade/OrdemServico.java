@@ -13,15 +13,16 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 @Entity
-@Table(name = "ordem_servico")
-public class OrdemServico implements Serializable {
+@Table(name = "ordem_servico", uniqueConstraints = @UniqueConstraint(
+        name = "uk_ordem_servico_usuario_numero", columnNames = {"usuario_id", "ordem_servico_numero"}))
+public class OrdemServico extends RegistroDoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, name = "ordem_servico_id")
     private Integer id;
 
-    @Column(nullable = false, unique = true, name = "ordem_servico_numero")
+    @Column(nullable = false, name = "ordem_servico_numero")
     private String numero;
 
     @Column(nullable = false, name = "ordem_servico_data_abertura")
