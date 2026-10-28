@@ -11,7 +11,7 @@ public class ItemNota implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, name = "item_nota_Id")
+    @Column(nullable = false, name = "item_nota_id")
     private Integer id;
 
     @Column(nullable = false, name = "item_nota_descricao")
@@ -20,15 +20,25 @@ public class ItemNota implements Serializable {
     @Column(nullable = false, name = "item_nota_quantidade")
     private Integer quantidade;
 
-    @Column(nullable = false, name = "item_nota_valor_unitrio")
+    @Column(nullable = false, name = "item_nota_valor_unitario")
     private Double valorUnitario;
 
-    @Column(nullable = false, name = "item_nota-subtotal")
+    @Column(nullable = false, name = "item_nota_subtotal")
     private Double subtotal;
 
     @ManyToOne
     @JoinColumn(name = "nota_fiscal_id", referencedColumnName = "nota_fiscal_id", nullable = false)
     private NotaFiscal notaFiscal;
+
+    public ItemNota() {
+    }
+
+    public ItemNota(String descricao, Integer quantidade, Double valorUnitario, Double subtotal) {
+        this.descricao = descricao;
+        this.quantidade = quantidade;
+        this.valorUnitario = valorUnitario;
+        this.subtotal = subtotal;
+    }
 
     @Override
     public String toString() {
@@ -43,14 +53,15 @@ public class ItemNota implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemNota itemNota = (ItemNota) o;
-        return Objects.equals(getId(), itemNota.getId()) && Objects.equals(getDescricao(), itemNota.getDescricao()) && Objects.equals(getQuantidade(), itemNota.getQuantidade()) && Objects.equals(getValorUnitario(), itemNota.getValorUnitario()) && Objects.equals(getSubtotal(), itemNota.getSubtotal());
+        return id != null && Objects.equals(id, itemNota.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDescricao(), getQuantidade(), getValorUnitario(), getSubtotal());
+        return Objects.hashCode(id);
     }
 
     public Integer getId() {

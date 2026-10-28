@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Talão de OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:#DDE3EA;color:#1E2733;display:grid;grid-template-columns:232px 1fr}
+.rail{background:#2B4A6F;color:#DCE6F1;padding:24px 16px}
+.rail b{display:block;font-size:18px;color:#fff;margin-bottom:24px}
+.nav{padding:10px 12px;border-radius:6px;font-size:14px;font-weight:600}
+.nav.on{background:#FFF4C2;color:#1E3A8A}
+main{padding:24px 32px;display:grid;grid-template-columns:1fr 360px;gap:24px}
+.vias{display:flex;gap:4px;margin-bottom:-1px}
+.via{padding:8px 16px;border-radius:8px 8px 0 0;font-size:13px;font-weight:700}
+.v1{background:#fff}.v2{background:#FFF4C2}.v3{background:#FBD3DA}
+.folha{background:#fff;border-radius:0 8px 8px 8px;box-shadow:4px 4px 0 #FFF4C2,8px 8px 0 #FBD3DA;padding:24px;height:780px}
+.cab{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1E3A8A;padding-bottom:12px;margin-bottom:16px}
+.cab h1{font-size:22px;color:#1E3A8A}
+.num{font-family:"Courier New",monospace;font-size:40px;color:#C8372D;font-weight:700;letter-spacing:2px}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.f{border:1px solid #C9D3E0;border-radius:4px;padding:6px 10px}
+.f small{display:block;font-size:11px;color:#1E3A8A;text-transform:uppercase;font-weight:700}
+.f b{font-size:15px;color:#1E3A8A}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+th{background:#1E3A8A;color:#fff;font-size:12px;text-align:left;padding:6px 8px}
+td{padding:8px;border-bottom:1px dashed #C9D3E0;color:#1E3A8A}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.tot{text-align:right;font-size:22px;font-weight:800;color:#1E3A8A;margin-top:12px}
+.side .card{background:#fff;border-radius:8px;padding:16px;margin-bottom:16px}
+.side h2{font-size:13px;text-transform:uppercase;color:#5B6875;margin-bottom:8px}
+.li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #EEF1F4;font-size:14px}
+.btn{display:block;text-align:center;padding:12px;border-radius:8px;background:#C8372D;color:#fff;font-weight:700;margin-top:8px}
+</style></head><body>
+<aside class="rail"><b>OfiSystem</b><div class="nav on">Ordens de Serviço</div><div class="nav">Venda de Balcão</div><div class="nav">Pessoas</div><div class="nav">Estoque</div><div class="nav">Relatórios</div></aside>
+<main>
+<section>
+  <div class="vias"><div class="via v1">1ª via · Cliente</div><div class="via v2">2ª via · Oficina</div><div class="via v3">3ª via · Caixa</div></div>
+  <div class="folha">
+    <div class="cab"><div><h1>Oficina do João</h1><small>Ordem de Serviço</small></div><div class="num">Nº 000043</div></div>
+    <div class="row"><div class="f" style="grid-column:span 2"><small>Cliente</small><b>Transportes Rocha Ltda</b></div><div class="f"><small>CNPJ</small><b>12.345.678/0001-90</b></div><div class="f"><small>Abertura</small><b>27/10 08:12</b></div></div>
+    <div class="row"><div class="f"><small>Placa</small><b>RTA7B90</b></div><div class="f"><small>Veículo</small><b>VW Delivery 9.170</b></div><div class="f"><small>KM</small><b>312.050</b></div><div class="f"><small>Status</small><b>Aguardando peça</b></div></div>
+    <div class="f" style="margin-bottom:12px"><small>Defeito relatado</small><b>Ruído na suspensão dianteira e freio puxando à direita</b></div>
+    <table><tr><th>Item</th><th>Qtd.</th><th style="text-align:right">Unit.</th><th style="text-align:right">Subtotal</th></tr>
+    <tr><td>Troca de pastilhas dianteiras</td><td>1</td><td class="n">R$ 180,00</td><td class="n">R$ 180,00</td></tr>
+    <tr><td>Bucha da bandeja (peça 118)</td><td>2</td><td class="n">R$ 145,00</td><td class="n">R$ 290,00</td></tr>
+    <tr><td>Amortecedor dianteiro (peça 52)</td><td>2</td><td class="n">R$ 640,00</td><td class="n">R$ 1.280,00</td></tr>
+    <tr><td>Alinhamento e balanceamento</td><td>1</td><td class="n">R$ 430,00</td><td class="n">R$ 430,00</td></tr></table>
+    <div class="tot">Total R$ 2.180,00</div>
+  </div>
+</section>
+<section class="side">
+  <div class="card"><h2>Talão de hoje</h2><div class="li"><span>000044 Marcos Lima</span><b>Aberta</b></div><div class="li"><span>000043 Transp. Rocha</span><b>Aguard.</b></div><div class="li"><span>000041 Carlos Mendes</span><b>Andamento</b></div><div class="li"><span>000038 Ana Paula</span><b style="color:#C8372D">Atrasada</b></div></div>
+  <div class="card"><h2>Ações</h2><div class="btn">Concluir e destacar via</div></div>
+</section>
+</main></body></html>

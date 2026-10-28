@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Adesivo de Revisão</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:#E9EDF2;color:#16202B;display:grid;grid-template-columns:232px 1fr}
+.rail{background:linear-gradient(180deg,#2B4A6F,#1F3A5A);color:#DCE6F1;padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.gear{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#3D6593 45%,#B9C3CE 46%,#8E99A6 70%);border:3px solid #C9D2DC}
+.brand b{font-size:18px;letter-spacing:.5px;color:#fff}
+.brand small{display:block;font-size:12px;color:#9FB4CB}
+.nav{padding:10px 12px;border-radius:8px;font-size:14px;font-weight:600;display:flex;justify-content:space-between}
+.nav.on{background:#FFFFFF;color:#1F3A5A}
+.nav span{font-size:12px;opacity:.7}
+.sep{height:1px;background:#3E5D82;margin:12px 0}
+main{padding:24px 32px;display:flex;flex-direction:column;gap:24px}
+.top{display:flex;justify-content:space-between;align-items:center}
+h1{font-size:26px;font-weight:700}
+.top .sub{font-size:14px;color:#5B6875;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.tools{display:flex;gap:8px;align-items:center}
+.search{width:320px;height:40px;border:1px solid #C3CCD6;border-radius:8px;background:#fff;padding:0 12px;font-size:14px;color:#5B6875;display:flex;align-items:center}
+.btn{height:40px;padding:0 16px;border-radius:8px;font-weight:700;font-size:14px;display:flex;align-items:center}
+.btn.p{background:#2B4A6F;color:#fff}.btn.g{background:#fff;border:1px solid #C3CCD6}
+.theme{width:56px;height:28px;border-radius:14px;background:#16202B;position:relative}.theme:after{content:"";position:absolute;right:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#E8A33D}
+.lane-h{display:flex;justify-content:space-between;align-items:baseline}
+.lane-h b{font-size:14px;text-transform:uppercase;letter-spacing:1px}
+.lane-h span{font-size:14px;color:#5B6875}
+.stickers{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.st{background:#fff;border-radius:12px;box-shadow:0 1px 2px rgba(22,32,43,.12);overflow:hidden}
+.st.focus{transform:rotate(-1.5deg) translateY(-6px);box-shadow:0 14px 28px rgba(22,32,43,.22)}
+.band{background:#2B4A6F;color:#fff;padding:8px 12px;display:flex;justify-content:space-between;font-size:12px;font-weight:700;letter-spacing:1px}
+.band.am{background:#E8A33D;color:#16202B}.band.rd{background:#C8372D}
+.st .bd{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.f small{display:block;font-size:12px;color:#5B6875;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.f b{font-size:16px;font-variant-numeric:tabular-nums}
+.f.w{grid-column:span 2}
+.os{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:16px;flex:1;min-height:0}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 2px rgba(22,32,43,.12);padding:16px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:#5B6875;text-transform:uppercase;letter-spacing:.8px;padding:8px;border-bottom:2px solid #E9EDF2}
+td{padding:10px 8px;border-bottom:1px solid #EEF1F4}
+td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700}
+.c1{background:#DCE6F1;color:#1F3A5A}.c2{background:#FCEBD0;color:#8A5A10}.c3{background:#DFF3E6;color:#1E6B3A}
+.kpi{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #EEF1F4;font-size:14px}
+.kpi b{font-variant-numeric:tabular-nums;font-size:16px}
+.alert{color:#C8372D;font-weight:700}
+.syn{position:absolute;bottom:8px;right:16px;font-size:12px;color:#5B6875}
+</style></head><body>
+<aside class="rail">
+  <div class="brand"><div class="gear"></div><div><b>OfiSystem</b><small>Oficina do João</small></div></div>
+  <div class="nav on">Início</div>
+  <div class="nav">Ordens de Serviço <span>7</span></div>
+  <div class="nav">Venda de Balcão</div>
+  <div class="nav">Pessoas</div>
+  <div class="nav">Serviços</div>
+  <div class="nav">Estoque <span>3 baixos</span></div>
+  <div class="sep"></div>
+  <div class="nav">Relatórios</div>
+</aside>
+<main>
+  <div class="top">
+    <h1>Fila de terça, 28/10</h1>
+    <div class="tools"><div class="search">Buscar OS, placa ou cliente  (Ctrl+K)</div><div class="btn g">Venda rápida</div><div class="btn p">+ Nova OS</div><div class="theme"></div></div>
+  </div>
+  <div class="lane-h"><b>Na oficina agora</b><span>4 de 7 em aberto</span></div>
+  <div class="stickers">
+    <div class="st"><div class="band"><span>OFICINA DO JOÃO</span><span>EM ANDAMENTO</span></div><div class="bd"><div class="f w"><span class="os">OS 000041</span></div><div class="f w"><small>Cliente</small><b>Carlos Mendes</b></div><div class="f"><small>Placa</small><b>QXR4F21</b></div><div class="f"><small>KM</small><b>84.210</b></div><div class="f"><small>Previsão</small><b>28/10</b></div><div class="f"><small>Total</small><b>R$ 640,00</b></div></div></div>
+    <div class="st focus"><div class="band am"><span>OFICINA DO JOÃO</span><span>AGUARDANDO PEÇA</span></div><div class="bd"><div class="f w"><span class="os">OS 000043</span></div><div class="f w"><small>Cliente</small><b>Transportes Rocha Ltda</b></div><div class="f"><small>Placa</small><b>RTA7B90</b></div><div class="f"><small>KM</small><b>312.050</b></div><div class="f"><small>Previsão</small><b>29/10</b></div><div class="f"><small>Total</small><b>R$ 2.180,00</b></div></div></div>
+    <div class="st"><div class="band rd"><span>OFICINA DO JOÃO</span><span>ATRASADA</span></div><div class="bd"><div class="f w"><span class="os">OS 000038</span></div><div class="f w"><small>Cliente</small><b>Ana Paula Souza</b></div><div class="f"><small>Placa</small><b>PNX2C44</b></div><div class="f"><small>KM</small><b>41.900</b></div><div class="f"><small>Previsão</small><b>27/10</b></div><div class="f"><small>Total</small><b>R$ 395,00</b></div></div></div>
+    <div class="st"><div class="band"><span>OFICINA DO JOÃO</span><span>ABERTA</span></div><div class="bd"><div class="f w"><span class="os">OS 000044</span></div><div class="f w"><small>Cliente</small><b>Marcos Lima</b></div><div class="f"><small>Placa</small><b>—</b></div><div class="f"><small>KM</small><b>—</b></div><div class="f"><small>Previsão</small><b>30/10</b></div><div class="f"><small>Total</small><b>R$ 0,00</b></div></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="lane-h" style="margin-bottom:8px"><b>Últimas movimentações</b><span>hoje</span></div>
+      <table><tr><th>Doc.</th><th>Cliente</th><th>Tipo</th><th>Status</th><th style="text-align:right">Valor</th></tr>
+      <tr><td>Venda 000112</td><td>Consumidor final</td><td>Balcão</td><td><span class="chip c3">Finalizada</span></td><td class="n">R$ 89,90</td></tr>
+      <tr><td>OS 000040</td><td>Rafael Teixeira</td><td>OS</td><td><span class="chip c3">Concluída</span></td><td class="n">R$ 1.240,00</td></tr>
+      <tr><td>OS 000043</td><td>Transportes Rocha</td><td>OS</td><td><span class="chip c2">Aguard. peça</span></td><td class="n">R$ 2.180,00</td></tr>
+      <tr><td>Venda 000111</td><td>Juliana Alves</td><td>Balcão</td><td><span class="chip c3">Finalizada</span></td><td class="n">R$ 254,00</td></tr></table></div>
+    <div class="card"><div class="lane-h" style="margin-bottom:8px"><b>Caixa de hoje</b><span>até 14:20</span></div>
+      <div class="kpi"><span>Recebido</span><b>R$ 1.583,90</b></div>
+      <div class="kpi"><span>PIX</span><b>R$ 1.240,00</b></div>
+      <div class="kpi"><span>Dinheiro</span><b>R$ 343,90</b></div>
+      <div class="kpi"><span class="alert">Peças abaixo do mínimo</span><b class="alert">3</b></div>
+    </div>
+  </div>
+</main>
+<div class="syn">Dados sintéticos</div>
+</body></html>

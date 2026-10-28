@@ -7,9 +7,10 @@
 
     <persistence-unit name="ofisystem" transaction-type="RESOURCE_LOCAL">
 
-        <class>com.ofisystem.entidade.Cliente</class>
+        <class>com.ofisystem.entidade.Pessoa</class>
         <class>com.ofisystem.entidade.Endereco</class>
         <class>com.ofisystem.entidade.Estoque</class>
+        <class>com.ofisystem.entidade.MovimentacaoEstoque</class>
         <class>com.ofisystem.entidade.ItemNota</class>
         <class>com.ofisystem.entidade.ItemOs</class>
         <class>com.ofisystem.entidade.ItemPeca</class>
@@ -17,6 +18,9 @@
         <class>com.ofisystem.entidade.OrdemServico</class>
         <class>com.ofisystem.entidade.Peca</class>
         <class>com.ofisystem.entidade.Servico</class>
+        <class>com.ofisystem.entidade.Venda</class>
+        <class>com.ofisystem.entidade.ItemVenda</class>
+        <class>com.ofisystem.entidade.PagamentoVenda</class>
         <class>com.ofisystem.entidade.Usuario</class>
 
         <properties>

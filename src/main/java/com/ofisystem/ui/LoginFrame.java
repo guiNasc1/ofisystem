@@ -1,264 +1,302 @@
 package com.ofisystem.ui;
 
+import com.formdev.flatlaf.util.Animator;
 import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.Usuario;
-import com.ofisystem.ui.style.CardPanel;
-import com.ofisystem.ui.style.PainelFundo;
+import com.ofisystem.ui.style.Adesivo;
+import com.ofisystem.ui.style.Botao;
+import com.ofisystem.ui.style.EngrenagemForjada;
+import com.ofisystem.ui.style.Icones;
+import com.ofisystem.ui.style.Movimento;
+import com.ofisystem.ui.style.Tema;
+import com.ofisystem.ui.style.Texto;
 import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 public class LoginFrame {
 
     private JFrame frame;
+    private EngrenagemForjada palco;
+    private EntradaCartao entrada;
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
-    private JButton btnLogin;
-    private JButton btnCadastrar;;
+    private Botao btnLogin;
+    private Botao btnCadastrar;
+    private Botao btnTema;
+    private JLabel lblErro;
     private JLabel qtdUsuario;
+    private KeyEventDispatcher pularComTecla;
 
-    private UsuarioDAO usuarioDAO;
+    private final UsuarioDAO usuarioDAO;
 
     public LoginFrame() {
         usuarioDAO = new UsuarioDAO();
         construirTela();
     }
 
-    public void exibir(){
+    public void exibir() {
         frame.setVisible(true);
+        txtUsuario.requestFocusInWindow();
+        entrada.setProgresso(0f);
+        palco.forjar(this::mostrarCartao);
+        pularComTecla = e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED && !palco.isConcluido()) {
+                palco.pular();
+            }
+            return false;
+        };
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(pularComTecla);
+        carregarContagem();
     }
 
-    private void construirTela(){
-        frame = new  JFrame("Ofisystem - Login");
-        frame.setSize(1100, 700);
+    private void construirTela() {
+        frame = new JFrame("OfiSystem — Entrar");
+        frame.setSize(1180, 720);
+        frame.setMinimumSize(new Dimension(900, 600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setLayout(new BorderLayout());
 
-        frame.add(criarPainelLogin(), BorderLayout.CENTER);
+        JPanel raiz = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1;
+
+        palco = new EngrenagemForjada();
+        palco.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                palco.pular();
+            }
+        });
+        palco.setPreferredSize(new Dimension(560, 600));
+        gbc.gridx = 0;
+        gbc.weightx = 0.56;
+        raiz.add(palco, gbc);
+
+        JPanel lado = new JPanel(new BorderLayout());
+        lado.setPreferredSize(new Dimension(440, 600));
+
+        JPanel barra = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 16));
+        barra.setOpaque(false);
+        btnTema = new Botao("", Botao.Estilo.CONTORNO, Tema.isEscuro() ? Icones.Tipo.SOL : Icones.Tipo.LUA);
+        btnTema.setToolTipText(Tema.isEscuro() ? "Usar tema claro" : "Usar tema escuro");
+        btnTema.addActionListener(e -> alternarTema());
+        barra.add(btnTema);
+        lado.add(barra, BorderLayout.NORTH);
+
+        JPanel centro = new JPanel(new GridBagLayout());
+        centro.setOpaque(false);
+        entrada = new EntradaCartao();
+        entrada.add(criarCartao());
+        centro.add(entrada);
+        lado.add(centro, BorderLayout.CENTER);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.44;
+        raiz.add(lado, gbc);
+
+        frame.setContentPane(raiz);
+        frame.getRootPane().setDefaultButton(btnLogin);
     }
 
-    private JPanel criarPainelLogin(){
-        JPanel painelLogin = new JPanel(new GridBagLayout());
-        painelLogin.setBackground(new Color(245, 245, 245));
-
-        // Painel com fundo
-        PainelFundo fundo = new PainelFundo("/images/background.jpg");
-        fundo.setLayout(new GridBagLayout());
-
-        //Card central
-        CardPanel cardPanel = new CardPanel(20, 0.88f);
-        cardPanel.setBorder(BorderFactory.createLineBorder(new Color(77, 98, 128), 2, true));
-        cardPanel.setPreferredSize(new Dimension(340, 540));
-        cardPanel.setLayout(new GridBagLayout());
+    private Adesivo criarCartao() {
+        Adesivo cartao = new Adesivo("OfiSystem", "Acesso", Tema.Tom.NEUTRO, new GridBagLayout());
+        cartao.setBorder(BorderFactory.createEmptyBorder(Adesivo.ALTURA_FAIXA + 24, 32, 36, 32));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
+        gbc.gridx = 0;
+        gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
 
-        // Logo
-        ImageIcon logo = new ImageIcon(getClass()
-                .getResource("/images/logo.png"));
+        gbc.insets = new Insets(0, 0, 4, 0);
+        cartao.add(Texto.titulo("Entrar"), gbc);
+        gbc.insets = new Insets(0, 0, 24, 0);
+        cartao.add(Texto.apoio("Acesse com o usuário da sua oficina."), gbc);
 
-        Image imgRedimensionada = logo.getImage().getScaledInstance(150,110,Image.SCALE_SMOOTH);
-        JLabel logoIcon = new JLabel(new ImageIcon(imgRedimensionada), SwingConstants.CENTER);
-        cardPanel.add(logoIcon, gbc);
-
-        // Titulo
-        JLabel titulo = new JLabel("Ofisystem", SwingConstants.CENTER);
-        titulo.setFont(new Font("Segoes UI", Font.BOLD, 26));
-        titulo.setForeground(new Color(229, 232, 251));
-        cardPanel.add(titulo, gbc);
-
-        // Subtitulo
-        JLabel subtitulo = new JLabel("Sistema de Gestão de Oficina", SwingConstants.CENTER);
-        subtitulo.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        subtitulo.setForeground(new Color(186, 187, 213));
-        gbc.insets = new Insets(0,24,24,24);
-        cardPanel.add(subtitulo, gbc);
-
-        // Texto usuário
-        gbc.insets = new Insets(6,24,4,24);
-        JLabel usuariojlabel = new JLabel("Usuário:");
-        usuariojlabel.setForeground(new Color(229, 232, 251));
-        usuariojlabel.setFont(new Font("Segoes UI", Font.BOLD, 16));
-        cardPanel.add(usuariojlabel, gbc);
-
-        // Campo usuário
         txtUsuario = new JTextField();
-        txtUsuario.setFont(new Font("Segoes UI", Font.PLAIN, 14));
-        txtUsuario.setPreferredSize(new Dimension(300, 40));
-        txtUsuario.setBackground(new Color(255, 255, 255, 25));
-        txtUsuario.setForeground(Color.WHITE);
-        txtUsuario.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200)),
-                BorderFactory.createEmptyBorder(4,8,4,8)));
-        txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
-        cardPanel.add(txtUsuario, gbc);
+        txtUsuario.putClientProperty("JTextField.leadingIcon", Icones.de(Icones.Tipo.USUARIO, 18, Tema::tintaSuave));
+        txtUsuario.putClientProperty("JTextField.placeholderText", "Nome de usuário");
+        txtUsuario.setPreferredSize(new Dimension(328, 40));
+        gbc.insets = new Insets(0, 0, 6, 0);
+        cartao.add(rotulo("Usuário"), gbc);
+        gbc.insets = new Insets(0, 0, 16, 0);
+        cartao.add(txtUsuario, gbc);
 
-        // Texto senha
-        gbc.insets = new Insets(12, 24, 4, 24);
-        JLabel senhajlabel = new JLabel("Senha:");
-        senhajlabel.setForeground(new Color(229, 232, 251));
-        senhajlabel.setFont(new Font("Segoes UI", Font.BOLD, 16));
-        cardPanel.add(senhajlabel, gbc);
-
-        // Campo senha
-        gbc.insets = new Insets(6,24,4,24);
         txtPassword = new JPasswordField();
-        txtPassword.setFont(new Font("Segoes UI", Font.PLAIN, 14));
-        txtPassword.setForeground(Color.WHITE);
-        txtPassword.setBackground(new Color(255, 255, 255, 25));
-        txtPassword.setPreferredSize(new Dimension(300, 40));
-        txtPassword.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200)),
-                BorderFactory.createEmptyBorder(4,8,4,8)));
-        txtPassword.putClientProperty("JTextField.placeholderText", "Insira a senha");
-        cardPanel.add(txtPassword, gbc);
+        txtPassword.putClientProperty("JTextField.leadingIcon", Icones.de(Icones.Tipo.CADEADO, 18, Tema::tintaSuave));
+        txtPassword.putClientProperty("JTextField.placeholderText", "Sua senha");
+        txtPassword.putClientProperty("JPasswordField.showRevealButton", true);
+        txtPassword.setPreferredSize(new Dimension(328, 40));
+        gbc.insets = new Insets(0, 0, 6, 0);
+        cartao.add(rotulo("Senha"), gbc);
+        gbc.insets = new Insets(0, 0, 8, 0);
+        cartao.add(txtPassword, gbc);
 
-        // Botão entrar
-        gbc.insets = new Insets(20,24,6,24);
-        gbc.weightx = 1.0;
-        btnLogin = new JButton("Login");
-        btnLogin.setFont(new Font("Segoes UI", Font.BOLD, 16));
-        btnLogin.setBackground(new Color(52, 79, 99));
-        btnLogin.setForeground(Color.WHITE);
-        btnLogin.setBorder(BorderFactory.createMatteBorder(0,0,4,0,new Color(34, 34, 34, 255)));
-        btnLogin.setFocusPainted(false);
-        btnLogin.setPreferredSize(new Dimension(280, 45));
-        btnLogin.setMinimumSize(new Dimension(280, 50));
-        btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        cardPanel.add(btnLogin, gbc);
+        lblErro = Texto.erro();
+        gbc.insets = new Insets(0, 0, 12, 0);
+        cartao.add(lblErro, gbc);
 
-        // Botão cadastrar
-        gbc.insets = new Insets(6,24,4,24);
-        btnCadastrar = new JButton("Cadastrar");
-        btnCadastrar.setFont(new Font("Segoes UI", Font.BOLD, 16));
-        btnCadastrar.setBackground(new Color(255, 255, 255, 0));
-        btnCadastrar.setForeground(Color.WHITE);
-        btnCadastrar.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, true));
-        btnCadastrar.setFocusPainted(false);
-        btnCadastrar.setPreferredSize(new Dimension(280, 45));
-        btnCadastrar.setMinimumSize(new Dimension(280, 50));
-        btnCadastrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnCadastrar.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btnCadastrar.setBackground(new Color(52, 79, 99, 165));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btnCadastrar.setBackground(new Color(52, 79, 99, 0));
-            }
-        });
-        cardPanel.add(btnCadastrar, gbc);
-
-        gbc.weightx = 0;
-
-        qtdUsuario = new JLabel("Quantidade de usuários cadastrado: " + usuarioDAO.contarUsuario(), SwingConstants.CENTER);
-        qtdUsuario.setFont(new Font("Segoes UI", Font.PLAIN, 15));
-        qtdUsuario.setForeground(new Color(145, 147, 158));
-        cardPanel.add(qtdUsuario, gbc);
-
-        // Ações
+        btnLogin = new Botao("Entrar", Botao.Estilo.PRINCIPAL);
         btnLogin.addActionListener(e -> login());
+        gbc.insets = new Insets(0, 0, 8, 0);
+        cartao.add(btnLogin, gbc);
+
+        btnCadastrar = new Botao("Criar conta", Botao.Estilo.DISCRETO);
         btnCadastrar.addActionListener(e -> abrirCadastro());
+        cartao.add(btnCadastrar, gbc);
 
-        // Pressionar Enter
-        txtPassword.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e){
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) login();
-            }
+        qtdUsuario = new Texto(" ", Tema.TAM_PEQUENO, Font.PLAIN, Tema::tintaSuave);
+        qtdUsuario.setHorizontalAlignment(SwingConstants.CENTER);
+        gbc.insets = new Insets(12, 0, 0, 0);
+        cartao.add(qtdUsuario, gbc);
+        return cartao;
+    }
+
+    private JLabel rotulo(String texto) {
+        return Texto.rotulo(texto);
+    }
+
+    private void mostrarCartao() {
+        if (pularComTecla != null) {
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(pularComTecla);
+            pularComTecla = null;
+        }
+        Movimento.animar(460, Movimento.SAIDA_SUAVE, entrada::setProgresso, () -> {
+            entrada.setProgresso(1f);
+            txtUsuario.requestFocusInWindow();
         });
+    }
 
-        fundo.add(cardPanel);
-
-        return fundo;
+    private void alternarTema() {
+        Tema.alternar(frame);
+        btnTema.setIcon(Icones.de(Tema.isEscuro() ? Icones.Tipo.SOL : Icones.Tipo.LUA, 18, btnTema::corTexto));
+        btnTema.setToolTipText(Tema.isEscuro() ? "Usar tema claro" : "Usar tema escuro");
     }
 
     private void login() {
-
         String usuario = txtUsuario.getText().trim();
         String senha = new String(txtPassword.getPassword());
 
-        if (usuario.isEmpty() && senha.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Insira o usuário e a senha    !", "Aviso!", JOptionPane.WARNING_MESSAGE);
+        if (usuario.isEmpty() || senha.isEmpty()) {
+            mostrarErro(usuario.isEmpty() ? "Informe o usuário." : "Informe a senha.");
+            (usuario.isEmpty() ? txtUsuario : txtPassword).requestFocusInWindow();
             return;
         }
 
-        if (usuario.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Insira o usuário!", "Aviso!", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (senha.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "Insira a senha!", "Aviso!", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        lblErro.setText(" ");
+        definirOcupado(true);
 
-        txtUsuario.setEnabled(false);
-        txtPassword.setEnabled(false);
-        btnLogin.setEnabled(false);
-        btnCadastrar.setEnabled(false);
-        btnLogin.setText("Carregando...");
-
-        SwingWorker<Usuario, Void> worker = new SwingWorker<>() {
-
+        new SwingWorker<Usuario, Void>() {
             @Override
             protected Usuario doInBackground() {
-                UsuarioDAO usuarioDAO = new UsuarioDAO();
-                return usuarioDAO.autenticar(usuario, senha);
+                return new UsuarioDAO().autenticar(usuario, senha);
             }
 
             @Override
             protected void done() {
                 try {
                     Usuario u = get();
-
                     if (u != null) {
                         Sessao.iniciar(u);
                         frame.dispose();
                         SwingUtilities.invokeLater(() -> new MainFrame().exibirFrame());
-                    } else {
-                        JOptionPane.showMessageDialog(frame,
-                                "Usuário ou senha incorretos!", "Erro",
-                                JOptionPane.ERROR_MESSAGE);
-                        txtPassword.setText("");
-                        txtPassword.requestFocus();
+                        return;
                     }
-
+                    mostrarErro("Usuário ou senha incorretos.");
+                    txtPassword.setText("");
+                    txtPassword.requestFocusInWindow();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(frame,
-                            "Erro ao autenticar: " + ex.getMessage(), "Erro",
-                            JOptionPane.ERROR_MESSAGE);
+                    mostrarErro("Não foi possível conectar ao servidor.");
                 } finally {
-                    // Reabilita tudo se não trocou de usuário
-                    txtUsuario.setEnabled(true);
-                    txtPassword.setEnabled(true);
-                    btnLogin.setEnabled(true);
-                    btnCadastrar.setEnabled(true);
-                    btnLogin.setText("Entrar");
+                    definirOcupado(false);
                 }
             }
-        };
-        worker.execute();
+        }.execute();
     }
 
-    private void atualizarContagem(){
-        String total = usuarioDAO.contarUsuario();
-        qtdUsuario.setText("Quantidade de usuários cadastrado:" + total);
+    private void definirOcupado(boolean ocupado) {
+        txtUsuario.setEnabled(!ocupado);
+        txtPassword.setEnabled(!ocupado);
+        btnLogin.setEnabled(!ocupado);
+        btnCadastrar.setEnabled(!ocupado);
+        btnLogin.setText(ocupado ? "Entrando..." : "Entrar");
+    }
+
+    private void mostrarErro(String mensagem) {
+        lblErro.setText(mensagem);
+        Point origem = entrada.getLocation();
+        Movimento.animar(320, Movimento.SAIDA_SUAVE, t -> {
+            int desvio = (int) Math.round(Math.sin(t * Math.PI * 4) * 6 * (1 - t));
+            entrada.setLocation(origem.x + desvio, origem.y);
+        }, () -> entrada.setLocation(origem));
+    }
+
+    private void carregarContagem() {
+        new SwingWorker<String, Void>() {
+            @Override
+            protected String doInBackground() {
+                return usuarioDAO.contarUsuario();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    String total = get();
+                    qtdUsuario.setText(("1".equals(total) ? "1 usuário cadastrado" : total + " usuários cadastrados"));
+                } catch (Exception e) {
+                    qtdUsuario.setText(" ");
+                }
+            }
+        }.execute();
     }
 
     private void abrirCadastro() {
-        new CadastroUsuarioFrame(frame, () -> atualizarContagem()).exibir();
+        new CadastroUsuarioFrame(frame, this::carregarContagem).exibir();
     }
 
+    private static class EntradaCartao extends JPanel {
+
+        private float progresso = 1f;
+
+        EntradaCartao() {
+            super(new BorderLayout());
+            setOpaque(false);
+            setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        }
+
+        void setProgresso(float progresso) {
+            this.progresso = progresso;
+            repaint();
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            if (progresso >= 1f || !Animator.useAnimation()) {
+                super.paint(g);
+                return;
+            }
+            if (progresso <= 0f || getWidth() <= 0) return;
+            BufferedImage imagem = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D gi = imagem.createGraphics();
+            gi.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            super.paint(gi);
+            gi.dispose();
+
+            Graphics2D g2 = Tema.suave(g);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, progresso * 1.6f)));
+            double escala = 0.94 + 0.06 * progresso;
+            g2.translate(getWidth() / 2.0, getHeight() / 2.0 + (1 - progresso) * 36);
+            g2.rotate(Math.toRadians(-4 * (1 - progresso)));
+            g2.scale(escala, escala);
+            g2.drawImage(imagem, -getWidth() / 2, -getHeight() / 2, null);
+            g2.dispose();
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package com.ofisystem.entidade;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -13,6 +12,8 @@ public class Endereco implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "end_id")
     private Integer id;
+    @Column(name = "end_cep")
+    private String cep;
     @Column(name = "end_cidade")
     private String cidade;
     @Column(name = "end_estado")
@@ -23,10 +24,11 @@ public class Endereco implements Serializable {
     private String rua;
     @Column(name = "end_numero")
     private String numero;
+    @Column(name = "end_complemento")
+    private String complemento;
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
-    @JsonIgnore
-    private Cliente cliente;
+    @JoinColumn(name = "pessoa_id", nullable = false)
+    private Pessoa pessoa;
 
     public Integer getId() {
         return id;
@@ -34,6 +36,14 @@ public class Endereco implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getCep() {
+        return cep;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
     }
 
     public String getCidade() {
@@ -76,11 +86,19 @@ public class Endereco implements Serializable {
         this.numero = numero;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public String getComplemento() {
+        return complemento;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 }

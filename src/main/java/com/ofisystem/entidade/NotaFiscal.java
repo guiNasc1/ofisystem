@@ -1,11 +1,11 @@
 package com.ofisystem.entidade;
 
-import Enums.Status;
+import Enums.StatusNota;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,12 +18,11 @@ public class NotaFiscal implements Serializable {
     @Column(name = "nota_fiscal_id")
     private Integer id;
 
-    @Column(nullable = false, name = "nota_fiscal_numero")
+    @Column(nullable = false, unique = true, name = "nota_fiscal_numero")
     private String numero;
 
-    @Column(nullable = false, name = "nota_fiscal_Data_emissao")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dataEmissao;
+    @Column(nullable = false, name = "nota_fiscal_data_emissao")
+    private LocalDateTime dataEmissao;
 
     @Column(nullable = false, name = "nota_fiscal_valor_total")
     private Double valorTotal;
@@ -32,11 +31,20 @@ public class NotaFiscal implements Serializable {
     private Double impostos;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "nota_fiscal_status")
-    private Status status;
+    @Column(nullable = false, name = "nota_fiscal_status")
+    private StatusNota status = StatusNota.EMITIDA;
 
-    @OneToMany(mappedBy = "notaFiscal", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(optional = false)
+    @JoinColumn(name = "ordem_servico_id", nullable = false, unique = true)
+    private OrdemServico ordemServico;
+
+    @OneToMany(mappedBy = "notaFiscal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemNota> itens = new ArrayList<>();
+
+    public void adicionarItem(ItemNota item) {
+        item.setNotaFiscal(this);
+        itens.add(item);
+    }
 
     @Override
     public String toString() {
@@ -52,14 +60,15 @@ public class NotaFiscal implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NotaFiscal that = (NotaFiscal) o;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getNumero(), that.getNumero()) && Objects.equals(getDataEmissao(), that.getDataEmissao()) && Objects.equals(getValorTotal(), that.getValorTotal()) && Objects.equals(getImpostos(), that.getImpostos()) && getStatus() == that.getStatus();
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getNumero(), getDataEmissao(), getValorTotal(), getImpostos(), getStatus());
+        return Objects.hashCode(id);
     }
 
     public Integer getId() {
@@ -78,11 +87,11 @@ public class NotaFiscal implements Serializable {
         this.numero = numero;
     }
 
-    public Date getDataEmissao() {
+    public LocalDateTime getDataEmissao() {
         return dataEmissao;
     }
 
-    public void setDataEmissao(Date dataEmissao) {
+    public void setDataEmissao(LocalDateTime dataEmissao) {
         this.dataEmissao = dataEmissao;
     }
 
@@ -102,12 +111,20 @@ public class NotaFiscal implements Serializable {
         this.impostos = impostos;
     }
 
-    public Status getStatus() {
+    public StatusNota getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(StatusNota status) {
         this.status = status;
+    }
+
+    public OrdemServico getOrdemServico() {
+        return ordemServico;
+    }
+
+    public void setOrdemServico(OrdemServico ordemServico) {
+        this.ordemServico = ordemServico;
     }
 
     public List<ItemNota> getItens() {

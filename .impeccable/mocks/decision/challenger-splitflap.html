@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Quadro do Pátio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:#E6EAEE;color:#14181D;display:grid;grid-template-columns:232px 1fr}
+.rail{background:#2B4A6F;color:#DCE6F1;padding:24px 16px}
+.rail b{display:block;font-size:18px;color:#fff;margin-bottom:24px}
+.nav{padding:10px 12px;border-radius:6px;font-size:14px;font-weight:600}
+.nav.on{background:#14181D;color:#F2B33D}
+main{padding:24px 32px;display:flex;flex-direction:column;gap:20px}
+.top{display:flex;justify-content:space-between;align-items:center}
+h1{font-size:26px}
+.btn{padding:10px 16px;border-radius:8px;background:#2B4A6F;color:#fff;font-weight:700;font-size:14px}
+.board{background:#14181D;border:10px solid #9AA6B2;border-radius:10px;padding:16px;box-shadow:inset 0 0 0 2px #59636E}
+.hd,.r{display:grid;grid-template-columns:120px 1.6fr 1.6fr 1.3fr 120px 150px;gap:12px;align-items:center}
+.hd{color:#8E9AA6;font-size:12px;font-weight:700;letter-spacing:2px;padding:0 4px 10px;border-bottom:1px solid #2C333B}
+.r{padding:8px 4px;border-bottom:1px solid #22282F}
+.flap{display:flex;gap:2px}
+.flap i{font-style:normal;background:#22272E;color:#fff;width:22px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;border-radius:3px;position:relative}
+.flap i:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#0B0E11}
+.t{color:#fff;font-size:17px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.am .t,.am .flap i{color:#F2B33D}.rd .t{color:#E8665C}
+.lamp{width:12px;height:12px;border-radius:50%;background:#3A8F5C;display:inline-block;margin-right:8px}
+.am .lamp{background:#F2B33D}.rd .lamp{background:#C8372D}
+.low{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border-radius:10px;padding:16px}
+.card small{font-size:12px;color:#5B6875;text-transform:uppercase;font-weight:700;letter-spacing:1px}
+.card b{display:block;font-size:28px;font-variant-numeric:tabular-nums;margin-top:6px}
+</style></head><body>
+<aside class="rail"><b>OfiSystem</b><div class="nav on">Quadro do Pátio</div><div class="nav">Ordens de Serviço</div><div class="nav">Venda de Balcão</div><div class="nav">Pessoas</div><div class="nav">Estoque</div><div class="nav">Relatórios</div></aside>
+<main>
+  <div class="top"><h1>Oficina do João · Pátio</h1><div class="btn">+ Nova OS</div></div>
+  <div class="board">
+    <div class="hd"><span>OS</span><span>CLIENTE</span><span>VEÍCULO</span><span>STATUS</span><span>PREVISÃO</span><span>TOTAL</span></div>
+    <div class="r rd"><div class="flap"><i>0</i><i>3</i><i>8</i></div><span class="t">Ana Paula Souza</span><span class="t">PNX2C44 Onix</span><span class="t"><span class="lamp"></span>Atrasada</span><span class="t">27/10</span><span class="t">R$ 395</span></div>
+    <div class="r am"><div class="flap"><i>0</i><i>4</i><i>3</i></div><span class="t">Transp. Rocha</span><span class="t">RTA7B90 Delivery</span><span class="t"><span class="lamp"></span>Aguard. peça</span><span class="t">29/10</span><span class="t">R$ 2.180</span></div>
+    <div class="r"><div class="flap"><i>0</i><i>4</i><i>1</i></div><span class="t">Carlos Mendes</span><span class="t">QXR4F21 Strada</span><span class="t"><span class="lamp"></span>Em andamento</span><span class="t">28/10</span><span class="t">R$ 640</span></div>
+    <div class="r"><div class="flap"><i>0</i><i>4</i><i>4</i></div><span class="t">Marcos Lima</span><span class="t">Sem veículo</span><span class="t"><span class="lamp"></span>Aberta</span><span class="t">30/10</span><span class="t">R$ 0</span></div>
+    <div class="r"><div class="flap"><i>0</i><i>4</i><i>2</i></div><span class="t">Rafael Teixeira</span><span class="t">FKD8E11 CG 160</span><span class="t"><span class="lamp"></span>Em andamento</span><span class="t">28/10</span><span class="t">R$ 310</span></div>
+  </div>
+  <div class="low"><div class="card"><small>Recebido hoje</small><b>R$ 1.583,90</b></div><div class="card"><small>Vendas de balcão</small><b>6</b></div><div class="card"><small>Peças abaixo do mínimo</small><b style="color:#C8372D">3</b></div></div>
+</main></body></html>

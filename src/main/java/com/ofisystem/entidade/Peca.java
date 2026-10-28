@@ -3,13 +3,12 @@ package com.ofisystem.entidade;
 import Enums.Status;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "peca")
-public class Peca {
+public class Peca implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,40 +18,32 @@ public class Peca {
     @Column(nullable = false, name = "peca_nome")
     private String nome;
 
-    @Column(nullable = false, unique = true, name = "peca_codigo")
-    private String codigo;
+    @Column(name = "peca_categoria")
+    private String categoria;
 
-    @Column(nullable = false, name = "pecaValorUnitario")
+    @Column(nullable = false, name = "peca_valor_unitario")
     private Double valorUnitario;
 
-    @OneToMany(mappedBy = "peca", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<ItemPeca> itens = new ArrayList<>();
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "pecaStatus")
-    private Status status;
+    @Column(nullable = false, name = "peca_status")
+    private Status status = Status.ATIVO;
 
     @Override
     public String toString() {
-        return "Peca{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", codigo='" + codigo + '\'' +
-                ", valorUnitario=" + valorUnitario +
-                ", status=" + status +
-                '}';
+        return id + " - " + nome;
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Peca peca = (Peca) o;
-        return Objects.equals(getId(), peca.getId()) && Objects.equals(getNome(), peca.getNome()) && Objects.equals(getCodigo(), peca.getCodigo()) && Objects.equals(getValorUnitario(), peca.getValorUnitario()) && getStatus() == peca.getStatus();
+        return id != null && Objects.equals(id, peca.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getNome(), getCodigo(), getValorUnitario(), getStatus());
+        return Objects.hashCode(id);
     }
 
     public Integer getId() {
@@ -71,12 +62,12 @@ public class Peca {
         this.nome = nome;
     }
 
-    public String getCodigo() {
-        return codigo;
+    public String getCategoria() {
+        return categoria;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     public Double getValorUnitario() {
@@ -93,13 +84,5 @@ public class Peca {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public List<ItemPeca> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<ItemPeca> itens) {
-        this.itens = itens;
     }
 }

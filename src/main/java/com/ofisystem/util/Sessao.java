@@ -1,5 +1,6 @@
 package com.ofisystem.util;
 
+import Enums.Perfil;
 import com.ofisystem.entidade.Usuario;
 
 public class Sessao {
@@ -24,6 +25,10 @@ public class Sessao {
 
     public static boolean estaLogado(){
         return usuariologado != null;
+    }
+
+    public static boolean isAdmin(){
+        return usuariologado != null && usuariologado.getPerfil() == Perfil.ADMIN;
     }
 
 }

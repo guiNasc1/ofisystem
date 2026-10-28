@@ -14,6 +14,10 @@ public class ItemOs implements Serializable {
     @Column(nullable = false, name = "item_os_id")
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "servico_id")
+    private Servico servico;
+
     @Column(nullable = false, name = "item_os_descricao")
     private String descricao;
 
@@ -30,6 +34,10 @@ public class ItemOs implements Serializable {
     @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id",nullable = false)
     private OrdemServico ordemServico;
 
+    public void calcularSubtotal() {
+        subtotal = quantidade * valorUnitario;
+    }
+
     @Override
     public String toString() {
         return "ItemOs{" +
@@ -43,14 +51,15 @@ public class ItemOs implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemOs itemOs = (ItemOs) o;
-        return Objects.equals(getId(), itemOs.getId()) && Objects.equals(getDescricao(), itemOs.getDescricao()) && Objects.equals(getQuantidade(), itemOs.getQuantidade()) && Objects.equals(getValorUnitario(), itemOs.getValorUnitario()) && Objects.equals(getSubtotal(), itemOs.getSubtotal());
+        return id != null && Objects.equals(id, itemOs.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDescricao(), getQuantidade(), getValorUnitario(), getSubtotal());
+        return Objects.hashCode(id);
     }
 
     public Integer getId() {
@@ -59,6 +68,14 @@ public class ItemOs implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Servico getServico() {
+        return servico;
+    }
+
+    public void setServico(Servico servico) {
+        this.servico = servico;
     }
 
     public String getDescricao() {

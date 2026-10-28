@@ -17,7 +17,7 @@ public class Servico implements Serializable {
     @Column(nullable = false, name = "servico_nome")
     private String nome;
 
-    @Column(nullable = false, name = "servico_descrico")
+    @Column(nullable = false, length = 1000, name = "servico_descricao")
     private String descricao;
 
     @Column(nullable = false, name = "servico_valor")
@@ -27,30 +27,24 @@ public class Servico implements Serializable {
     private Integer duracaoMin;
 
     @Column(nullable = false, name = "servico_ativo")
-    private boolean ativo;
+    private boolean ativo = true;
 
     @Override
     public String toString() {
-        return "Servico{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", descricao='" + descricao + '\'' +
-                ", valor=" + valor +
-                ", duracaoMin=" + duracaoMin +
-                ", ativo=" + ativo +
-                '}';
+        return nome;
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Servico servico = (Servico) o;
-        return isAtivo() == servico.isAtivo() && Objects.equals(getId(), servico.getId()) && Objects.equals(getNome(), servico.getNome()) && Objects.equals(getDescricao(), servico.getDescricao()) && Objects.equals(getValor(), servico.getValor()) && Objects.equals(getDuracaoMin(), servico.getDuracaoMin());
+        return id != null && Objects.equals(id, servico.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getNome(), getDescricao(), getValor(), getDuracaoMin(), isAtivo());
+        return Objects.hashCode(id);
     }
 
     public Integer getId() {

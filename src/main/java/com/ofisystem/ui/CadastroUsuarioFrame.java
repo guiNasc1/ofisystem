@@ -2,8 +2,11 @@ package com.ofisystem.ui;
 
 import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.Usuario;
-import com.ofisystem.ui.style.CardPanel;
-import com.ofisystem.ui.style.PainelFundo;
+import com.ofisystem.ui.style.Botao;
+import com.ofisystem.ui.style.Icones;
+import com.ofisystem.ui.style.Superficie;
+import com.ofisystem.ui.style.Tema;
+import com.ofisystem.ui.style.Texto;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,11 +18,11 @@ public class CadastroUsuarioFrame {
     private JTextField txtEmail;
     private JPasswordField txtSenha;
     private JPasswordField txtConfirmarSenha;
+    private JLabel lblErro;
+    private Botao btCadastrar;
 
-    private Runnable aoConcluir;
-    private UsuarioDAO usuarioDAO;
-
-    private GradientPaint gradientPaint;
+    private final Runnable aoConcluir;
+    private final UsuarioDAO usuarioDAO;
 
     public CadastroUsuarioFrame(JFrame parent, Runnable aoConcluir) {
         this.usuarioDAO = new UsuarioDAO();
@@ -28,8 +31,7 @@ public class CadastroUsuarioFrame {
     }
 
     public CadastroUsuarioFrame(JFrame parent) {
-        this.usuarioDAO = new UsuarioDAO();
-        construirTela(parent);
+        this(parent, null);
     }
 
     public void exibir() {
@@ -38,143 +40,71 @@ public class CadastroUsuarioFrame {
 
     private void construirTela(JFrame parent) {
         dialog = new JDialog(parent, "Criar conta", true);
-        dialog.setSize(560, 500);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setResizable(false);
         dialog.setLayout(new BorderLayout());
 
-        CardPanel painel = new CardPanel(0,0.99f);
-        painel.setLayout(new GridBagLayout());
-
+        Superficie cartao = new Superficie(new GridBagLayout(), 24, 32);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 20, 4, 20);
+        gbc.gridx = 0;
+        gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(5, 0, 5, 0);
-        ImageIcon logo = new ImageIcon(getClass()
-                .getResource("/images/logo.png"));
+        gbc.insets = new Insets(0, 0, 4, 0);
+        cartao.add(Texto.titulo("Criar conta"), gbc);
+        gbc.insets = new Insets(0, 0, 24, 0);
+        cartao.add(Texto.apoio("Cada pessoa da oficina deve ter o próprio usuário."), gbc);
 
-        Image imgRedimensionada = logo.getImage().getScaledInstance(150,110,Image.SCALE_SMOOTH);
-        JLabel logoIcon = new JLabel(new ImageIcon(imgRedimensionada), SwingConstants.CENTER);
-        painel.add(logoIcon, gbc);
-        gbc.gridwidth = 1;
+        txtUsuario = campo(new JTextField(), Icones.Tipo.USUARIO, "Nome de usuário para entrar");
+        txtEmail = campo(new JTextField(), null, "email@exemplo.com");
+        txtSenha = (JPasswordField) campo(new JPasswordField(), Icones.Tipo.CADEADO, "Mínimo de 6 caracteres");
+        txtConfirmarSenha = (JPasswordField) campo(new JPasswordField(), Icones.Tipo.CADEADO, "Repita a senha");
+        txtSenha.putClientProperty("JPasswordField.showRevealButton", true);
 
-        JLabel titulo = new JLabel("Cadastro de Usuário", SwingConstants.CENTER);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        titulo.setForeground(new Color(229, 232, 251));
-        gbc.gridx = 0; gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(20, 20, 20, 20);
-        painel.add(titulo, gbc);
-        gbc.gridwidth = 1;
+        adicionar(cartao, gbc, "Usuário", txtUsuario);
+        adicionar(cartao, gbc, "E-mail", txtEmail);
+        adicionar(cartao, gbc, "Senha", txtSenha);
+        adicionar(cartao, gbc, "Confirmar senha", txtConfirmarSenha);
 
-        // Usuário
-        gbc.gridx = 0; gbc.gridy = 2;
-        gbc.insets = new Insets(6, 20, 4, 10);
-        JLabel usuariojlabel = new JLabel("Usuário:");
-        usuariojlabel.setForeground(new Color(229, 232, 251));
-        usuariojlabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        painel.add(usuariojlabel, gbc);
+        lblErro = Texto.erro();
+        gbc.insets = new Insets(0, 0, 12, 0);
+        cartao.add(lblErro, gbc);
 
-        // Usuário campo
-        gbc.gridx = 1; gbc.gridy = 2;
-        gbc.insets = new Insets(6, 0, 4, 20);
-        txtUsuario = new JTextField();
-        txtUsuario.setPreferredSize(new Dimension(300, 38));
-        txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtUsuario.setBackground(new Color(255, 255, 255, 25));
-        txtUsuario.setForeground(Color.WHITE);
-        txtUsuario.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200)),
-                BorderFactory.createEmptyBorder(4,8,4,8)));
-        txtUsuario.putClientProperty("JTextField.placeholderText", "Insira o usuário");
-        painel.add(txtUsuario, gbc);
+        JPanel botoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        botoes.setOpaque(false);
+        Botao btCancelar = new Botao("Cancelar", Botao.Estilo.DISCRETO);
+        btCadastrar = new Botao("Criar conta", Botao.Estilo.PRINCIPAL);
+        botoes.add(btCancelar);
+        botoes.add(btCadastrar);
+        gbc.insets = new Insets(0, 0, 0, 0);
+        cartao.add(botoes, gbc);
 
-        // Email
-        gbc.gridx = 0; gbc.gridy = 3;
-        gbc.insets = new Insets(6, 20, 4, 10);
-        JLabel emailJLabel = new JLabel("Email:");
-        emailJLabel.setForeground(new Color(229, 232, 251));
-        emailJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        painel.add(emailJLabel, gbc);
+        JPanel fundo = new JPanel(new BorderLayout());
+        fundo.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        fundo.add(cartao, BorderLayout.CENTER);
+        dialog.add(fundo, BorderLayout.CENTER);
+        dialog.getRootPane().setDefaultButton(btCadastrar);
 
-        // Email campo
-        gbc.gridx = 1; gbc.gridy = 3;
-        gbc.insets = new Insets(6, 0, 4, 20);
-        txtEmail = new JTextField();
-        txtEmail.setPreferredSize(new Dimension(300, 38));
-        txtEmail.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtEmail.setBackground(new Color(255, 255, 255, 25));
-        txtEmail.setForeground(Color.WHITE);
-        txtEmail.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200)),
-                BorderFactory.createEmptyBorder(4,8,4,8)));
-        txtEmail.putClientProperty("JTextField.placeholderText", "Insira o email");
-        painel.add(txtEmail, gbc);
-
-        // Senha
-        gbc.gridx = 0; gbc.gridy = 4;
-        gbc.insets = new Insets(6, 20, 4, 10);
-        JLabel senhaJLabel = new JLabel("Senha:");
-        senhaJLabel.setForeground(new Color(229, 232, 251));
-        senhaJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        painel.add(senhaJLabel, gbc);
-
-        // Senha campo
-        gbc.gridx = 1; gbc.gridy = 4;
-        gbc.insets = new Insets(6, 0, 4, 20);
-        txtSenha = new JPasswordField();
-        txtSenha.setPreferredSize(new Dimension(300, 38));
-        txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtSenha.setBackground(new Color(255, 255, 255, 25));
-        txtSenha.setForeground(Color.WHITE);
-        txtSenha.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200)),
-                BorderFactory.createEmptyBorder(4,8,4,8)));
-        txtSenha.putClientProperty("JTextField.placeholderText", "Insira a senha");
-        painel.add(txtSenha, gbc);
-
-        // Confirmar senha
-        gbc.gridx = 0; gbc.gridy = 5;
-        gbc.insets = new Insets(6, 20, 4, 20);
-        JLabel confirmarSenhaJLabel = new JLabel("Confirmar Senha:");
-        confirmarSenhaJLabel.setForeground(new Color(229, 232, 251));
-        confirmarSenhaJLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        painel.add(confirmarSenhaJLabel, gbc);
-
-        // Confirmar senha campo
-        gbc.gridx = 1; gbc.gridy = 5;
-        gbc.insets = new Insets(6, 0, 4, 20);
-        txtConfirmarSenha = new JPasswordField();
-        txtConfirmarSenha.setPreferredSize(new Dimension(300, 38));
-        txtConfirmarSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        txtConfirmarSenha.setBackground(new Color(255, 255, 255, 25));
-        txtConfirmarSenha.setForeground(Color.WHITE);
-        txtConfirmarSenha.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200,200,200)),
-                BorderFactory.createEmptyBorder(4,8,4,8)));
-        txtConfirmarSenha.putClientProperty("JTextField.placeholderText", "Confirme a senha");
-        painel.add(txtConfirmarSenha, gbc);
-
-        // Botão cadastrar
-        gbc.gridx = 0; gbc.gridy = 6;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(20, 20, 20, 20);
-        JButton btCadastrar = new JButton("Criar conta");
-        btCadastrar.setBackground(new Color(33, 37, 41));
-        btCadastrar.setForeground(Color.WHITE);
-        btCadastrar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btCadastrar.setFocusPainted(false);
-        btCadastrar.setForeground(Color.WHITE);
-        btCadastrar.setPreferredSize(new Dimension(300, 42));
-        btCadastrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btCancelar.addActionListener(e -> dialog.dispose());
         btCadastrar.addActionListener(e -> cadastrar());
-        painel.add(btCadastrar, gbc);
 
-        dialog.add(painel, BorderLayout.CENTER);
+        dialog.pack();
+        dialog.setResizable(false);
+        dialog.setLocationRelativeTo(parent);
+    }
+
+    private JTextField campo(JTextField campo, Icones.Tipo icone, String exemplo) {
+        campo.setPreferredSize(new Dimension(360, 40));
+        campo.putClientProperty("JTextField.placeholderText", exemplo);
+        if (icone != null) {
+            campo.putClientProperty("JTextField.leadingIcon", Icones.de(icone, 18, Tema::tintaSuave));
+        }
+        return campo;
+    }
+
+    private void adicionar(JPanel painel, GridBagConstraints gbc, String rotulo, JComponent campo) {
+        gbc.insets = new Insets(0, 0, 6, 0);
+        painel.add(Texto.rotulo(rotulo), gbc);
+        gbc.insets = new Insets(0, 0, 16, 0);
+        painel.add(campo, gbc);
     }
 
     private void cadastrar() {
@@ -184,24 +114,18 @@ public class CadastroUsuarioFrame {
         String confirma = new String(txtConfirmarSenha.getPassword());
 
         if (nome.isEmpty() || email.isEmpty() || senha.isEmpty()) {
-            JOptionPane.showMessageDialog(dialog,
-                    "Preencha todos os campos!", "Aviso",
-                    JOptionPane.WARNING_MESSAGE);
+            lblErro.setText("Preencha usuário, e-mail e senha.");
             return;
         }
-
         if (senha.length() < 6) {
-            JOptionPane.showMessageDialog(dialog,
-                    "A senha deve ter pelo menos 6 caracteres!", "Aviso",
-                    JOptionPane.WARNING_MESSAGE);
+            lblErro.setText("A senha precisa ter pelo menos 6 caracteres.");
+            txtSenha.requestFocusInWindow();
             return;
         }
-
         if (!senha.equals(confirma)) {
-            JOptionPane.showMessageDialog(dialog,
-                    "As senhas não coincidem!", "Erro",
-                    JOptionPane.ERROR_MESSAGE);
+            lblErro.setText("As senhas não são iguais.");
             txtConfirmarSenha.setText("");
+            txtConfirmarSenha.requestFocusInWindow();
             return;
         }
 
@@ -210,16 +134,30 @@ public class CadastroUsuarioFrame {
         usuario.setEmail(email);
         usuario.setSenha(senha);
 
-        usuarioDAO.salvar(usuario);
+        lblErro.setText(" ");
+        btCadastrar.setEnabled(false);
+        btCadastrar.setText("Criando...");
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                usuarioDAO.salvar(usuario);
+                return null;
+            }
 
-        JOptionPane.showMessageDialog(dialog,
-                "Conta criada com sucesso! Faça login.", "Sucesso",
-                JOptionPane.INFORMATION_MESSAGE);
-
-        dialog.dispose();
-
-        if(aoConcluir != null){
-            aoConcluir.run();
-        }
+            @Override
+            protected void done() {
+                try {
+                    get();
+                    JOptionPane.showMessageDialog(dialog, "Conta criada. Agora é só entrar.", "Conta criada",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    dialog.dispose();
+                    if (aoConcluir != null) aoConcluir.run();
+                } catch (Exception e) {
+                    btCadastrar.setEnabled(true);
+                    btCadastrar.setText("Criar conta");
+                    lblErro.setText("Não foi possível criar a conta. Verifique a conexão.");
+                }
+            }
+        }.execute();
     }
 }

@@ -1,6 +1,11 @@
 package com.ofisystem.ui;
 
 import com.ofisystem.dao.UsuarioDAO;
+import com.ofisystem.ui.style.Adesivo;
+import com.ofisystem.ui.style.Botao;
+import com.ofisystem.ui.style.EngrenagemForjada;
+import com.ofisystem.ui.style.Tema;
+import com.ofisystem.ui.style.Texto;
 import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
@@ -8,124 +13,112 @@ import java.awt.*;
 
 public class BoasVindasPanel extends JPanel {
 
-    private JTextField txtNomeOficina;  // campo para inserir o nome da oficina
-    private Runnable aoConcluir;        // callback executado ao salvar
-    private UsuarioDAO usuarioDAO;
+    private final JTextField txtNomeOficina;
+    private final JLabel lblErro;
+    private final Botao btConfirmar;
+    private final Runnable aoConcluir;
+    private final UsuarioDAO usuarioDAO;
 
     public BoasVindasPanel(Runnable aoConcluir) {
+        super(new GridBagLayout());
         this.aoConcluir = aoConcluir;
         this.usuarioDAO = new UsuarioDAO();
         setOpaque(true);
-        setBackground(new Color(22, 28, 36));
-        construir();
-    }
 
-    private void construir() {
-        setLayout(new GridBagLayout());                         // centraliza tudo
-        setBackground(new Color(22, 28, 36));                   // fundo escuro
+        Adesivo cartao = new Adesivo("OfiSystem", "Primeiro acesso", Tema.Tom.NEUTRO, new GridBagLayout());
+        cartao.setBorder(BorderFactory.createEmptyBorder(Adesivo.ALTURA_FAIXA + 24, 32, 36, 32));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridx = 0;
+        gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(8, 60, 8, 60);
 
-        // emoji de boas-vindas
-        JLabel emoji = new JLabel("🏍️", SwingConstants.CENTER);
-        emoji.setFont(new Font("Segoe UI", Font.PLAIN, 64));
-        gbc.insets = new Insets(0, 60, 8, 60);
-        add(emoji, gbc);
+        EngrenagemForjada marca = new EngrenagemForjada();
+        marca.setSomenteMarca(true);
+        marca.setPreferredSize(new Dimension(56, 56));
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 16, 0);
+        cartao.add(marca, gbc);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // título
-        JLabel titulo = new JLabel(
-                "Bem-vindo, " + Sessao.getNome() + "!",
-                SwingConstants.CENTER);
-        titulo.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        titulo.setForeground(Color.WHITE);
-        gbc.insets = new Insets(0, 60, 8, 60);
-        add(titulo, gbc);
-
-        // subtítulo
-        JLabel sub = new JLabel(
-                "Antes de começar, dê um nome para sua oficina.",
-                SwingConstants.CENTER);
-        sub.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        sub.setForeground(new Color(160, 160, 160));
-        gbc.insets = new Insets(0, 60, 32, 60);
-        add(sub, gbc);
-
-        // label campo
-        JLabel lblNome = new JLabel("Nome da oficina:");
-        lblNome.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblNome.setForeground(new Color(200, 200, 200));
-        gbc.insets = new Insets(0, 200, 4, 200);
-        add(lblNome, gbc);
-
-        // campo
-        txtNomeOficina = new JTextField();
-        txtNomeOficina.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtNomeOficina.setPreferredSize(new Dimension(200, 48));
-        txtNomeOficina.setBackground(new Color(35, 43, 54));
-        txtNomeOficina.setForeground(Color.WHITE);
-        txtNomeOficina.setCaretColor(Color.WHITE);
-        txtNomeOficina.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(80, 100, 130), 1),
-                BorderFactory.createEmptyBorder(8, 14, 8, 14)));
-        txtNomeOficina.putClientProperty(
-                "JTextField.placeholderText", "Ex: Oficina do João");
-        gbc.insets = new Insets(0, 200, 20, 200);
-        add(txtNomeOficina, gbc);
-
-        // botão confirmar
-        JButton btConfirmar = new JButton("Confirmar") {
+        gbc.insets = new Insets(0, 0, 4, 0);
+        cartao.add(Texto.titulo("Bem-vindo, " + Sessao.getNome() + "!"), gbc);
+        gbc.insets = new Insets(0, 0, 24, 0);
+        cartao.add(new JLabel("<html><body style='width:330px'>Antes de começar, dê um nome para sua oficina. "
+                + "Ele aparece no menu e nos documentos impressos.</body></html>") {
             @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint grad = new GradientPaint(
-                        0, 0, new Color(52, 73, 102),
-                        0, getHeight(), new Color(66, 90, 125));
-                g2.setPaint(grad);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
-                g2.dispose();
-                super.paintComponent(g);
+            public Color getForeground() {
+                return Tema.tintaSuave();
             }
-        };
-        btConfirmar.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btConfirmar.setForeground(Color.WHITE);
-        btConfirmar.setContentAreaFilled(false);
-        btConfirmar.setBorderPainted(false);
-        btConfirmar.setFocusPainted(false);
-        btConfirmar.setOpaque(false);
-        btConfirmar.setPreferredSize(new Dimension(0, 52));
-        btConfirmar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        gbc.insets = new Insets(0, 200, 0, 200);
-        add(btConfirmar, gbc);
+        }, gbc);
 
-        // ação do botão
+        gbc.insets = new Insets(0, 0, 6, 0);
+        cartao.add(Texto.rotulo("Nome da oficina"), gbc);
+        txtNomeOficina = new JTextField();
+        txtNomeOficina.setPreferredSize(new Dimension(396, 40));
+        txtNomeOficina.putClientProperty("JTextField.placeholderText", "Ex.: Oficina do João");
+        gbc.insets = new Insets(0, 0, 8, 0);
+        cartao.add(txtNomeOficina, gbc);
+
+        lblErro = Texto.erro();
+        gbc.insets = new Insets(0, 0, 12, 0);
+        cartao.add(lblErro, gbc);
+
+        btConfirmar = new Botao("Começar a usar", Botao.Estilo.PRINCIPAL);
+        gbc.insets = new Insets(0, 0, 0, 0);
+        cartao.add(btConfirmar, gbc);
+
+        add(cartao);
+
         btConfirmar.addActionListener(e -> salvar());
-
-        // Enter também confirma
         txtNomeOficina.addActionListener(e -> salvar());
+    }
+
+    public void focar() {
+        SwingUtilities.invokeLater(txtNomeOficina::requestFocusInWindow);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setPaint(new GradientPaint(0, 0, new Color(0x1B2B3D), getWidth(), getHeight(), new Color(0x0B1219)));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+        g2.setColor(new Color(255, 255, 255, 10));
+        for (int x = 32; x < getWidth(); x += 32) g2.drawLine(x, 0, x, getHeight());
+        for (int y = 32; y < getHeight(); y += 32) g2.drawLine(0, y, getWidth(), y);
+        g2.dispose();
     }
 
     private void salvar() {
         String nome = txtNomeOficina.getText().trim();
-
         if (nome.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Digite o nome da oficina!", "Aviso",
-                    JOptionPane.WARNING_MESSAGE);
-            txtNomeOficina.requestFocus();
+            lblErro.setText("Digite o nome da oficina.");
+            txtNomeOficina.requestFocusInWindow();
             return;
         }
 
-        // salva no banco
+        btConfirmar.setEnabled(false);
+        btConfirmar.setText("Salvando...");
         Sessao.getUsuariologado().setNomeOficina(nome);
-        usuarioDAO.atualizarNomeOficina(Sessao.getUsuariologado());
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                usuarioDAO.atualizarNomeOficina(Sessao.getUsuariologado());
+                return null;
+            }
 
-        // executa o callback — mostra o sistema normal
-        if (aoConcluir != null) aoConcluir.run();
+            @Override
+            protected void done() {
+                try {
+                    get();
+                    if (aoConcluir != null) aoConcluir.run();
+                } catch (Exception e) {
+                    btConfirmar.setEnabled(true);
+                    btConfirmar.setText("Começar a usar");
+                    lblErro.setText("Não foi possível salvar. Verifique a conexão.");
+                }
+            }
+        }.execute();
     }
-
 }

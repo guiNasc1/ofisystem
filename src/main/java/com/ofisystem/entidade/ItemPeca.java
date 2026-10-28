@@ -2,11 +2,12 @@ package com.ofisystem.entidade;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-@Table(name = "item_Peca")
-public class ItemPeca {
+@Table(name = "item_peca")
+public class ItemPeca implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +31,10 @@ public class ItemPeca {
     @JoinColumn(name = "ordem_servico_id", referencedColumnName = "ordem_servico_id", nullable = false)
     private OrdemServico ordemServico;
 
+    public void calcularSubtotal() {
+        subtotal = quantidade * valorUnitario;
+    }
+
     @Override
     public String toString() {
         return "itemPeca{" +
@@ -38,20 +43,20 @@ public class ItemPeca {
                 ", valorUnitario=" + valorUnitario +
                 ", subtotal=" + subtotal +
                 ", peca=" + peca +
-                ", ordemServico=" + ordemServico +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemPeca itemPeca = (ItemPeca) o;
-        return Objects.equals(getId(), itemPeca.getId()) && Objects.equals(getQuantidade(), itemPeca.getQuantidade()) && Objects.equals(getValorUnitario(), itemPeca.getValorUnitario()) && Objects.equals(getSubtotal(), itemPeca.getSubtotal()) && Objects.equals(getPeca(), itemPeca.getPeca()) && Objects.equals(getOrdemServico(), itemPeca.getOrdemServico());
+        return id != null && Objects.equals(id, itemPeca.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getQuantidade(), getValorUnitario(), getSubtotal(), getPeca(), getOrdemServico());
+        return Objects.hashCode(id);
     }
 
     public Integer getId() {

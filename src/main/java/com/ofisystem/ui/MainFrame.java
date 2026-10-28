@@ -1,53 +1,132 @@
 package com.ofisystem.ui;
 
+import com.formdev.flatlaf.util.Animator;
 import com.ofisystem.dao.UsuarioDAO;
 import com.ofisystem.entidade.Usuario;
-import com.ofisystem.ui.panels.cliente.ClienteCadastroPanel;
-import com.ofisystem.ui.panels.cliente.ClienteConsultaPanel;
+import com.ofisystem.ui.panels.estoque.EstoqueConsultaPanel;
+import com.ofisystem.ui.panels.estoque.MovimentacaoEstoquePanel;
+import com.ofisystem.ui.panels.estoque.PecaCadastroPanel;
+import com.ofisystem.ui.panels.inicio.InicioPanel;
+import com.ofisystem.ui.panels.os.OrdemServicoConsultaPanel;
+import com.ofisystem.ui.panels.os.OrdemServicoPanel;
+import com.ofisystem.ui.panels.pessoa.PessoaCadastroPanel;
+import com.ofisystem.ui.panels.pessoa.PessoaConsultaPanel;
+import com.ofisystem.ui.panels.relatorio.RelatorioEstoquePanel;
+import com.ofisystem.ui.panels.relatorio.RelatorioFinanceiroPanel;
+import com.ofisystem.ui.panels.relatorio.RelatorioOrdemServicoPanel;
+import com.ofisystem.ui.panels.relatorio.RelatorioPessoasPanel;
+import com.ofisystem.ui.panels.relatorio.RelatorioVendasPanel;
+import com.ofisystem.ui.panels.servico.ServicoCadastroPanel;
+import com.ofisystem.ui.panels.servico.ServicoConsultaPanel;
+import com.ofisystem.ui.panels.venda.VendaConsultaPanel;
+import com.ofisystem.ui.panels.venda.VendaPanel;
+import com.ofisystem.ui.style.Botao;
+import com.ofisystem.ui.style.EngrenagemForjada;
+import com.ofisystem.ui.style.Icones;
+import com.ofisystem.ui.style.ItemTrilho;
+import com.ofisystem.ui.style.Movimento;
+import com.ofisystem.ui.style.Superficie;
+import com.ofisystem.ui.style.Tema;
+import com.ofisystem.ui.style.Texto;
 import com.ofisystem.util.Sessao;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class MainFrame {
 
+    private record Destino(String secao, String item, Supplier<JPanel> criar, Class<?> tela) {
+    }
+
+    private static final String INICIO = "Início";
+
+    private static final List<Destino> DESTINOS = List.of(
+            new Destino("Ordens de Serviço", "Nova Ordem", OrdemServicoPanel::new, OrdemServicoPanel.class),
+            new Destino("Ordens de Serviço", "Consultar", OrdemServicoConsultaPanel::new, OrdemServicoConsultaPanel.class),
+            new Destino("Financeiro", "Nova Venda", VendaPanel::new, VendaPanel.class),
+            new Destino("Financeiro", "Consultar Vendas", VendaConsultaPanel::new, VendaConsultaPanel.class),
+            new Destino("Pessoas", "Cadastrar", PessoaCadastroPanel::new, PessoaCadastroPanel.class),
+            new Destino("Pessoas", "Consultar", PessoaConsultaPanel::new, PessoaConsultaPanel.class),
+            new Destino("Estoque", "Cadastrar Peça", PecaCadastroPanel::new, PecaCadastroPanel.class),
+            new Destino("Estoque", "Consultar", EstoqueConsultaPanel::new, EstoqueConsultaPanel.class),
+            new Destino("Estoque", "Movimentação", MovimentacaoEstoquePanel::new, MovimentacaoEstoquePanel.class),
+            new Destino("Serviços", "Cadastrar", ServicoCadastroPanel::new, ServicoCadastroPanel.class),
+            new Destino("Serviços", "Consultar", ServicoConsultaPanel::new, ServicoConsultaPanel.class),
+            new Destino("Relatórios", "Ordens de Serviço", RelatorioOrdemServicoPanel::new, RelatorioOrdemServicoPanel.class),
+            new Destino("Relatórios", "Vendas", RelatorioVendasPanel::new, RelatorioVendasPanel.class),
+            new Destino("Relatórios", "Pessoas", RelatorioPessoasPanel::new, RelatorioPessoasPanel.class),
+            new Destino("Relatórios", "Estoque", RelatorioEstoquePanel::new, RelatorioEstoquePanel.class),
+            new Destino("Relatórios", "Financeiro", RelatorioFinanceiroPanel::new, RelatorioFinanceiroPanel.class));
+
+    private static final Map<String, Icones.Tipo> ICONES_SECAO = Map.of(
+            "Ordens de Serviço", Icones.Tipo.OS,
+            "Financeiro", Icones.Tipo.VENDA,
+            "Pessoas", Icones.Tipo.PESSOAS,
+            "Estoque", Icones.Tipo.ESTOQUE,
+            "Serviços", Icones.Tipo.SERVICOS,
+            "Relatórios", Icones.Tipo.RELATORIOS);
+
     private JFrame frame;
     private JPanel painelCentral;
-    private JLabel lblNomeOficina;
+    private JLabel lblOficina;
+    private ItemTrilho itemTema;
 
-    private List<JPanel> todosOsMenus = new ArrayList<>();
-    private List<JButton> todosBotoesTitulo = new ArrayList<>();
+    private final List<JPanel> todosOsMenus = new ArrayList<>();
+    private final List<ItemTrilho> todosBotoesTitulo = new ArrayList<>();
+    private final Map<Class<?>, ItemTrilho> itemPorTela = new HashMap<>();
+    private final Map<ItemTrilho, Integer> secaoDoItem = new HashMap<>();
+    private ItemTrilho itemInicio;
+    private ItemTrilho itemAtivo;
+
+    private BufferedImage telaAnterior;
+    private float opacidadeTelaAnterior;
+    private Animator animadorTela;
 
     public MainFrame() {
         frame = new JFrame();
-        frame.setTitle("Oficina AutoMecânica — Sistema de Gestão");
-        frame.setSize(1100, 700);
+        atualizarTitulo();
+        frame.setSize(1280, 780);
         frame.setMinimumSize(new Dimension(900, 600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
 
-        // Menu lateral fixo — nunca muda
-        frame.add(crirarMenuTopBar(), BorderLayout.NORTH);
-        frame.add(criarMenuLateral(), BorderLayout.WEST);
+        frame.add(criarTrilho(), BorderLayout.WEST);
 
-        // Painel central — só esse muda
-        painelCentral = new JPanel(new BorderLayout());
-        painelCentral.setBackground(new Color(245, 245, 245));
+        painelCentral = new JPanel(new BorderLayout()) {
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                if (telaAnterior != null && opacidadeTelaAnterior > 0f) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacidadeTelaAnterior));
+                    g2.drawImage(telaAnterior, 0, 0, null);
+                    g2.dispose();
+                }
+            }
+        };
         frame.add(painelCentral, BorderLayout.CENTER);
+        Navegador.registrar(this::navegarPara);
+        registrarAtalhos();
 
-        if(Sessao.getUsuariologado().getNomeOficina() == null
-        || Sessao.getUsuariologado().getNomeOficina().isEmpty()) {
-            mostrarTelaBoasVindas();
-        } else {
-            mostrarBemVindo();
+        navegarPara(new InicioPanel());
+
+        String oficina = Sessao.getUsuariologado().getNomeOficina();
+        if (oficina == null || oficina.isEmpty()) {
+            SwingUtilities.invokeLater(this::mostrarTelaBoasVindas);
         }
 
         frame.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent e) {
-                // redimensiona o painel de boas-vindas se estiver visível
                 for (Component c : frame.getLayeredPane().getComponents()) {
                     if (c instanceof BoasVindasPanel) {
                         c.setBounds(0, 0, frame.getWidth(), frame.getHeight());
@@ -61,416 +140,226 @@ public class MainFrame {
         frame.setVisible(true);
     }
 
-    // Troca o conteúdo do painel central
+    private void atualizarTitulo() {
+        String oficina = Sessao.getUsuariologado().getNomeOficina();
+        frame.setTitle(oficina == null || oficina.isBlank() ? "OfiSystem" : "OfiSystem — " + oficina);
+    }
+
     private void navegarPara(JPanel painel) {
+        Movimento.parar(animadorTela);
+        BufferedImage captura = painelCentral.getComponentCount() > 0 ? Movimento.capturar(painelCentral) : null;
+
         painelCentral.removeAll();
         painelCentral.add(painel, BorderLayout.CENTER);
         painelCentral.revalidate();
+        marcarAtivo(painel.getClass());
+
+        telaAnterior = captura;
+        opacidadeTelaAnterior = captura != null ? 1f : 0f;
         painelCentral.repaint();
-    }
+        if (captura == null) return;
 
-    private void mostrarBemVindo() {
-        painelCentral.removeAll();
-
-        JLabel label = new JLabel("Bem-vindo ao sistema da oficina! 🏍️");
-        label.setFont(new Font("Segoe UI", Font.PLAIN, 22));
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        painelCentral.add(label, BorderLayout.CENTER);
-
-        painelCentral.revalidate();
-        painelCentral.repaint();
-    }
-
-    private void fecharTodosMenus() {
-        for (int i = 0; i < todosOsMenus.size(); i++) {
-            todosOsMenus.get(i).setVisible(false);
-            todosBotoesTitulo.get(i).setText(todosBotoesTitulo.get(i).getText().replace("  ▼", "  ▶")
-            );
-            todosBotoesTitulo.get(i).setForeground(new Color(245, 245, 245));
-        }
-    }
-
-    private JPanel crirarMenuTopBar() {
-        JPanel topbar = new JPanel();
-        topbar.setLayout(new BorderLayout());
-        topbar.setPreferredSize(new Dimension(0, 60));
-        topbar.setBackground(new Color(53, 69, 99));
-        topbar.setBorder(BorderFactory.createEmptyBorder(10, 16, 0, 16));
-
-        // = Lado Esquerdo =
-
-        ImageIcon logo = new ImageIcon(getClass()
-                .getResource("/images/logo.png"));
-
-        Image imgRedimensionada = logo.getImage().getScaledInstance(65,45,Image.SCALE_SMOOTH);
-        JLabel logoIcon = new JLabel(new ImageIcon(imgRedimensionada), SwingConstants.CENTER);
-        logoIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-        JPanel esquerda = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        esquerda.setOpaque(false);
-
-        lblNomeOficina = new JLabel();
-        lblNomeOficina.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblNomeOficina.setForeground(new Color(245, 245, 245));
-
-        String nomeSessao = Sessao.getUsuariologado().getNomeOficina();
-        lblNomeOficina.setText(nomeSessao != null && !nomeSessao.isEmpty()? "Oficina - " + nomeSessao : "Nenhuma oficina vinculada");
-
-        esquerda.add(logoIcon);
-        esquerda.add(lblNomeOficina);
-        topbar.add(esquerda, BorderLayout.WEST);
-
-        // = Lado Direito =
-
-        JPanel direita = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        direita.setOpaque(false);
-
-        JLabel lblDireita = new JLabel("⭐ " + Sessao.getUsuariologado().getNome());
-        lblDireita.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblDireita.setForeground(new Color(200, 200, 200));
-        lblDireita.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-
-
-        direita.add(lblDireita);
-        topbar.add(direita, BorderLayout.EAST);
-
-        return topbar;
-    }
-
-    // ─── Menu lateral ────────────────────────────────────────────
-
-    private JPanel criarMenuLateral() {
-        JPanel menu = new JPanel(new BorderLayout());
-        menu.setPreferredSize(new Dimension(250, 0));
-        menu.setBackground(new Color(27, 37, 53));
-
-        // Separador
-        JPanel painelItens = new JPanel();
-        painelItens.setLayout(new BoxLayout(painelItens, BoxLayout.Y_AXIS));
-        painelItens.setBackground(new Color(33, 37, 41));
-
-        menu.add(criarSeparador());
-        menu.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Itens do menu com subitens
-        painelItens.add(criarSeparador());
-
-        painelItens.add(criarMenuExpansivel("Clientes", new String[]{
-                "Cadastrar", "Consultar"}));
-
-        painelItens.add(criarMenuExpansivel("Motos", new String[]{
-                "Cadastrar", "Consultar"}));
-
-        painelItens.add(criarMenuExpansivel("Ordens de Servico", new String[]{
-                "Nova Ordem", "Consultar"}));
-
-        painelItens.add(criarMenuExpansivel("Estoque", new String[]{
-                "Cadastrar Peca", "Consultar", "Movimentacao"}));
-
-        painelItens.add(criarMenuExpansivel("Financeiro", new String[]{
-                "Lancamentos", "Relatorio"}));
-
-        painelItens.add(criarMenuExpansivel("Manuais", new String[]{
-                "Catalogo"}));
-
-
-        menu.add(Box.createVerticalGlue()); // empurra tudo para cima
-
-        JPanel painelRodape = new JPanel();
-        painelRodape.setLayout(new BoxLayout(painelRodape, BoxLayout.Y_AXIS));
-        painelRodape.setBackground(new Color(24, 32, 43));
-
-        JButton btSair = new JButton("Sair");
-        btSair.setMaximumSize(new Dimension(210,36));
-        btSair.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btSair.setForeground(new Color(220, 53, 69));
-        btSair.setBackground(new Color(24, 32, 43));
-        btSair.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btSair.setBorderPainted(false);
-        btSair.setFocusPainted(false);
-        btSair.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btSair.addActionListener(e -> sair());
-
-        JButton btTrocarUsuario = new JButton("Trocar Usuário");
-        btTrocarUsuario.setMaximumSize(new Dimension(210,36));
-        btTrocarUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btTrocarUsuario.setForeground(new Color(255, 255, 255));
-        btTrocarUsuario.setBackground(new Color(24, 32, 43));
-        btTrocarUsuario.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btTrocarUsuario.setBorderPainted(false);
-        btTrocarUsuario.setFocusPainted(false);
-        btTrocarUsuario.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btTrocarUsuario.addActionListener(e -> trocarUsuario());
-
-        painelRodape.add(btSair);
-        painelRodape.add(btTrocarUsuario);
-
-        menu.add(painelItens, BorderLayout.NORTH);
-        menu.add(painelRodape,  BorderLayout.SOUTH);
-
-        return menu;
-    }
-
-    private void atualizarTopBar(){
-        String nome = Sessao.getUsuariologado().getNomeOficina();
-        lblNomeOficina.setText(nome != null ? nome : "Oficina");
-    }
-
-    private void mostrarTelaBoasVindas() {
-        // cobre o painel central com a tela de boas-vindas
-        BoasVindasPanel boasVindas = new BoasVindasPanel(() -> {
-
-            Component[] components = frame.getLayeredPane().getComponents();
-            for (Component c : components) {
-                if (c instanceof BoasVindasPanel) {
-                    frame.getLayeredPane().remove(c);
-                }
-            }
-
-            atualizarTopBar();
-            mostrarBemVindo();
-
-            frame.getLayeredPane().revalidate();
-            frame.getLayeredPane().repaint();
-            frame.revalidate();
-            frame.repaint();
+        animadorTela = Movimento.animar(160, Movimento.SAIDA_SUAVE, t -> {
+            opacidadeTelaAnterior = 1f - t;
+            painelCentral.repaint();
+        }, () -> {
+            telaAnterior = null;
+            painelCentral.repaint();
         });
-
-        boasVindas.setBounds(0, 0, frame.getWidth(), frame.getHeight());
-        frame.getLayeredPane().add(boasVindas, JLayeredPane.POPUP_LAYER);
-        frame.getLayeredPane().revalidate();
-        frame.getLayeredPane().repaint();
     }
 
-    private void sair(){
-        try{
-        int resposta = JOptionPane.showConfirmDialog(frame,
-                "Deseja sair do programa?", "Sair", JOptionPane.YES_NO_OPTION);
-        if(resposta == JOptionPane.YES_OPTION) {
-            Sessao.encerrar();
-            frame.dispose();
-            new LoginFrame().exibir();
+    private void marcarAtivo(Class<?> tela) {
+        ItemTrilho novo = tela == InicioPanel.class ? itemInicio : itemPorTela.get(tela);
+        if (novo == null || novo == itemAtivo) return;
+        if (itemAtivo != null) itemAtivo.setSelecionado(false);
+        itemAtivo = novo;
+        itemAtivo.setSelecionado(true);
+        Integer secao = secaoDoItem.get(novo);
+        if (secao != null && !estaAberto(todosOsMenus.get(secao))) {
+            abrirSecao(secao);
+        }
+    }
+
+    private void registrarAtalhos() {
+        JRootPane raiz = frame.getRootPane();
+        InputMap entradas = raiz.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap acoes = raiz.getActionMap();
+        entradas.put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "novaOs");
+        entradas.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), "novaVenda");
+        entradas.put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "inicio");
+        acoes.put("novaOs", acao(() -> navegarPara(new OrdemServicoPanel())));
+        acoes.put("novaVenda", acao(() -> navegarPara(new VendaPanel())));
+        acoes.put("inicio", acao(() -> navegarPara(new InicioPanel())));
+    }
+
+    private Action acao(Runnable r) {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                r.run();
             }
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(frame, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
+        };
     }
 
-    private void trocarUsuario(){
-        try{
-            JDialog dialog = new JDialog();
-            dialog.setSize(720, 560);
-            dialog.setLocationRelativeTo(frame);
-            dialog.setResizable(false);
-            dialog.setLayout(new BorderLayout());
+    private JPanel criarTrilho() {
+        JPanel trilho = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setPaint(new GradientPaint(0, 0, Tema.trilhoTopo(), 0, getHeight(), Tema.trilhoBase()));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
+            }
+        };
+        trilho.setPreferredSize(new Dimension(248, 0));
 
-            JPanel painel = new JPanel(new GridBagLayout());
-            painel.setBackground(new Color(245, 245, 245));
-            painel.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
+        trilho.add(criarMarca(), BorderLayout.NORTH);
 
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(8, 0, 8, 0);
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.gridwidth = GridBagConstraints.REMAINDER;
+        JPanel itens = transparente(new JPanel());
+        itens.setLayout(new BoxLayout(itens, BoxLayout.Y_AXIS));
+        itens.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
 
-            // Título
-            JLabel titulo = new JLabel("Trocar Usuário", SwingConstants.CENTER);
-            titulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-            gbc.insets = new Insets(0, 0, 20, 0);
-            painel.add(titulo, gbc);
+        itemInicio = new ItemTrilho(INICIO, ItemTrilho.Tipo.PRINCIPAL, Icones.Tipo.INICIO);
+        itemInicio.setToolTipText("F1");
+        itemInicio.addActionListener(e -> navegarPara(new InicioPanel()));
+        itens.add(itemInicio);
+        itens.add(Box.createVerticalStrut(8));
 
-            // Campo usuário
-            gbc.insets = new Insets(4, 0, 4, 0);
-            JLabel lblUsuario = new JLabel("Usuário");
-            lblUsuario.setFont(new Font("Segoe UI", Font.BOLD, 13));
-            painel.add(lblUsuario, gbc);
-
-            JTextField txtUsuario = new JTextField();
-            txtUsuario.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-            txtUsuario.setPreferredSize(new Dimension(280, 36));
-            txtUsuario.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                    BorderFactory.createEmptyBorder(4, 8, 4, 8)));
-            painel.add(txtUsuario, gbc);
-
-            // Campo senha
-            JLabel lblSenha = new JLabel("Senha");
-            lblSenha.setFont(new Font("Segoe UI", Font.BOLD, 13));
-            painel.add(lblSenha, gbc);
-
-            JPasswordField txtSenha = new JPasswordField();
-            txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-            txtSenha.setPreferredSize(new Dimension(280, 36));
-            txtSenha.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                    BorderFactory.createEmptyBorder(4, 8, 4, 8)));
-            painel.add(txtSenha, gbc);
-
-            // Botões
-            JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-            painelBotoes.setBackground(new Color(245, 245, 245));
-
-            JButton btCancelar = new JButton("Cancelar");
-            btCancelar.setFocusPainted(false);
-
-            JButton btEntrar = new JButton("Entrar");
-            btEntrar.setBackground(new Color(33, 37, 41));
-            btEntrar.setForeground(Color.WHITE);
-            btEntrar.setFocusPainted(false);
-            btEntrar.setBorderPainted(false);
-            btEntrar.setPreferredSize(new Dimension(100, 34));
-
-            painelBotoes.add(btCancelar);
-            painelBotoes.add(btEntrar);
-
-            gbc.insets = new Insets(16, 0, 0, 0);
-            painel.add(painelBotoes, gbc);
-
-            dialog.add(painel, BorderLayout.CENTER);
-
-            // Ações
-            btCancelar.addActionListener(e -> dialog.dispose());
-
-            // Enter na senha também loga
-            txtSenha.addKeyListener(new java.awt.event.KeyAdapter() {
-                public void keyPressed(java.awt.event.KeyEvent e) {
-                    if (e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
-                        btEntrar.doClick();
-                    }
-                }
-            });
-
-            btEntrar.addActionListener(e -> {
-                String usuario = txtUsuario.getText().trim();
-                String senha   = new String(txtSenha.getPassword());
-
-                if (usuario.isEmpty() || senha.isEmpty()) {
-                    JOptionPane.showMessageDialog(dialog,
-                            "Preencha usuário e senha!", "Aviso",
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                UsuarioDAO usuarioDAO = new UsuarioDAO();
-                Usuario u = usuarioDAO.autenticar(usuario, senha);
-
-                if (u != null) {
-                    Sessao.iniciar(u);          // troca a sessão para o novo usuário
-                    dialog.dispose();           // fecha o dialog
-                    frame.dispose();            // fecha o MainFrame atual
-
-                    // Abre um novo MainFrame com o novo usuário
-                    SwingUtilities.invokeLater(() -> new MainFrame().exibirFrame());
-                } else {
-                    JOptionPane.showMessageDialog(dialog,
-                            "Usuário ou senha incorretos!", "Erro",
-                            JOptionPane.ERROR_MESSAGE);
-                    txtSenha.setText("");
-                    txtSenha.requestFocus();
-                }
-            });
-
-            dialog.setVisible(true);
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(frame, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        Map<String, List<Destino>> secoes = new LinkedHashMap<>();
+        for (Destino d : DESTINOS) {
+            secoes.computeIfAbsent(d.secao(), k -> new ArrayList<>()).add(d);
         }
+        secoes.forEach((secao, destinos) -> itens.add(criarMenuExpansivel(secao, destinos)));
+
+        JPanel topo = transparente(new JPanel(new BorderLayout()));
+        topo.add(itens, BorderLayout.NORTH);
+        JScrollPane rolagem = new JScrollPane(topo,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        rolagem.setBorder(BorderFactory.createEmptyBorder());
+        rolagem.setOpaque(false);
+        rolagem.getViewport().setOpaque(false);
+        rolagem.getVerticalScrollBar().setUnitIncrement(16);
+        trilho.add(rolagem, BorderLayout.CENTER);
+
+        trilho.add(criarRodapeTrilho(), BorderLayout.SOUTH);
+        return trilho;
     }
 
-    private JPanel criarMenuExpansivel(String titulo, String[] subitens) {
-        JPanel container = new JPanel();
+    private JPanel criarMarca() {
+        JPanel marca = transparente(new JPanel(new BorderLayout(12, 0)));
+        marca.setBorder(BorderFactory.createEmptyBorder(24, 24, 16, 16));
+
+        EngrenagemForjada engrenagem = new EngrenagemForjada();
+        engrenagem.setSomenteMarca(true);
+        engrenagem.setPreferredSize(new Dimension(40, 40));
+        marca.add(engrenagem, BorderLayout.WEST);
+
+        JPanel textos = transparente(new JPanel(new GridLayout(2, 1)));
+        JLabel nome = new JLabel("OfiSystem");
+        nome.setFont(Tema.fonte(Tema.TAM_TEXTO, Font.BOLD));
+        nome.setForeground(Color.WHITE);
+        lblOficina = new JLabel();
+        lblOficina.setFont(Tema.fonte(Tema.TAM_PEQUENO));
+        lblOficina.setForeground(Tema.trilhoSuave());
+        lblOficina.setText(textoOficina());
+        textos.add(nome);
+        textos.add(lblOficina);
+        marca.add(textos, BorderLayout.CENTER);
+        return marca;
+    }
+
+    private String textoOficina() {
+        String nome = Sessao.getUsuariologado().getNomeOficina();
+        return nome != null && !nome.isEmpty() ? nome : "Oficina não definida";
+    }
+
+    private void atualizarOficina() {
+        lblOficina.setText(textoOficina());
+        atualizarTitulo();
+    }
+
+    private JPanel criarRodapeTrilho() {
+        JPanel rodape = transparente(new JPanel());
+        rodape.setLayout(new BoxLayout(rodape, BoxLayout.Y_AXIS));
+        rodape.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(255, 255, 255, 28)),
+                BorderFactory.createEmptyBorder(8, 0, 16, 0)));
+
+        Usuario usuario = Sessao.getUsuariologado();
+        JLabel lblUsuario = new JLabel(usuario.getNome(), Icones.de(Icones.Tipo.USUARIO, 18, Tema::trilhoTexto), SwingConstants.LEFT);
+        lblUsuario.setFont(Tema.fonte(Tema.TAM_TEXTO, Font.BOLD));
+        lblUsuario.setForeground(Tema.trilhoTexto());
+        lblUsuario.setIconTextGap(10);
+        lblUsuario.setBorder(BorderFactory.createEmptyBorder(8, 24, 8, 16));
+        lblUsuario.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if (usuario.getPerfil() != null) {
+            lblUsuario.setToolTipText(usuario.getPerfil().getDescricao());
+        }
+        rodape.add(lblUsuario);
+
+        itemTema = new ItemTrilho(textoTema(), ItemTrilho.Tipo.PRINCIPAL, Tema.isEscuro() ? Icones.Tipo.SOL : Icones.Tipo.LUA);
+        itemTema.addActionListener(e -> alternarTema());
+        rodape.add(itemTema);
+
+        ItemTrilho trocar = new ItemTrilho("Trocar usuário", ItemTrilho.Tipo.PRINCIPAL, Icones.Tipo.TROCAR);
+        trocar.addActionListener(e -> trocarUsuario());
+        rodape.add(trocar);
+
+        ItemTrilho sair = new ItemTrilho("Sair", ItemTrilho.Tipo.PRINCIPAL, Icones.Tipo.SAIR);
+        sair.addActionListener(e -> sair());
+        rodape.add(sair);
+        return rodape;
+    }
+
+    private String textoTema() {
+        return Tema.isEscuro() ? "Tema claro" : "Tema escuro";
+    }
+
+    private void alternarTema() {
+        Tema.alternar(frame);
+        JPanel rodape = (JPanel) itemTema.getParent();
+        int indice = List.of(rodape.getComponents()).indexOf(itemTema);
+        rodape.remove(itemTema);
+        itemTema = new ItemTrilho(textoTema(), ItemTrilho.Tipo.PRINCIPAL, Tema.isEscuro() ? Icones.Tipo.SOL : Icones.Tipo.LUA);
+        itemTema.addActionListener(e -> alternarTema());
+        rodape.add(itemTema, indice);
+        rodape.revalidate();
+        rodape.repaint();
+    }
+
+    private JPanel criarMenuExpansivel(String titulo, List<Destino> destinos) {
+        JPanel container = transparente(new JPanel());
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setAlignmentX(Component.LEFT_ALIGNMENT);
         container.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1000));
-        container.setBackground(new Color(33, 37, 41));
 
-        // Botão do título
-        JButton btnTitulo = new JButton(titulo + "  ▶");
-        btnTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        btnTitulo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
-        btnTitulo.setMinimumSize(new Dimension(0, 46));
-        btnTitulo.setPreferredSize(new Dimension(0, 46));
-        btnTitulo.setHorizontalAlignment(SwingConstants.LEFT);
-        btnTitulo.setForeground(new Color(200, 200, 200));
-        btnTitulo.setBorder(BorderFactory.createEmptyBorder(10,16,10,0));
-        btnTitulo.setBackground(new Color(15, 22, 37));
-        btnTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        btnTitulo.setBorderPainted(false);
-        btnTitulo.setFocusPainted(false);
-        btnTitulo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        ItemTrilho btnTitulo = new ItemTrilho(titulo, ItemTrilho.Tipo.SECAO, ICONES_SECAO.get(titulo));
 
-        // Painel dos subitens — começa escondido
-        JPanel painelSub = new JPanel();
+        JPanel painelSub = transparente(new JPanel());
         painelSub.setLayout(new BoxLayout(painelSub, BoxLayout.Y_AXIS));
         painelSub.setAlignmentX(Component.LEFT_ALIGNMENT);
-        painelSub.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1000));
-        painelSub.setBackground(new Color(22, 25, 29));
         painelSub.setVisible(false);
+        aplicarAltura(painelSub, 0);
 
-        // Registra na lista global
+        int indiceSecao = todosOsMenus.size();
         todosOsMenus.add(painelSub);
         todosBotoesTitulo.add(btnTitulo);
 
-        // Cria cada subitem
-        for (String subitem : subitens) {
-            JButton btnSub = new JButton("•" + subitem);
-            btnSub.setHorizontalAlignment(SwingConstants.LEFT);
-            btnSub.setAlignmentX(Component.LEFT_ALIGNMENT);
-            btnSub.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
-            btnSub.setMinimumSize(new Dimension(0, 38));
-            btnSub.setPreferredSize(new Dimension(0, 38));
-            btnSub.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 0));
-            btnSub.setForeground(new Color(160, 160, 160));
-            btnSub.setBackground(new Color(22, 25, 29));
-            btnSub.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-            btnSub.setBorderPainted(false);
-            btnSub.setFocusPainted(false);
-            btnSub.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-            // Hover no subitem
-            btnSub.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseEntered(java.awt.event.MouseEvent e) {
-                    btnSub.setForeground(Color.WHITE);
-                    btnSub.setBackground(new Color(35, 40, 46));
-                }
-                public void mouseExited(java.awt.event.MouseEvent e) {
-                    btnSub.setForeground(new Color(160, 160, 160));
-                    btnSub.setBackground(new Color(22, 25, 29));
-                }
-            });
-
-            // Ação do subitem — aqui você vai conectar os painéis reais
-            btnSub.addActionListener(e -> {
-                    onSubitemClicado(titulo, subitem);
-            });
-
+        for (Destino destino : destinos) {
+            ItemTrilho btnSub = new ItemTrilho(destino.item(), ItemTrilho.Tipo.SUBITEM, null);
+            btnSub.addActionListener(e -> navegarPara(destino.criar().get()));
+            itemPorTela.putIfAbsent(destino.tela(), btnSub);
+            secaoDoItem.put(btnSub, indiceSecao);
+            if (destino.tela() == OrdemServicoPanel.class) btnSub.setToolTipText("F2");
+            if (destino.tela() == VendaPanel.class) btnSub.setToolTipText("F3");
             painelSub.add(btnSub);
         }
 
-        // Clique no título — fecha todos e abre só esse
         btnTitulo.addActionListener(e -> {
-            boolean estaAberto = painelSub.isVisible();
-
-            // Fecha todos os menus
+            boolean estavaAberto = estaAberto(painelSub);
             fecharTodosMenus();
-
-            // Se estava fechado, abre ele
-            if (!estaAberto) {
-                painelSub.setVisible(true);
-                btnTitulo.setText(titulo + "  ▼");
-                btnTitulo.setForeground(Color.WHITE);
-            }
-
-            SwingUtilities.getAncestorOfClass(JPanel.class, container).revalidate();
-            SwingUtilities.getAncestorOfClass(JPanel.class, container).repaint();
-        });
-
-        // Hover no título
-        btnTitulo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                btnTitulo.setBackground(new Color(45, 50, 56));
-            }
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                btnTitulo.setBackground(new Color(33, 37, 41));
+            if (!estavaAberto) {
+                abrirSecao(indiceSecao);
             }
         });
 
@@ -479,23 +368,195 @@ public class MainFrame {
         return container;
     }
 
-    // Aqui você conecta cada subitem ao seu painel
-    private void onSubitemClicado(String menu, String subitem) {
-        // Exemplo — substitua os JOptionPane pelos painéis reais quando criar
-         switch (menu) {
-             case "Clientes" -> {
-                 if (subitem.equals("Cadastrar")) navegarPara(new ClienteCadastroPanel());
-                 if (subitem.equals("Consultar")) navegarPara(ClienteConsultaPanel.criar(() ->
-                         navegarPara(new ClienteCadastroPanel())));
-             }
-         }
+    private void abrirSecao(int indice) {
+        fecharTodosMenus();
+        animarAltura(todosOsMenus.get(indice), true);
+        todosBotoesTitulo.get(indice).setAberto(true);
     }
 
-    private JSeparator criarSeparador() {
-        JSeparator sep = new JSeparator();
-        sep.setForeground(new Color(55, 60, 65));
-        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
-        sep.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return sep;
+    private void fecharTodosMenus() {
+        for (int i = 0; i < todosOsMenus.size(); i++) {
+            if (estaAberto(todosOsMenus.get(i))) {
+                animarAltura(todosOsMenus.get(i), false);
+            }
+            todosBotoesTitulo.get(i).setAberto(false);
+        }
+    }
+
+    private boolean estaAberto(JPanel painelSub) {
+        return Boolean.TRUE.equals(painelSub.getClientProperty("menu.aberto"));
+    }
+
+    private void animarAltura(JPanel painelSub, boolean abrir) {
+        Movimento.parar((Animator) painelSub.getClientProperty(Animator.class));
+        painelSub.putClientProperty("menu.aberto", abrir);
+
+        int inicial = painelSub.isVisible() ? painelSub.getPreferredSize().height : 0;
+        int alvo = 0;
+        if (abrir) {
+            for (Component c : painelSub.getComponents()) {
+                alvo += c.getMaximumSize().height;
+            }
+            aplicarAltura(painelSub, inicial);
+            painelSub.setVisible(true);
+        }
+
+        int destino = alvo;
+        painelSub.putClientProperty(Animator.class, Movimento.animar(abrir ? 220 : 150, Movimento.SAIDA_SUAVE,
+                t -> aplicarAltura(painelSub, Math.round(inicial + (destino - inicial) * t)),
+                () -> {
+                    if (!abrir) painelSub.setVisible(false);
+                }));
+    }
+
+    private void aplicarAltura(JPanel painelSub, int altura) {
+        painelSub.setPreferredSize(new Dimension(0, altura));
+        painelSub.setMinimumSize(new Dimension(0, altura));
+        painelSub.setMaximumSize(new Dimension(Integer.MAX_VALUE, altura));
+        painelSub.revalidate();
+        painelSub.repaint();
+    }
+
+    private <T extends JComponent> T transparente(T componente) {
+        componente.setOpaque(false);
+        return componente;
+    }
+
+    private void mostrarTelaBoasVindas() {
+        BoasVindasPanel boasVindas = new BoasVindasPanel(() -> {
+            JLayeredPane camadas = frame.getLayeredPane();
+            BufferedImage captura = null;
+            for (Component c : camadas.getComponents()) {
+                if (c instanceof BoasVindasPanel) {
+                    captura = Movimento.capturar(c);
+                    camadas.remove(c);
+                }
+            }
+
+            atualizarOficina();
+            navegarPara(new InicioPanel());
+
+            camadas.revalidate();
+            camadas.repaint();
+            frame.revalidate();
+            frame.repaint();
+
+            if (captura == null) return;
+            Movimento.CamadaDesvanecer desvanecer = new Movimento.CamadaDesvanecer(captura);
+            desvanecer.setBounds(0, 0, captura.getWidth(), captura.getHeight());
+            camadas.add(desvanecer, JLayeredPane.POPUP_LAYER);
+            Movimento.animar(450, Movimento.SAIDA_SUAVE, t -> desvanecer.setOpacidade(1f - t), () -> {
+                camadas.remove(desvanecer);
+                camadas.repaint();
+            });
+        });
+
+        boasVindas.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+        frame.getLayeredPane().add(boasVindas, JLayeredPane.POPUP_LAYER);
+        frame.getLayeredPane().revalidate();
+        frame.getLayeredPane().repaint();
+        boasVindas.focar();
+    }
+
+    private void sair() {
+        int resposta = JOptionPane.showConfirmDialog(frame,
+                "Deseja sair do sistema?", "Sair", JOptionPane.YES_NO_OPTION);
+        if (resposta == JOptionPane.YES_OPTION) {
+            Sessao.encerrar();
+            frame.dispose();
+            new LoginFrame().exibir();
+        }
+    }
+
+    private void trocarUsuario() {
+        JDialog dialog = new JDialog(frame, "Trocar usuário", true);
+        dialog.setLayout(new BorderLayout());
+
+        Superficie cartao = new Superficie(new GridBagLayout(), 24, 24);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+
+        gbc.insets = new Insets(0, 0, 4, 0);
+        cartao.add(Texto.titulo("Trocar usuário"), gbc);
+        gbc.insets = new Insets(0, 0, 16, 0);
+        cartao.add(Texto.apoio("Entre com outro usuário sem fechar o sistema."), gbc);
+
+        JTextField txtUsuario = new JTextField(22);
+        txtUsuario.putClientProperty("JTextField.leadingIcon", Icones.de(Icones.Tipo.USUARIO, 18, Tema::tintaSuave));
+        txtUsuario.putClientProperty("JTextField.placeholderText", "Usuário");
+        JPasswordField txtSenha = new JPasswordField(22);
+        txtSenha.putClientProperty("JTextField.leadingIcon", Icones.de(Icones.Tipo.CADEADO, 18, Tema::tintaSuave));
+        txtSenha.putClientProperty("JTextField.placeholderText", "Senha");
+        txtSenha.putClientProperty("JPasswordField.showRevealButton", true);
+        for (JTextField campo : new JTextField[]{txtUsuario, txtSenha}) {
+            campo.setPreferredSize(new Dimension(320, 40));
+        }
+        gbc.insets = new Insets(0, 0, 8, 0);
+        cartao.add(txtUsuario, gbc);
+        cartao.add(txtSenha, gbc);
+
+        JLabel erro = Texto.erro();
+        gbc.insets = new Insets(0, 0, 8, 0);
+        cartao.add(erro, gbc);
+
+        JPanel botoes = transparente(new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0)));
+        Botao btCancelar = new Botao("Cancelar", Botao.Estilo.DISCRETO);
+        Botao btEntrar = new Botao("Entrar", Botao.Estilo.PRINCIPAL);
+        botoes.add(btCancelar);
+        botoes.add(btEntrar);
+        gbc.insets = new Insets(8, 0, 0, 0);
+        cartao.add(botoes, gbc);
+
+        JPanel fundo = new JPanel(new BorderLayout());
+        fundo.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+        fundo.add(cartao, BorderLayout.CENTER);
+        dialog.add(fundo, BorderLayout.CENTER);
+        dialog.getRootPane().setDefaultButton(btEntrar);
+
+        btCancelar.addActionListener(e -> dialog.dispose());
+        btEntrar.addActionListener(e -> {
+            String usuario = txtUsuario.getText().trim();
+            String senha = new String(txtSenha.getPassword());
+            if (usuario.isEmpty() || senha.isEmpty()) {
+                erro.setText("Preencha usuário e senha.");
+                return;
+            }
+            btEntrar.setEnabled(false);
+            btEntrar.setText("Entrando...");
+            new SwingWorker<Usuario, Void>() {
+                @Override
+                protected Usuario doInBackground() {
+                    return new UsuarioDAO().autenticar(usuario, senha);
+                }
+
+                @Override
+                protected void done() {
+                    btEntrar.setEnabled(true);
+                    btEntrar.setText("Entrar");
+                    try {
+                        Usuario u = get();
+                        if (u == null) {
+                            erro.setText("Usuário ou senha incorretos.");
+                            txtSenha.setText("");
+                            txtSenha.requestFocusInWindow();
+                            return;
+                        }
+                        Sessao.iniciar(u);
+                        dialog.dispose();
+                        frame.dispose();
+                        SwingUtilities.invokeLater(() -> new MainFrame().exibirFrame());
+                    } catch (Exception ex) {
+                        erro.setText("Não foi possível conectar. Verifique a internet.");
+                    }
+                }
+            }.execute();
+        });
+
+        dialog.pack();
+        dialog.setResizable(false);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true);
     }
 }

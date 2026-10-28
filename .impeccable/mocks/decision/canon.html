@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Padrão</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1440px;height:900px;overflow:hidden;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:#F4F6F9;color:#111827;display:grid;grid-template-columns:240px 1fr}
+.rail{background:#1B2535;color:#A9B4C4;padding:24px 16px}
+.rail b{display:block;font-size:18px;color:#fff;margin-bottom:28px}
+.nav{padding:10px 12px;border-radius:6px;font-size:14px}
+.nav.on{background:#2563EB;color:#fff}
+main{padding:28px 32px;display:flex;flex-direction:column;gap:24px}
+h1{font-size:24px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.k{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.k small{color:#6B7280;font-size:13px}.k b{display:block;font-size:28px;margin-top:8px}
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:#6B7280;font-size:12px;padding:10px;border-bottom:1px solid #E5E7EB}
+td{padding:12px 10px;border-bottom:1px solid #F1F2F4}
+.chip{padding:3px 10px;border-radius:999px;font-size:12px;background:#DBEAFE;color:#1E40AF}
+</style></head><body>
+<aside class="rail"><b>OfiSystem</b><div class="nav on">Dashboard</div><div class="nav">Ordens de Serviço</div><div class="nav">Vendas</div><div class="nav">Pessoas</div><div class="nav">Estoque</div><div class="nav">Relatórios</div></aside>
+<main><h1>Dashboard</h1>
+<div class="kpis"><div class="k"><small>OS abertas</small><b>7</b></div><div class="k"><small>Recebido hoje</small><b>R$ 1.583,90</b></div><div class="k"><small>Vendas hoje</small><b>6</b></div><div class="k"><small>Estoque baixo</small><b>3</b></div></div>
+<div class="card"><table><tr><th>OS</th><th>Cliente</th><th>Veículo</th><th>Status</th><th>Total</th></tr>
+<tr><td>000044</td><td>Marcos Lima</td><td>—</td><td><span class="chip">Aberta</span></td><td>R$ 0,00</td></tr>
+<tr><td>000043</td><td>Transportes Rocha</td><td>RTA7B90</td><td><span class="chip">Aguardando peça</span></td><td>R$ 2.180,00</td></tr>
+<tr><td>000041</td><td>Carlos Mendes</td><td>QXR4F21</td><td><span class="chip">Em andamento</span></td><td>R$ 640,00</td></tr>
+<tr><td>000038</td><td>Ana Paula Souza</td><td>PNX2C44</td><td><span class="chip">Atrasada</span></td><td>R$ 395,00</td></tr></table></div>
+</main></body></html>
