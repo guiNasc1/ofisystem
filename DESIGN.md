@@ -230,7 +230,7 @@ Uma família azul-aço sobre neutros frios de aço e vinil, com três cores de e
 **Body Font:** fonte sans instalada na máquina, resolvida por `Tema.familia()` na ordem Segoe UI → Inter → Noto Sans → Cantarell → Ubuntu → Liberation Sans → `SansSerif` lógico. Aplicada como `defaultFont` do FlatLaf.
 **Label/Mono Font:** não há.
 
-**Character:** uma única sans de sistema, trabalhada só por tamanho, peso e caixa. Decisão em aberto: empacotar Barlow / Barlow Condensed depende de consentimento do usuário; até lá, a família do sistema é a fonte real e nenhuma tela deve assumir Barlow.
+**Character:** uma única sans de sistema, trabalhada só por tamanho, peso e caixa. Decisão do usuário (28/10/2026): manter a fonte do sistema; Barlow não será empacotada.
 
 ### Hierarchy
 - **Título** (700, 22px): título de tela, data/valor grande no adesivo ("Ontem", "30/10"), total do caixa e da venda, título da forja.
@@ -341,4 +341,4 @@ Uma curva: SAIDA_SUAVE, cubic-bezier(0.16, 1, 0.3, 1), via `Movimento.animar` (r
 - **Don't** pintar sombra dura deslocada; a sombra deste mundo é macia e empilhada.
 - **Don't** usar rótulo em caixa alta como sobretítulo decorativo acima de um título.
 - **Don't** reaproveitar a Engrenagem Forjada fora do login nem fazer o brilho de aço ciclar.
-- **Don't** assumir Barlow nas telas enquanto o empacotamento da fonte não for aprovado.
+- **Don't** empacotar fonte externa: a fonte do sistema é a escolha definitiva.

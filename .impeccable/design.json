@@ -30,7 +30,7 @@
       "texto-forte": { "displayName": "Texto forte", "purpose": "Botões, itens principais do trilho, nome e total no adesivo." },
       "rotulo": { "displayName": "Rótulo", "purpose": "Caixa alta: rótulo de campo/dado/bloco, cabeçalho de tabela, faixa e etiqueta." },
       "pequeno": { "displayName": "Pequeno", "purpose": "Metadados, dica da forja, contagem de usuários." },
-      "familyNote": "Fonte instalada resolvida por Tema.familia(): Segoe UI > Inter > Noto Sans > Cantarell > Ubuntu > Liberation Sans > SansSerif. Barlow / Barlow Condensed: decisão em aberto, aguardando consentimento do usuário; não é a fonte do sistema."
+      "familyNote": "Fonte instalada resolvida por Tema.familia(): Segoe UI > Inter > Noto Sans > Cantarell > Ubuntu > Liberation Sans > SansSerif. Decisão do usuário: manter a fonte do sistema; Barlow não será empacotada."
     },
     "shadows": [
       { "name": "vinil-repouso", "value": "0 1px 0 rgba(16,24,32,0.06), 0 3px 4px rgba(16,24,32,0.06), 0 6px 7px rgba(16,24,32,0.04)", "purpose": "Aproximação CSS de Tema.sombra com elevação 3: 7 camadas de fillRoundRect deslocadas 1px para baixo, alfa peso^2 x 0.42 x base. Base claro rgba(16,24,32,36/255); escuro rgba(0,0,0,115/255). Superfícies e adesivos em repouso." },
@@ -176,7 +176,7 @@
       "**Don't** pintar sombra dura deslocada; a sombra deste mundo é macia e empilhada.",
       "**Don't** usar rótulo em caixa alta como sobretítulo decorativo acima de um título.",
       "**Don't** reaproveitar a Engrenagem Forjada fora do login nem fazer o brilho de aço ciclar.",
-      "**Don't** assumir Barlow nas telas enquanto o empacotamento da fonte não for aprovado."
+      "**Don't** empacotar fonte externa: a fonte do sistema é a escolha definitiva."
     ]
   }
 }
